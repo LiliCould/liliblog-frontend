@@ -1,0 +1,50 @@
+/* Element Plus Theme Override */
+:root {
+    --el-color-primary: #E8613C;
+    --el-color-primary-light-1: #eb7153;
+    --el-color-primary-light-2: #ed816a;
+    --el-color-primary-light-3: #f09080;
+    --el-color-primary-light-4: #f2a097;
+    --el-color-primary-light-5: #f4b0ae;
+    --el-color-primary-light-6: #f6c0c4;
+    --el-color-primary-light-7: #f9cfdb;
+    --el-color-primary-light-8: #fbdfe8;
+    --el-color-primary-light-9: #fdeef4;
+    --el-color-primary-dark-2: #ba4e30;
+
+    --el-border-radius-base: 8px;
+    --el-border-radius-small: 6px;
+    --el-border-radius-round: 16px;
+
+    --el-font-family: var(--font-family);
+
+    --el-color-success: #67C23A;
+    --el-color-warning: #F0A04B;
+    --el-color-danger: #E8613C;
+
+    --el-border-color: var(--color-border);
+    --el-border-color-light: var(--color-border);
+    --el-border-color-lighter: var(--color-border);
+
+    --el-bg-color: var(--color-card);
+    --el-bg-color-page: var(--color-bg);
+}
+
+.el-button--primary {
+    --el-button-bg-color: var(--color-primary);
+    --el-button-border-color: var(--color-primary);
+    --el-button-hover-bg-color: var(--color-primary-hover);
+    --el-button-hover-border-color: var(--color-primary-hover);
+}
+
+.el-message-box {
+    border-radius: var(--radius-md);
+}
+
+.el-dialog {
+    border-radius: var(--radius-lg);
+}
+
+.el-input__wrapper {
+    border-radius: var(--radius-sm);
+}
