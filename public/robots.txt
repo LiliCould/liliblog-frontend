@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /manage/
+
+Sitemap: https://lilicould.cn/sitemap.xml

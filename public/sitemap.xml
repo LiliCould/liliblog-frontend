@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- 首页 -->
+  <url>
+    <loc>https://lilicould.cn</loc>
+    <lastmod>2026-04-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- 搜索页 -->
+  <url>
+    <loc>https://lilicould.cn/search</loc>
+    <lastmod>2026-04-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 个人信息页 -->
+  <url>
+    <loc>https://lilicould.cn/profile</loc>
+    <lastmod>2026-04-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 文章详情页示例 -->
+  <url>
+    <loc>https://lilicould.cn/article/s/litltle-upgrade</loc>
+    <lastmod>2026-04-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>
