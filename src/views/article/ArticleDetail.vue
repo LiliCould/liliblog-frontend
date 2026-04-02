@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useArticleStore } from '@/stores/article'
 import ArticleMeta from '@/components/article/ArticleMeta.vue'
@@ -51,6 +51,82 @@ const route = useRoute()
 const articleStore = useArticleStore()
 const article = ref<Article | null>(null)
 const loading = ref(true)
+
+const currentUrl = computed(() => {
+  const id = route.params.id as string
+  const slug = route.params.slug as string
+  if (slug) {
+    return `https://lilicould.cn/article/s/${slug}`
+  } else if (id) {
+    return `https://lilicould.cn/article/${id}`
+  }
+  return 'https://lilicould.cn'
+})
+
+function updateMetaTags() {
+  if (!article.value) return
+
+  const { title, summary, coverImage, authorNickname } = article.value
+  const url = currentUrl.value
+  const image = coverImage || 'https://lilicould.cn/favicon.svg'
+  const description = summary || '立里博客的文章'
+
+  // 更新页面标题
+  document.title = `${title} - 立里博客`
+
+  // 更新 meta 标签
+  updateMetaTag('description', description)
+  updateMetaTag('keywords', `${title},${authorNickname},立里博客`)
+
+  // 更新 Open Graph 标签
+  updateOgTag('og:title', title)
+  updateOgTag('og:description', description)
+  updateOgTag('og:url', url)
+  updateOgTag('og:image', image)
+  updateOgTag('og:site_name', '立里博客')
+  updateOgTag('og:type', 'article')
+  updateOgTag('article:author', authorNickname)
+
+  // 更新 Twitter 标签
+  updateMetaTag('twitter:card', 'summary_large_image')
+  updateMetaTag('twitter:title', title)
+  updateMetaTag('twitter:description', description)
+  updateMetaTag('twitter:image', image)
+  updateMetaTag('twitter:site', '@lilicould')
+
+  // 更新规范链接
+  updateCanonicalTag(url)
+}
+
+function updateMetaTag(name: string, content: string) {
+  let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.name = name
+    document.head.appendChild(tag)
+  }
+  tag.content = content
+}
+
+function updateOgTag(property: string, content: string) {
+  let tag = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.setAttribute('property', property)
+    document.head.appendChild(tag)
+  }
+  tag.content = content
+}
+
+function updateCanonicalTag(url: string) {
+  let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'canonical'
+    document.head.appendChild(link)
+  }
+  link.href = url
+}
 
 async function loadArticle() {
   loading.value = true
@@ -67,12 +143,14 @@ async function loadArticle() {
     article.value = null
   } finally {
     loading.value = false
+    updateMetaTags()
   }
 }
 
 onMounted(loadArticle)
 
 watch(() => [route.params.id, route.params.slug], loadArticle)
+watch(article, updateMetaTags, { deep: true })
 </script>
 
 <style scoped>
