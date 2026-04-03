@@ -29,8 +29,11 @@
         </span>
       </div>
 
-      <div v-if="article.tags && article.tags.length > 0" class="card-tags">
-        <TagBadge v-for="tag in article.tags" :key="tag.id" :tag="tag" />
+      <div v-if="displayTags.length > 0" class="card-tags">
+        <TagBadge v-for="tag in displayTags" :key="tag.id" :tag="tag" />
+        <el-tag v-if="hiddenTagsCount > 0" size="small" type="info" class="more-tag">
+          +{{ hiddenTagsCount }}
+        </el-tag>
       </div>
     </div>
 
@@ -41,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, Folder, Calendar, View } from '@element-plus/icons-vue'
 import type { Article } from '@/types/article.d'
@@ -52,6 +56,17 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const MAX_TAGS = 10
+
+const displayTags = computed(() => {
+  if (!props.article.tags) return []
+  return props.article.tags.slice(0, MAX_TAGS)
+})
+
+const hiddenTagsCount = computed(() => {
+  if (!props.article.tags) return 0
+  return Math.max(0, props.article.tags.length - MAX_TAGS)
+})
 
 function goDetail() {
   if (props.article.slug) {
@@ -161,7 +176,18 @@ function goDetail() {
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
+  align-items: center;
+}
+
+.more-tag {
+  height: 22px;
+  line-height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  background: var(--color-bg);
+  border-color: var(--color-border);
 }
 
 .card-cover {

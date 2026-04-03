@@ -65,6 +65,29 @@ const appStore = useAppStore()
   display: flex;
   flex-direction: column;
   gap: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-light) var(--color-bg);
+}
+
+.category-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.category-list::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 3px;
+}
+
+.category-list::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 3px;
+}
+
+.category-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }
 
 .category-item {
@@ -94,6 +117,29 @@ const appStore = useAppStore()
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-light) var(--color-bg);
+}
+
+.tag-cloud::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tag-cloud::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 3px;
+}
+
+.tag-cloud::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 3px;
+}
+
+.tag-cloud::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }
 
 .empty-hint {
