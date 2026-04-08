@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, onUnmounted, watch, nextTick } from 'vue'
 import { Loading } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
@@ -150,9 +150,7 @@ watch(visible, (newVal) => {
   }
 })
 
-onMounted(() => {
-  chatStore.initialize()
-})
+// 只有在用户点击打开聊天室时才初始化
 
 onUnmounted(() => {
   chatStore.closeConnection()

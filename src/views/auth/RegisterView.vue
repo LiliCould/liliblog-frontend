@@ -161,14 +161,14 @@ function startCountdown() {
 
 async function handleGetCaptcha() {
   if (!form.email) {
-    ElMessage.error('请输入邮箱')
+    ElMessage.error({ message: '请输入邮箱', duration: 1500 })
     return
   }
   
   captchaLoading.value = true
   try {
     await getCaptcha(form.email)
-    ElMessage.success('验证码已发送到您的邮箱')
+    ElMessage.success({ message: '验证码已发送到您的邮箱', duration: 1500 })
     startCountdown()
   } catch {
     // error handled by interceptor
@@ -190,7 +190,7 @@ async function handleRegister() {
       nickname: form.nickname,
       captcha: form.captcha,
     })
-    ElMessage.success('注册成功，请登录')
+    ElMessage.success({ message: '注册成功，请登录', duration: 1500 })
     router.push('/login')
   } catch {
     // error handled by interceptor

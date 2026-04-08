@@ -131,7 +131,7 @@ async function confirmDelete(article: Article) {
       },
     )
     await deleteArticle(article.id, userStore.username)
-    ElMessage.success('删除成功')
+    ElMessage.success({ message: '删除成功', duration: 1500 })
     await loadArticles()
   } catch {
     // cancelled or error

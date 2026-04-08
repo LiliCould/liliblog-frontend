@@ -81,17 +81,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+// import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Close, HomeFilled, Search, EditPen, Document, User, UserFilled, SwitchButton, ChatLineSquare } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
-import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
 const userStore = useUserStore()
 const appStore = useAppStore()
-const chatStore = useChatStore()
 
 function navigate(path: string) {
   appStore.closeMobileNav()
@@ -103,9 +101,7 @@ function handleLogout() {
   userStore.logout()
 }
 
-onMounted(() => {
-  chatStore.initialize()
-})
+// 只有在进入聊天室页面时才初始化
 </script>
 
 <style scoped>

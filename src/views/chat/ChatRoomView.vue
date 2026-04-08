@@ -3,8 +3,12 @@
     <AppHeader />
     <div class="chat-room-container">
       <div class="chat-room-header">
-        <h1 class="chat-room-title">✨ 聊天室 ✨</h1>
+        <h1 class="chat-room-title">✨ 立里聊天室 ✨</h1>
         <div class="status-bar">
+          <div class="online-count-mobile" @click="showOnlineMembers = !showOnlineMembers">
+            <span class="count-value">{{ onlineUsers.length }}</span>
+            <span class="count-label">在线</span>
+          </div>
           <span class="status-text">
             <span class="status-dot" :class="{ 'connected': chatStore.isConnected }">
               {{ chatStore.isConnected ? '✨' : '○' }}
@@ -16,7 +20,7 @@
 
       <div class="chat-room-content">
         <!-- 侧边栏：在线人数和在线用户 -->
-        <div class="chat-sidebar">
+        <div class="chat-sidebar" :class="{ 'show-mobile': showOnlineMembers }">
           <div class="sidebar-section">
             <h3 class="sidebar-title">👥 在线用户</h3>
             <div class="online-count">
@@ -39,18 +43,12 @@
 
         <!-- 消息区域 -->
         <div class="chat-main">
-          <div class="messages-container" ref="messagesContainer" @scroll="handleScroll">
-            <div v-if="chatStore.isLoading" class="loading-message">
-              <el-icon class="loading-icon">
-                <Loading />
-              </el-icon>
-              加载历史消息...
-            </div>
-
+          <div class="messages-container" ref="messagesContainer">
             <div v-for="message in chatStore.messages" :key="message.id || message.content" class="message-item" :class="{
               'system-message': message.type === 'SYSTEM',
               'own-message': message.senderUsername === userStore.username
-            }">
+            }" @contextmenu.prevent="startReply(message)" @touchstart="touchStart($event, message)"
+              @touchend="touchEnd">
               <div v-if="message.type !== 'SYSTEM'" class="message-avatar">
                 <el-avatar :size="36" :src="message.senderAvatar || 'https://lilicould.cn/xiaodingdang.png'">
                   {{ message.senderName?.charAt(0) || 'U' }}
@@ -61,6 +59,10 @@
                 {{ message.content }}
               </div>
               <div v-else class="message-content-wrapper">
+                <div v-if="(message.parentId ?? 0) > 0" class="message-quote">
+                  <span class="quote-name">{{ message.parentSenderName || '用户' }}</span>
+                  <span class="quote-content">{{ message.parentContent || '引用内容被删除或尚未加载' }}</span>
+                </div>
                 <div class="message-header">
                   <span class="sender-name">{{ message.senderName }}</span>
                   <span class="message-time">{{ formatMessageTime(message.createTime) }}</span>
@@ -70,10 +72,29 @@
             </div>
           </div>
 
+          <!-- 回到底部按钮 -->
+          <el-button v-if="showScrollToBottomButton" type="primary" circle class="scroll-to-bottom-button"
+            @click="scrollToBottom" :title="'回到底部'">
+            ↓
+          </el-button>
+
           <!-- 输入区域 -->
-          <div class="input-area">
-            <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendMessage"
-              :disabled="!chatStore.isConnected" class="message-input" :class="{ 'has-content': inputMessage.trim() }">
+          <div class="input-area" :class="{ 'replying': isReplying }">
+            <!-- 回复状态 -->
+            <div v-if="isReplying && replyToMessage" class="reply-status">
+              <div class="reply-header">
+                <span class="reply-label">回复：</span>
+                <span class="reply-name">{{ replyToMessage.senderName }}</span>
+                <el-button type="text" size="small" @click="cancelReply" class="cancel-reply">
+                  ×
+                </el-button>
+              </div>
+              <div class="reply-content">{{ replyToMessage.content.length > 50 ? replyToMessage.content.substring(0, 50)
+                + '...' : replyToMessage.content }}</div>
+            </div>
+            <el-input v-model="inputMessage" :placeholder="inputPlaceholder" @keyup.enter="sendMessage"
+              :disabled="!chatStore.isConnected" class="message-input"
+              :class="{ 'has-content': inputMessage.trim(), 'replying': isReplying, 'disconnected': !chatStore.isConnected }">
               <template #append>
                 <el-button type="primary" @click="sendMessage"
                   :disabled="!chatStore.isConnected || !inputMessage.trim()" class="send-button"
@@ -91,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { Loading } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
@@ -103,61 +124,212 @@ const messagesContainer = ref<HTMLElement>()
 const inputMessage = ref('')
 const onlineUsers = ref<any[]>([])
 
+// 回复相关状态
+const isReplying = ref(false)
+const replyToMessage = ref<any>(null)
+let touchTimer: number | null = null
+
+// 滚动相关状态
+const showScrollToBottomButton = ref(false)
+
+// 在线成员窗口控制
+const showOnlineMembers = ref(false)
+
 const userStore = useUserStore()
 const chatStore = useChatStore()
+
+// 输入框提示词计算
+const inputPlaceholder = computed(() => {
+  if (!chatStore.isConnected) {
+    // 断开连接时：如果有内容或正在回复，保持原有提示；否则显示断连提示
+    if (isReplying.value) {
+      return `回复 ${replyToMessage.value?.senderName}...`
+    }
+    if (inputMessage.value.trim()) {
+      return '输入消息...'
+    }
+    return '已断开连接，请尝试刷新处理'
+  }
+
+  // 已连接时的提示词
+  if (isReplying.value) {
+    return `回复 ${replyToMessage.value?.senderName}...`
+  }
+  return '输入消息...'
+})
+
+function touchStart(event: TouchEvent, message: any) {
+  event.preventDefault() // 阻止默认的复制行为
+  touchTimer = window.setTimeout(() => {
+    startReply(message)
+  }, 500) as unknown as number
+}
+
+function touchEnd(event: TouchEvent) {
+  event.preventDefault() // 阻止默认的复制行为
+  if (touchTimer) {
+    clearTimeout(touchTimer)
+    touchTimer = null
+  }
+}
+
+function startReply(message: any) {
+  isReplying.value = true
+  replyToMessage.value = message
+  // 聚焦到输入框
+  nextTick(() => {
+    // 尝试多种方式聚焦输入框
+    const inputElement = document.querySelector('.message-input input') as HTMLInputElement
+    const textareaElement = document.querySelector('.message-input textarea') as HTMLTextAreaElement
+    const inputContainer = document.querySelector('.message-input') as HTMLElement
+
+    if (inputElement) {
+      inputElement.focus()
+    } else if (textareaElement) {
+      textareaElement.focus()
+    } else if (inputContainer) {
+      inputContainer.focus()
+    }
+
+    // 确保输入框获得焦点
+    setTimeout(() => {
+      if (inputElement) {
+        inputElement.focus()
+      } else if (textareaElement) {
+        textareaElement.focus()
+      } else if (inputContainer) {
+        inputContainer.focus()
+      }
+    }, 100)
+  })
+}
+
+function cancelReply() {
+  isReplying.value = false
+  replyToMessage.value = null
+  inputMessage.value = ''
+}
 
 function sendMessage() {
   const content = inputMessage.value.trim()
   if (!content || !chatStore.isConnected) return
 
-  chatStore.sendMessage({
+  const messageData: any = {
     content,
     type: 'TEXT',
-    parentId: 0
-  })
+    parentId: isReplying.value && replyToMessage.value ? replyToMessage.value.id : 0
+  }
+
+  // 添加引用信息，确保前端能够显示引用内容
+  if (isReplying.value && replyToMessage.value) {
+    messageData.parentContent = replyToMessage.value.content
+    messageData.parentSenderName = replyToMessage.value.senderName
+  }
+
+  chatStore.sendMessage(messageData)
 
   inputMessage.value = ''
+  isReplying.value = false
+  replyToMessage.value = null
+  // 发送消息后手动滚动到底部
   scrollToBottom()
 }
 
+// 处理滚动事件
 function handleScroll() {
   const container = messagesContainer.value
   if (!container) return
 
-  if (container.scrollTop === 0 && chatStore.hasMore && !chatStore.isLoading) {
-    chatStore.loadMoreMessages()
-  }
+  // 检测是否需要显示回到底部按钮
+  const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+  showScrollToBottomButton.value = !isNearBottom
 }
 
+// 滚动到底部
 function scrollToBottom() {
   nextTick(() => {
     const container = messagesContainer.value
     if (container) {
       container.scrollTop = container.scrollHeight
+      showScrollToBottomButton.value = false
     }
   })
 }
 
+// 处理消息的引用信息
+function processMessageReferences(messages: any[]) {
+  // 创建消息ID到消息对象的映射
+  const messageMap = new Map()
+  messages.forEach(msg => {
+    if (msg.id) {
+      messageMap.set(msg.id, msg)
+    }
+  })
 
-// 监听消息变化，滚动到底部
-watch(() => chatStore.messages, () => {
-  scrollToBottom()
+  // 为每条有parentId的消息添加引用信息
+  messages.forEach(msg => {
+    if (msg.parentId > 0 && !msg.parentContent) {
+      const parentMsg = messageMap.get(msg.parentId)
+      if (parentMsg) {
+        msg.parentContent = parentMsg.content
+        msg.parentSenderName = parentMsg.senderName
+      }
+    }
+  })
+}
+
+// 监听消息变化，处理引用信息
+watch(() => chatStore.messages, (newMessages) => {
+  if (newMessages && newMessages.length > 0) {
+    processMessageReferences(newMessages)
+  }
 }, { deep: true })
 
-// 初始化聊天房间
-onMounted(() => {
-  chatStore.initialize()
-  chatStore.updateReadPosition()
-  // 模拟在线用户数据，实际应从后端获取
-  onlineUsers.value = [
-    { id: 1, name: '张三', avatar: 'https://example.com/avatar1.jpg' },
-    { id: 2, name: '李四', avatar: 'https://example.com/avatar2.jpg' },
-    { id: 3, name: '王五', avatar: '' }
-  ]
+// 监听新消息，自动滚动到底部
+watch(() => chatStore.messages.length, (newLength, oldLength) => {
+  if (newLength > oldLength) {
+    scrollToBottom()
+  }
 })
 
+// 初始化聊天房间
+onMounted(async () => {
+  // 禁用浏览器自动恢复滚动位置，防止 F5 刷新后跳到顶部
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual'
+  }
+
+  // 等待初始化完全完成（包括缓存加载 + 服务器请求）
+  await chatStore.initialize()
+  chatStore.updateReadPosition()
+
+  // 模拟在线用户数据，实际应从后端获取
+  onlineUsers.value = [
+
+  ]
+
+  // 处理引用信息并滚动到底部（确保在初始化完成后执行）
+  nextTick(() => {
+    if (chatStore.messages && chatStore.messages.length > 0) {
+      processMessageReferences(chatStore.messages)
+    }
+    scrollToBottom()
+  })
+
+  // 添加滚动事件监听器
+  const container = messagesContainer.value
+  if (container) {
+    container.addEventListener('scroll', handleScroll)
+  }
+})
+
+// 清理滚动事件监听器
 onUnmounted(() => {
   chatStore.closeConnection()
+  const container = messagesContainer.value
+  if (container) {
+    container.removeEventListener('scroll', handleScroll)
+  }
 })
 </script>
 
@@ -175,6 +347,7 @@ onUnmounted(() => {
 .chat-room-container {
   flex: 1;
   padding: 16px;
+  padding-top: calc(16px + var(--header-height));
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -193,6 +366,8 @@ onUnmounted(() => {
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 100;
 }
 
 .chat-room-title {
@@ -221,6 +396,35 @@ onUnmounted(() => {
   color: #666;
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.online-count-mobile {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  background: rgba(255, 105, 180, 0.1);
+  border: 1px solid rgba(255, 105, 180, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.online-count-mobile:hover {
+  background: rgba(255, 105, 180, 0.2);
+  border-color: rgba(255, 105, 180, 0.5);
+}
+
+.online-count-mobile .count-value {
+  font-weight: 700;
+  color: #ff69b4;
+  font-size: 12px;
+}
+
+.online-count-mobile .count-label {
+  font-size: 12px;
+  color: #666;
 }
 
 .status-text {
@@ -561,6 +765,87 @@ onUnmounted(() => {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
 }
 
+/* 引用效果 */
+.message-quote {
+  font-size: 12px;
+  color: #999;
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 3px solid #ff69b4;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.4;
+}
+
+.quote-name {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #666;
+}
+
+.quote-content {
+  color: #999;
+}
+
+/* 回复菜单 */
+.reply-menu {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  min-width: 80px;
+}
+
+/* 回复状态 */
+.reply-status {
+  padding: 10px 12px;
+  background: rgba(255, 105, 180, 0.1);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.reply-label {
+  color: #666;
+}
+
+.reply-name {
+  font-weight: 600;
+  color: #ff69b4;
+  flex: 1;
+}
+
+.reply-content {
+  color: #666;
+  line-height: 1.4;
+  word-break: break-word;
+  padding-left: 20px;
+  border-left: 2px solid rgba(255, 105, 180, 0.3);
+  margin-top: 4px;
+}
+
+.cancel-reply {
+  color: #999;
+  padding: 0;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.cancel-reply:hover {
+  color: #ff69b4;
+}
+
 .input-toggle {
   display: flex;
   align-items: center;
@@ -589,6 +874,17 @@ onUnmounted(() => {
   backdrop-filter: blur(10px);
   transition: all 0.3s ease-in-out;
   animation: slideDown 0.3s ease-out;
+}
+
+/* 回复模式下的输入框样式 */
+.input-area.replying {
+  background: rgba(255, 240, 245, 0.9);
+  border-top-color: rgba(255, 105, 180, 0.3);
+}
+
+.message-input.replying {
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.1);
 }
 
 @keyframes slideDown {
@@ -620,6 +916,18 @@ onUnmounted(() => {
 .message-input.has-content {
   border-color: #ff69b4;
   box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.08);
+}
+
+/* 断连状态 */
+.message-input.disconnected {
+  border-color: #f56c6c;
+  background: rgba(245, 108, 108, 0.05);
+  opacity: 0.7;
+}
+
+.message-input.disconnected:focus {
+  border-color: #f56c6c;
+  box-shadow: 0 0 0 3px rgba(245, 108, 108, 0.1);
 }
 
 .send-button {
@@ -703,9 +1011,34 @@ onUnmounted(() => {
   }
 
   .chat-sidebar {
-    width: 100%;
-    height: 140px;
-    padding: 14px;
+    display: none;
+    position: fixed;
+    top: calc(var(--header-height) + 20px);
+    right: 20px;
+    width: 200px;
+    max-height: 300px;
+    z-index: 1000;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .chat-sidebar.show-mobile {
+    display: block;
+  }
+
+  .online-count-mobile {
+    display: flex;
+  }
+
+  .chat-room-header {
+    padding: 10px 12px;
+  }
+
+  .chat-room-title {
+    font-size: 18px;
   }
 
   .sidebar-title {
@@ -765,5 +1098,39 @@ onUnmounted(() => {
   .messages-container {
     padding: 12px;
   }
+
+  .scroll-to-bottom-button {
+    bottom: 80px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+/* 回到底部按钮样式 */
+.scroll-to-bottom-button {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  font-size: 16px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #ff69b4, #ff85c2);
+  border: none;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+  animation: buttonPulse 2s infinite;
+  transition: all 0.3s ease;
+}
+
+.scroll-to-bottom-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 105, 180, 0.5);
+  background: linear-gradient(135deg, #ff5aa8, #ff70b0);
+}
+
+.scroll-to-bottom-button:active {
+  transform: translateY(0);
 }
 </style>

@@ -258,9 +258,9 @@ async function handleCoverUpload(options: UploadRequestOptions) {
   try {
     const res = await uploadFile(options.file as File, 'cover') as unknown as ApiResponse<string>
     form.coverImage = res.message?.trim() || res.data
-    ElMessage.success('封面上传成功')
+    ElMessage.success({ message: '封面上传成功', duration: 1500 })
   } catch {
-    ElMessage.error('封面上传失败')
+    ElMessage.error({ message: '封面上传失败', duration: 1500 })
   }
 }
 
@@ -270,7 +270,7 @@ async function handleSave(status: string) {
   try {
     await formRef.value.validate()
   } catch {
-    ElMessage.warning('请完善必填项')
+    ElMessage.warning({ message: '请完善必填项', duration: 1500 })
     return
   }
 
@@ -290,10 +290,10 @@ async function handleSave(status: string) {
     if (isEdit.value) {
       const id = Number(route.params.id)
       await updateArticle(id, userStore.username, { ...data, id })
-      ElMessage.success('更新成功')
+      ElMessage.success({ message: '更新成功', duration: 1500 })
     } else {
       await createArticle(userStore.username, data)
-      ElMessage.success(status === 'PUBLISHED' ? '发布成功' : '草稿已保存')
+      ElMessage.success({ message: status === 'PUBLISHED' ? '发布成功' : '草稿已保存', duration: 1500 })
     }
     router.push('/manage/articles')
   } catch {
@@ -317,7 +317,7 @@ async function loadArticleForEdit() {
     form.categoryId = article.categoryId || undefined
     form.tagIds = article.tags?.map(t => t.id) || []
   } catch {
-    ElMessage.error('加载文章失败')
+    ElMessage.error({ message: '加载文章失败', duration: 1500 })
     router.push('/manage/articles')
   }
 }

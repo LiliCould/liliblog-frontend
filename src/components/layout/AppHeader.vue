@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+// import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, ArrowDown, Menu, ChatLineSquare } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
@@ -86,9 +86,7 @@ function handleCommand(command: string) {
   }
 }
 
-onMounted(() => {
-  chatStore.initialize()
-})
+// 只有在进入聊天室页面时才初始化
 </script>
 
 <style scoped>

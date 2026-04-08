@@ -84,7 +84,7 @@ async function handleLogin() {
   loading.value = true
   try {
     await userStore.login(form)
-    ElMessage.success('登录成功')
+    ElMessage.success({ message: '登录成功', duration: 1500 })
     const redirect = route.query.redirect as string
     router.push(redirect || '/')
   } catch {

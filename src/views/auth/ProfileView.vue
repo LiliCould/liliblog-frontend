@@ -189,10 +189,10 @@ async function handleAvatarUpload(options: UploadRequestOptions) {
         avatar: avatarUrl
       })
       
-      ElMessage.success('头像上传成功')
+      ElMessage.success({ message: '头像上传成功', duration: 1500 })
     }
   } catch {
-    ElMessage.error('头像上传失败')
+    ElMessage.error({ message: '头像上传失败', duration: 1500 })
   }
 }
 
@@ -208,12 +208,12 @@ function startEditNickname() {
 
 async function handleSaveNickname() {
   if (!editNickname.value.trim()) {
-    ElMessage.error('昵称不能为空')
+    ElMessage.error({ message: '昵称不能为空', duration: 1500 })
     return
   }
   
   if (editNickname.value.length < 2 || editNickname.value.length > 20) {
-    ElMessage.error('昵称长度在 2-20 个字符之间')
+    ElMessage.error({ message: '昵称长度在 2-20 个字符之间', duration: 1500 })
     return
   }
   
@@ -233,9 +233,9 @@ async function handleSaveNickname() {
     }
     
     editingNickname.value = false
-    ElMessage.success('昵称更新成功')
+    ElMessage.success({ message: '昵称更新成功', duration: 1500 })
   } catch {
-    ElMessage.error('昵称更新失败')
+    ElMessage.error({ message: '昵称更新失败', duration: 1500 })
   } finally {
     updatingProfile.value = false
   }
@@ -251,7 +251,7 @@ async function handleChangePassword() {
       oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword,
     })
-    ElMessage.success('密码修改成功，请重新登录')
+    ElMessage.success({ message: '密码修改成功，请重新登录', duration: 1500 })
     userStore.logout()
     router.push('/login')
   } catch {

@@ -29,7 +29,7 @@ service.interceptors.response.use(
         if (res.code === 0 || res.code === 200) {
             return res as unknown as AxiosResponse
         }
-        ElMessage.error(res.message || '请求失败')
+        ElMessage.error({ message: res.message || '请求失败', duration: 1500 })
         return Promise.reject(new Error(res.message || '请求失败'))
     },
     (error) => {
@@ -37,17 +37,17 @@ service.interceptors.response.use(
             const status = error.response.status
             if (status === 401) {
                 clearAuth()
-                ElMessage.error('登录已过期，请重新登录')
+                ElMessage.error({ message: '登录已过期，请重新登录', duration: 1500 })
                 router.push('/login')
             } else if (status === 403) {
-                ElMessage.error('没有权限')
+                ElMessage.error({ message: '没有权限', duration: 1500 })
             } else if (status === 500) {
-                ElMessage.error('服务器错误')
+                ElMessage.error({ message: '服务器错误', duration: 1500 })
             } else {
-                ElMessage.error(error.response.data?.message || '请求失败')
+                ElMessage.error({ message: error.response.data?.message || '请求失败', duration: 1500 })
             }
         } else {
-            ElMessage.error('网络异常，请稍后重试')
+            ElMessage.error({ message: '网络异常，请稍后重试', duration: 1500 })
         }
         return Promise.reject(error)
     },
