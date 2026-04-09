@@ -20,8 +20,8 @@
       </div>
 
       <div class="chat-room-content">
-        <!-- 侧边栏：在线人数和在线用户 -->
-        <div class="chat-sidebar" :class="{ 'show-mobile': showOnlineMembers }">
+        <!-- PC 侧边栏：在线人数和在线用户 -->
+        <div class="chat-sidebar pc-only">
           <div class="sidebar-section">
             <h3 class="sidebar-title">
               <el-icon><UserFilled /></el-icon>
@@ -31,19 +31,38 @@
               <span class="count-label">在线人数：</span>
               <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
             </div>
-            <div class="online-users">
-              <div v-for="user in chatStore.onlineUsers" :key="user.id" class="online-user">
-                <el-avatar :size="32" :src="user.avatar || 'https://lilicould.cn/xiaodingdang.png'" class="user-avatar">
+            <div class="user-list">
+              <div v-for="user in chatStore.onlineUsers" :key="user.id" class="user-item">
+                <el-avatar :size="32" :src="user.avatar || 'https://lilicould.cn/xiaodingdang.png'">
                   {{ user.nickname?.charAt(0) || 'U' }}
                 </el-avatar>
                 <span class="user-name">{{ user.nickname }}</span>
               </div>
-              <div v-if="chatStore.onlineUsers.length === 0" class="no-online-users">
-                暂无在线用户
-              </div>
             </div>
           </div>
         </div>
+
+        <!-- 移动端侧边抽屉 -->
+        <el-drawer
+          v-model="showOnlineMembers"
+          title="在线用户"
+          direction="rtl"
+          size="280px"
+          custom-class="mobile-online-drawer"
+        >
+          <div class="online-count">
+            <span class="count-label">在线人数：</span>
+            <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
+          </div>
+          <div class="user-list">
+            <div v-for="user in chatStore.onlineUsers" :key="user.id" class="user-item">
+              <el-avatar :size="32" :src="user.avatar || 'https://lilicould.cn/xiaodingdang.png'">
+                {{ user.nickname?.charAt(0) || 'U' }}
+              </el-avatar>
+              <span class="user-name">{{ user.nickname }}</span>
+            </div>
+          </div>
+        </el-drawer>
 
         <!-- 消息区域 -->
         <div class="chat-main">
@@ -810,13 +829,14 @@ onUnmounted(() => {
 .online-count-mobile {
   display: none;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
-  border-radius: 20px;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
   background: var(--color-primary-light);
   color: var(--color-primary);
   font-size: 13px;
   cursor: pointer;
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .status-text {
@@ -1089,7 +1109,12 @@ onUnmounted(() => {
 
 .message-content-wrapper {
   position: relative;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-item.own-message .message-content-wrapper {
+  align-items: flex-end;
 }
 
 .text-bubble {
@@ -1103,6 +1128,8 @@ onUnmounted(() => {
   color: var(--color-text);
   word-break: break-word;
   white-space: pre-wrap;
+  display: inline-block; /* 修复短消息撑满一行的问题 */
+  width: fit-content;
 }
 
 .message-item.own-message .text-bubble {
@@ -1110,6 +1137,7 @@ onUnmounted(() => {
   border-color: var(--color-primary-light-2);
   border-radius: 16px 4px 16px 16px;
   color: var(--color-primary);
+  text-align: left;
 }
 
 /* 媒体内容样式 */
@@ -1281,6 +1309,32 @@ onUnmounted(() => {
 
 /* 响应式设计补全 */
 @media (max-width: 768px) {
+  .pc-only {
+    display: none !important;
+  }
+
+  .chat-sidebar {
+    display: none;
+  }
+
+  .mobile-online-drawer .user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .mobile-online-drawer .user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobile-online-drawer .user-name {
+    font-size: 14px;
+    color: var(--color-text);
+  }
+
   .chat-main {
     border-radius: 0;
     box-shadow: none;
