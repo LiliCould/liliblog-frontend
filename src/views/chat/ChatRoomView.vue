@@ -184,6 +184,7 @@
               :autosize="{ minRows: 3, maxRows: 8 }"
               :placeholder="inputPlaceholder" 
               @keyup.enter.exact.prevent="sendMessage"
+              @paste="handlePaste"
               :disabled="!chatStore.isConnected || isUploading || !!selectedFile" 
               class="message-input"
               resize="none"
@@ -254,7 +255,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder, Sunny } from '@element-plus/icons-vue'
+import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
 import { formatMessageTime } from '@/utils/format'
@@ -408,6 +409,27 @@ function handleFileSelect(event: Event) {
   selectedFile.value = file
   inputMessage.value = '' // 选中文件后清空文字
   target.value = ''
+}
+
+function handlePaste(event: ClipboardEvent) {
+  if (!chatStore.isConnected || isUploading.value || !!selectedFile.value) return
+
+  const items = event.clipboardData?.items
+  if (!items) return
+
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') !== -1) {
+      const file = items[i].getAsFile()
+      if (file) {
+        selectedFile.value = file
+        selectedFileType.value = 'IMAGE'
+        inputMessage.value = '' // 选中图片后清空文字
+        ElMessage.success('已从剪切板获取图片')
+        event.preventDefault() // 阻止默认的文字粘贴行为
+        break
+      }
+    }
+  }
 }
 
 function cancelFileSelection() {
