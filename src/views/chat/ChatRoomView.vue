@@ -183,7 +183,7 @@
               <div class="tool-left">
                 <el-popover placement="top-start" :width="300" trigger="click">
                   <template #reference>
-                    <el-button type="text" class="tool-btn"><el-icon><Orange /></el-icon></el-button>
+                    <el-button type="text" class="tool-btn"><el-icon><ChatDotRound /></el-icon></el-button>
                   </template>
                   <div class="emoji-picker">
                     <span v-for="emoji in emojiList" :key="emoji" class="emoji-item" @click="addEmoji(emoji)">
@@ -240,10 +240,10 @@
     <!-- 预览弹窗 -->
     <el-dialog v-model="previewDialogVisible" title="文件预览" width="80%" destroy-on-close>
       <div class="preview-container">
-        <vue-office-docx v-if="previewType === 'DOCX'" :src="previewUrl" />
-        <vue-office-excel v-if="previewType === 'XLSX'" :src="previewUrl" />
-        <vue-office-pdf v-if="previewType === 'PDF'" :src="previewUrl" />
-        <vue-office-pptx v-if="previewType === 'PPTX'" :src="previewUrl" />
+        <VueOfficeDocx v-if="previewType === 'DOCX'" :src="previewUrl" />
+        <VueOfficeExcel v-if="previewType === 'XLSX'" :src="previewUrl" />
+        <VueOfficePdf v-if="previewType === 'PDF'" :src="previewUrl" />
+        <VueOfficePptx v-if="previewType === 'PPTX'" :src="previewUrl" />
         <MdPreview v-if="previewType === 'MD'" :modelValue="markdownContent" />
       </div>
     </el-dialog>
@@ -252,7 +252,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder, Orange } from '@element-plus/icons-vue'
+import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder, ChatDotRound } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
 import { formatMessageTime } from '@/utils/format'
@@ -415,11 +415,13 @@ function cancelFileSelection() {
 function getFileType(url: string): string {
   if (!url) return 'FILE'
   const extension = url.split('.').pop()?.toLowerCase() || ''
+  
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'IMAGE'
   if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) return 'VIDEO'
   if (['mp3', 'wav', 'ogg', 'flac'].includes(extension)) return 'AUDIO'
-  if (['pdf', 'docx', 'xlsx', 'pptx', 'md'].includes(extension)) return extension.toUpperCase()
-  return 'FILE'
+  
+  // 对于不可直接预览的文件，也返回大写的后缀名作为类型显示
+  return extension.toUpperCase() || 'FILE'
 }
 
 function getFileName(url: string): string {
