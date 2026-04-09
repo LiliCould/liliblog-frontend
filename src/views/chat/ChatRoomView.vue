@@ -370,7 +370,12 @@ const previewType = ref('')
 const markdownContent = ref('')
 
 // 表情列表
-const emojiList = ['😊', '😂', '🤣', '😍', '😒', '😘', '😁', '😉', '🙌', '👍', '🌹', '🎉', '🔥', '✨', '🎈', '🎁', '🎂', '🌈', '🍦', '🍓', '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵']
+const emojiList = ['😊', '😂', '🤣', '😍', '😒', '😘',
+                  '😁', '😉', '🙌', '👍', '🌹', '🎉', 
+                  '🔥', '✨', '🎈', '🎁', '🎂', '🌈', 
+                  '🍦', '🍓', '🐶', '🐱', '🐭', '🐹', 
+                  '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', 
+                  '🦁', '🐮', '🐷', '🐸', '🐵']
 
 // 输入框提示词计算
 const inputPlaceholder = computed(() => {
@@ -907,45 +912,30 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 105, 180, 0.3);
 }
 
-.online-users {
+.user-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.online-user {
+.user-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  transition: all 0.3s;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 105, 180, 0.1);
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: default;
 }
 
-.online-user:hover {
-  background: rgba(255, 105, 180, 0.05);
-  transform: translateX(5px);
-  box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
-}
-
-.user-avatar {
-  transition: all 0.3s;
-  border: 2px solid rgba(255, 105, 180, 0.2);
-}
-
-.online-user:hover .user-avatar {
-  transform: scale(1.1) rotate(5deg);
-  border-color: rgba(255, 105, 180, 0.5);
+.user-item:hover {
+  background: var(--color-primary-light);
 }
 
 .user-name {
-  font-size: 13px;
-  color: #333;
+  font-size: 14px;
+  color: var(--color-text);
   font-weight: 500;
-  flex: 1;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
 }
 
 .no-online-users {
@@ -1078,6 +1068,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   max-width: calc(100% - 100px);
+  flex: 1;
+  min-width: 0;
 }
 
 .message-item.own-message .message-body {
@@ -1111,6 +1103,9 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
+  width: 100%;
 }
 
 .message-item.own-message .message-content-wrapper {
@@ -1126,10 +1121,12 @@ onUnmounted(() => {
   font-size: 14px;
   line-height: 1.6;
   color: var(--color-text);
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: break-word;
   white-space: pre-wrap;
-  display: inline-block; /* 修复短消息撑满一行的问题 */
   width: fit-content;
+  max-width: 100%;
+  display: block; /* 在 flex 容器下，inline-block 无效，用 block + fit-content */
 }
 
 .message-item.own-message .text-bubble {
@@ -1318,21 +1315,7 @@ onUnmounted(() => {
   }
 
   .mobile-online-drawer .user-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
     padding: 16px 0;
-  }
-
-  .mobile-online-drawer .user-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .mobile-online-drawer .user-name {
-    font-size: 14px;
-    color: var(--color-text);
   }
 
   .chat-main {
@@ -1350,6 +1333,8 @@ onUnmounted(() => {
 
   .message-body {
     max-width: calc(100% - 60px);
+    flex: 1;
+    min-width: 0;
   }
 
   .file-card {
@@ -1762,8 +1747,15 @@ onUnmounted(() => {
   }
 
   .message-content-wrapper {
-    max-width: 75%;
-    padding: 8px 12px;
+    max-width: 90%;
+    width: 100%;
+  }
+
+  .text-bubble {
+    font-size: 15px;
+    padding: 8px 14px;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   .input-area {
