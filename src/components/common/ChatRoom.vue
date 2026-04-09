@@ -115,7 +115,7 @@
       <div class="input-area">
         <div class="input-tools">
           <el-button 
-            type="text" 
+            link 
             @click="triggerFileInput"
             :disabled="!chatStore.isConnected"
           >

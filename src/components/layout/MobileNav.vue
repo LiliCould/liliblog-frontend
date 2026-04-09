@@ -37,6 +37,9 @@
           <a class="mobile-link" @click="navigate('/chat')">
             <el-icon><ChatLineSquare /></el-icon>
             <span>聊天室</span>
+            <span v-if="chatStore.unreadCount > 0 && !chatStore.isChatRoomActive" class="mobile-unread-badge">
+              {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
+            </span>
           </a>
           <a class="mobile-link" @click="navigate('/search')">
             <el-icon><Search /></el-icon>
@@ -86,10 +89,12 @@ import { useRouter } from 'vue-router'
 import { Close, HomeFilled, Search, EditPen, Document, User, UserFilled, SwitchButton, ChatLineSquare } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
+import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
 const userStore = useUserStore()
 const appStore = useAppStore()
+const chatStore = useChatStore()
 
 function navigate(path: string) {
   appStore.closeMobileNav()
@@ -185,6 +190,18 @@ function handleLogout() {
 .mobile-link:hover {
   background: var(--color-primary-light);
   color: var(--color-primary);
+}
+
+.mobile-unread-badge {
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  min-width: 16px;
+  text-align: center;
+  margin-left: auto;
 }
 
 .mobile-link.logout {

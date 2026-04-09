@@ -187,7 +187,7 @@
               <div class="reply-header">
                 <span class="reply-label">回复：</span>
                 <span class="reply-name">{{ replyToMessage.senderName }}</span>
-                <el-button type="text" size="small" @click="cancelReply" class="cancel-reply">
+                <el-button link size="small" @click="cancelReply" class="cancel-reply">
                   ×
                 </el-button>
               </div>
@@ -200,7 +200,7 @@
               <div class="file-item">
                 <el-icon><Document /></el-icon>
                 <span class="file-name">{{ selectedFile.name }}</span>
-                <el-button type="text" @click="cancelFileSelection" class="cancel-file">
+                <el-button link @click="cancelFileSelection" class="cancel-file">
                   <el-icon><Close /></el-icon>
                 </el-button>
               </div>
@@ -225,7 +225,7 @@
                 <div class="tool-left">
                   <el-popover placement="top-start" :width="280" trigger="click" popper-class="emoji-popover">
                     <template #reference>
-                      <el-button type="text" class="tool-btn"><el-icon><ChatDotRound /></el-icon></el-button>
+                      <el-button link class="tool-btn"><el-icon><ChatDotRound /></el-icon></el-button>
                     </template>
                     <div class="emoji-picker">
                       <span v-for="emoji in emojiList" :key="emoji" class="emoji-item" @click="addEmoji(emoji)">
@@ -234,10 +234,10 @@
                     </div>
                   </el-popover>
                   
-                  <el-button type="text" class="tool-btn" @click="triggerFileInput('IMAGE')"><el-icon><Picture /></el-icon></el-button>
-                  <el-button type="text" class="tool-btn" @click="triggerFileInput('VIDEO')"><el-icon><VideoCamera /></el-icon></el-button>
-                  <el-button type="text" class="tool-btn" @click="triggerFileInput('AUDIO')"><el-icon><Microphone /></el-icon></el-button>
-                  <el-button type="text" class="tool-btn" @click="triggerFileInput('FILE')"><el-icon><Folder /></el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('IMAGE')"><el-icon><Picture /></el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('VIDEO')"><el-icon><VideoCamera /></el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('AUDIO')"><el-icon><Microphone /></el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('FILE')"><el-icon><Folder /></el-icon></el-button>
                   
                   <input 
                     ref="fileInputRef" 
@@ -648,13 +648,15 @@ onMounted(async () => {
     history.scrollRestoration = 'manual'
   }
 
-  // 等待初始化完全完成（包括缓存加载 + 服务器请求）
-  await chatStore.initialize()
+  // 确保 store 已初始化（如果尚未初始化）
+  if (!chatStore.isConnected && !chatStore.isConnecting) {
+    await chatStore.initialize()
+  }
+  
+  // 更新阅读位置
   chatStore.updateReadPosition()
 
-
-
-  // 处理引用信息并滚动到底部（确保在初始化完成后执行）
+  // 处理引用信息并滚动到底部
   nextTick(() => {
     if (chatStore.messages && chatStore.messages.length > 0) {
       processMessageReferences(chatStore.messages)
@@ -671,7 +673,7 @@ onMounted(async () => {
 
 // 清理滚动事件监听器
 onUnmounted(() => {
-  chatStore.closeConnection()
+  // 不再在此处关闭连接，改为在 App.vue 全局管理
   const container = messagesContainer.value
   if (container) {
     container.removeEventListener('scroll', handleScroll)

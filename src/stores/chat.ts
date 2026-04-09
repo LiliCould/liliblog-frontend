@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getChatMessages } from '@/api/public'
-import { getToken } from '@/utils/storage'
+import { getToken, getUserInfo } from '@/utils/storage'
 import type { ApiResponse } from '@/types/api.d'
+import type { LoginVO } from '@/types/auth.d'
 
 interface Message {
   id?: number
@@ -22,18 +23,14 @@ interface Message {
 
 // 缓存键名
 const CACHE_KEY = 'chat_messages_cache'
+const LAST_READ_ID_KEY = 'chat_last_read_id'
 
 // 从缓存读取消息
 function loadMessagesFromCache(): Message[] {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
-    console.log('Cache raw data:', cached)
     if (cached) {
-      const parsed = JSON.parse(cached)
-      console.log('Cache parsed data length:', parsed.length)
-      return parsed
-    } else {
-      console.log('Cache is empty')
+      return JSON.parse(cached)
     }
   } catch (error) {
     console.error('Failed to load messages from cache:', error)
@@ -48,6 +45,17 @@ function saveMessagesToCache(messages: Message[]) {
   } catch (error) {
     console.error('Failed to save messages to cache:', error)
   }
+}
+
+// 获取最后阅读的消息 ID
+function getLastReadId(): number {
+  const id = localStorage.getItem(LAST_READ_ID_KEY)
+  return id ? parseInt(id) : 0
+}
+
+// 保存最后阅读的消息 ID
+function saveLastReadId(id: number) {
+  localStorage.setItem(LAST_READ_ID_KEY, id.toString())
 }
 
 interface SendMessage {
@@ -65,15 +73,131 @@ export const useChatStore = defineStore('chat', () => {
   const onlineUsers = ref<any[]>([])
   const isConnected = ref(false)
   const unreadCount = ref(0)
+  const lastReadId = ref(getLastReadId())
   const reconnectTimeout = ref<number | null>(null)
   const isConnecting = ref(false)
   const isInitialized = ref(false)
+  const isChatRoomActive = ref(false)
+
+  // 音频提示音对象（延迟加载）
+  let dingAudio: HTMLAudioElement | null = null
 
   // 心跳相关
   let heartbeatTimer: number | null = null
   let missedHeartbeats = 0
   const HEARTBEAT_INTERVAL = 30000 // 30秒发送一次心跳
   const MAX_MISSED_HEARTBEATS = 3 // 最大丢失心跳次数
+
+  // 获取音频对象
+  const getDingAudio = () => {
+    if (!dingAudio) {
+      // 优先尝试绝对路径，其次尝试 Vite 提供的相对路径
+      const audioUrl = new URL('/ding.wav', window.location.origin).href
+      dingAudio = new Audio(audioUrl)
+      
+      // 添加详细状态监听，排查 NotSupportedError
+      dingAudio.addEventListener('error', () => {
+        const error = dingAudio?.error
+        console.error('音频文件加载失败:', {
+          url: audioUrl,
+          code: error?.code, // 1: MEDIA_ERR_ABORTED, 2: MEDIA_ERR_NETWORK, 3: MEDIA_ERR_DECODE, 4: MEDIA_ERR_SRC_NOT_SUPPORTED
+          message: error?.message,
+          networkState: dingAudio?.networkState, // 3 代表网络错误/404
+          readyState: dingAudio?.readyState
+        })
+      })
+      
+      // 预加载
+      dingAudio.load()
+    }
+    return dingAudio
+  }
+
+  // 播放备用提示音（当 ding.wav 加载失败时）
+  const playFallbackBeep = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = audioCtx.createOscillator()
+      const gainNode = audioCtx.createGain()
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioCtx.destination)
+
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime) // A5 note
+      gainNode.gain.setValueAtTime(0, audioCtx.currentTime)
+      gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5)
+
+      oscillator.start(audioCtx.currentTime)
+      oscillator.stop(audioCtx.currentTime + 0.5)
+      console.log('播放备用合成音成功')
+    } catch (e) {
+      console.warn('播放备用合成音失败:', e)
+    }
+  }
+
+  // 播放提示音
+  const playDing = () => {
+    const audio = getDingAudio()
+    
+    // 如果音频文件确定不可用（网络状态为3且未就绪），直接尝试备用音
+    if (audio.networkState === 3 || (audio.error && audio.error.code === 4)) {
+      console.warn('音频文件不可用，尝试播放备用音')
+      playFallbackBeep()
+      return
+    }
+
+    audio.pause()
+    audio.currentTime = 0
+    audio.play().catch(e => {
+      console.warn('音频播放被阻止或失败（可能是浏览器限制，需要用户点击页面）：', e)
+      // 如果不是因为权限问题（NotAllowedError），尝试播放备用音
+      if (e.name !== 'NotAllowedError') {
+        playFallbackBeep()
+      }
+    })
+  }
+
+  // 尝试在用户首次交互时解锁音频（解决浏览器自动播放限制）
+  const unlockAudio = () => {
+    const audio = getDingAudio()
+    // 先尝试解锁文件音频
+    audio.play().then(() => {
+      audio.pause()
+      audio.currentTime = 0
+      removeUnlockListeners()
+      console.log('音频文件解锁成功')
+    }).catch(e => {
+      // 如果文件加载失败，尝试通过播放一个合成音来解锁音频上下文
+      console.warn('文件音频解锁失败，尝试解锁 Web Audio 上下文:', e)
+      playFallbackBeep()
+      removeUnlockListeners()
+    })
+  }
+
+  const removeUnlockListeners = () => {
+    window.removeEventListener('click', unlockAudio)
+    window.removeEventListener('touchstart', unlockAudio)
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('click', unlockAudio)
+    window.addEventListener('touchstart', unlockAudio)
+  }
+
+  // 计算未读消息数
+  const calculateUnreadCount = () => {
+    if (isChatRoomActive.value) {
+      unreadCount.value = 0
+      return
+    }
+    
+    const count = messages.value.filter(msg => 
+      msg.id && typeof msg.id === 'number' && msg.id > lastReadId.value && msg.type !== 'SYSTEM'
+    ).length
+    unreadCount.value = count
+  }
 
   // 根据环境变量生成 WebSocket 地址
   const getWsUrl = (): string => {
@@ -94,6 +218,13 @@ export const useChatStore = defineStore('chat', () => {
   async function initialize() {
     if (isInitialized.value) {
       return
+    }
+
+    // 加载缓存消息
+    const cachedMessages = loadMessagesFromCache()
+    if (cachedMessages.length > 0) {
+      messages.value = cachedMessages
+      calculateUnreadCount()
     }
 
     if (ws.value && ws.value.readyState === WebSocket.OPEN) {
@@ -150,26 +281,28 @@ export const useChatStore = defineStore('chat', () => {
             try {
               const onlineUsersData = JSON.parse(message.content)
               onlineUsers.value = onlineUsersData
-              console.log('Updated online users:', onlineUsersData)
             } catch (parseError) {
               console.error('Failed to parse online users data:', parseError)
             }
             return
           }
           
+          // 播放提示音（非自己发送的消息且非系统消息）
+          const currentUser = getUserInfo<LoginVO>()
+          if (message.type !== 'SYSTEM' && currentUser && message.senderUsername !== currentUser.username) {
+            playDing()
+          }
+
           // 查找并替换临时消息
           const tempMessageIndex = messages.value.findIndex(msg => {
-            // 临时消息的 ID 是时间戳，而服务器返回的消息 ID 是数字
-            return typeof msg.id === 'number' && msg.id > 1000000000000 && // 时间戳大于 2001 年
+            return typeof msg.id === 'number' && msg.id > 1000000000000 && 
                    msg.senderUsername === message.senderUsername &&
                    msg.content === message.content
           })
           
           if (tempMessageIndex !== -1) {
-            // 替换临时消息为服务器返回的消息
             messages.value[tempMessageIndex] = message
           } else {
-            // 确保消息按时间顺序添加
             const insertIndex = messages.value.findIndex(msg => {
               const msgTime = new Date(msg.createTime || '').getTime()
               const newMsgTime = new Date(message.createTime || '').getTime()
@@ -182,8 +315,17 @@ export const useChatStore = defineStore('chat', () => {
               messages.value.splice(insertIndex, 0, message)
             }
           }
-          // 更新缓存
-          saveMessagesToCache(messages.value)
+
+          // 只有在聊天室界面时才缓存内容和更新阅读状态
+          if (isChatRoomActive.value) {
+            saveMessagesToCache(messages.value)
+            if (message.id && typeof message.id === 'number') {
+              lastReadId.value = Math.max(lastReadId.value, message.id)
+              saveLastReadId(lastReadId.value)
+            }
+          }
+          
+          calculateUnreadCount()
         } catch (error) {
           console.error('Failed to parse WebSocket message:', error)
         }
@@ -193,120 +335,84 @@ export const useChatStore = defineStore('chat', () => {
         console.log('WebSocket disconnected')
         isConnected.value = false
         isConnecting.value = false
-        // 断开连接时停止心跳
         stopHeartbeat()
-        // 不再自动重连，只有用户点击聊天室进入时才连接
+        
+        // 自动重连机制，防止后台断连
+        scheduleReconnect()
       }
 
       ws.value.onerror = (error) => {
         console.error('WebSocket error:', error)
         isConnected.value = false
         isConnecting.value = false
+        scheduleReconnect()
       }
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error)
       isConnected.value = false
       isConnecting.value = false
+      scheduleReconnect()
     }
   }
 
-  // 不再使用自动重连功能
-  // function scheduleReconnect() {
-  //   if (reconnectTimeout.value) {
-  //     clearTimeout(reconnectTimeout.value)
-  //   }
-  // 
-  //   reconnectTimeout.value = window.setTimeout(() => {
-  //     console.log('Attempting to reconnect...')
-  //     connectWebSocket()
-  //   }, 3000)
-  // }
+  function scheduleReconnect() {
+    if (reconnectTimeout.value) {
+      clearTimeout(reconnectTimeout.value)
+    }
+
+    reconnectTimeout.value = window.setTimeout(() => {
+      console.log('Attempting to reconnect...')
+      connectWebSocket()
+    }, 5000)
+  }
 
   async function loadInitialMessages() {
-    console.log('=== loadInitialMessages start ===')
     try {
-      // 先从缓存加载消息作为临时显示
-      const cachedMessages = loadMessagesFromCache()
-      console.log('Cached messages length:', cachedMessages.length)
-      console.log('Cached messages IDs:', cachedMessages.map(m => m.id).filter(id => id))
-      
-      // 从服务器获取最新消息（不需要传参数，接口会返回七天内的所有消息）
-      console.log('Fetching messages from server...')
       const response = await getChatMessages()
-      console.log('Server response:', response)
-      
-      // 注意：由于响应拦截器的处理，response 实际上是 ApiResponse<any[]> 对象
       const apiResponse = response as unknown as ApiResponse<any[]>
       const messageData = apiResponse.data || []
-      console.log('Server data length:', messageData.length)
-      console.log('Server data IDs:', messageData.map((m: Message) => m.id))
       
-      // 按时间正序排序消息（接口返回的是逆序，需要转换为正序）
       const newMessages = Array.isArray(messageData) ? messageData.sort((a: Message, b: Message) => {
         const timeA = new Date(a.createTime || '').getTime()
         const timeB = new Date(b.createTime || '').getTime()
         return timeA - timeB
       }) : []
       
-      console.log('Server messages after sort:', newMessages.length, 'items')
-      console.log('Server messages after sort IDs:', newMessages.map((m: Message) => m.id))
-      
-      // 合并服务器数据和缓存数据，确保获取到所有消息
-      // 使用 Map 来去重，以消息 ID 为 key
       const messageMap = new Map<number, Message>()
-      
-      // 先添加服务器返回的消息
       newMessages.forEach(msg => {
-        if (msg.id) {
-          messageMap.set(msg.id, msg)
-        } else {
-          // 对于没有 ID 的消息，直接添加到消息列表
-          // 注意：这些消息可能无法被引用，但可以正常显示
-          messages.value.push(msg)
-        }
+        if (msg.id) messageMap.set(msg.id, msg)
       })
       
-      // 再添加缓存中的消息（如果服务器没有的话）
+      const cachedMessages = loadMessagesFromCache()
       cachedMessages.forEach(msg => {
         if (msg.id && !messageMap.has(msg.id)) {
           messageMap.set(msg.id, msg)
         }
       })
       
-      // 转换为数组并按时间排序
       const mergedMessages = Array.from(messageMap.values()).sort((a: Message, b: Message) => {
         const timeA = new Date(a.createTime || '').getTime()
         const timeB = new Date(b.createTime || '').getTime()
         return timeA - timeB
       })
       
-      console.log('Merged messages:', mergedMessages.length, 'items')
-      console.log('Merged messages IDs:', mergedMessages.map(m => m.id))
-      
-      // 使用合并后的数据
       messages.value = mergedMessages
-      console.log('After setting merged messages, messages.length:', messages.value.length)
-      console.log('After setting merged messages, messages IDs:', messages.value.map(m => m.id).filter(id => id))
       
-      // 更新缓存
-      saveMessagesToCache(mergedMessages)
-      
-      console.log('Final messages.length:', messages.value.length)
-      console.log('Final messages IDs:', messages.value.map(m => m.id).filter(id => id))
+      // 只有在聊天室界面时才保存缓存
+      if (isChatRoomActive.value) {
+        saveMessagesToCache(mergedMessages)
+        const maxId = mergedMessages.reduce((max, msg) => 
+          (msg.id && typeof msg.id === 'number') ? Math.max(max, msg.id) : max, 0
+        )
+        if (maxId > lastReadId.value) {
+          lastReadId.value = maxId
+          saveLastReadId(lastReadId.value)
+        }
+      }
+
+      calculateUnreadCount()
     } catch (error) {
       console.error('Failed to load initial messages:', error)
-      // 如果从服务器加载失败，使用缓存的消息
-      const cachedMessages = loadMessagesFromCache()
-      if (cachedMessages.length > 0) {
-        console.log('Using cached messages after server error:', cachedMessages.length, 'items')
-        console.log('Cached messages IDs:', cachedMessages.map(m => m.id).filter(id => id))
-        messages.value = cachedMessages
-      } else {
-        console.log('No cached messages, setting empty array')
-        messages.value = []
-      }
-    } finally {
-      console.log('=== loadInitialMessages end ===')
     }
   }
 
@@ -324,7 +430,6 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function addMessage(message: Message) {
-    // 确保消息按时间顺序添加
     const insertIndex = messages.value.findIndex(msg => {
       const msgTime = new Date(msg.createTime || '').getTime()
       const newMsgTime = new Date(message.createTime || '').getTime()
@@ -336,18 +441,50 @@ export const useChatStore = defineStore('chat', () => {
     } else {
       messages.value.splice(insertIndex, 0, message)
     }
-    // 更新缓存
-    saveMessagesToCache(messages.value)
+
+    if (isChatRoomActive.value) {
+      saveMessagesToCache(messages.value)
+      if (message.id && typeof message.id === 'number') {
+        lastReadId.value = Math.max(lastReadId.value, message.id)
+        saveLastReadId(lastReadId.value)
+      }
+    }
+    calculateUnreadCount()
   }
 
-  async function updateReadPosition() {
-    // 接口不可用，暂时空实现
-    console.log('Update read position not available')
+  // 设置聊天室激活状态
+  function setChatRoomActive(active: boolean) {
+    isChatRoomActive.value = active
+    if (active) {
+      // 进入聊天室，清除未读并更新最后阅读 ID
+      const maxId = messages.value.reduce((max, msg) => 
+        (msg.id && typeof msg.id === 'number') ? Math.max(max, msg.id) : max, 0
+      )
+      if (maxId > lastReadId.value) {
+        lastReadId.value = maxId
+        saveLastReadId(lastReadId.value)
+      }
+      unreadCount.value = 0
+      // 进入聊天室时保存当前消息到缓存
+      saveMessagesToCache(messages.value)
+    }
+  }
+
+  function updateReadPosition() {
+    if (messages.value.length > 0) {
+      const maxId = messages.value.reduce((max, msg) => 
+        (msg.id && typeof msg.id === 'number') ? Math.max(max, msg.id) : max, 0
+      )
+      if (maxId > lastReadId.value) {
+        lastReadId.value = maxId
+        saveLastReadId(lastReadId.value)
+        unreadCount.value = 0
+      }
+    }
   }
 
   async function getUnreadCount() {
-    // 接口不可用，暂时空实现
-    console.log('Get unread count not available')
+    calculateUnreadCount()
   }
 
   // 心跳相关函数
@@ -359,9 +496,6 @@ export const useChatStore = defineStore('chat', () => {
         try {
           ws.value.send('PING')
           missedHeartbeats++
-          console.log('Heartbeat sent, missed count:', missedHeartbeats)
-
-          // 如果连续丢失多次心跳，认为连接已断开
           if (missedHeartbeats >= MAX_MISSED_HEARTBEATS) {
             console.warn('Connection lost due to heartbeat timeout')
             stopHeartbeat()
@@ -384,19 +518,16 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function closeConnection() {
-    // 停止心跳
+    // 只有在非重连状态下才彻底关闭
     stopHeartbeat()
-
     if (ws.value) {
       ws.value.close()
       ws.value = null
     }
-
     if (reconnectTimeout.value) {
       clearTimeout(reconnectTimeout.value)
       reconnectTimeout.value = null
     }
-
     isConnected.value = false
     isConnecting.value = false
     isInitialized.value = false
@@ -407,10 +538,14 @@ export const useChatStore = defineStore('chat', () => {
     chatMessages,
     onlineUsers,
     isConnected,
+    isConnecting,
     unreadCount,
+    lastReadId,
+    isChatRoomActive,
     initialize,
     sendMessage,
     addMessage,
+    setChatRoomActive,
     updateReadPosition,
     getUnreadCount,
     closeConnection

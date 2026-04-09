@@ -11,7 +11,9 @@
         <router-link to="/chat" class="nav-link chat-trigger">
           <el-icon><ChatLineSquare /></el-icon>
           <span>聊天室</span>
-          <span v-if="chatStore.unreadCount > 0" class="unread-badge">{{ chatStore.unreadCount }}</span>
+          <span v-if="chatStore.unreadCount > 0 && !chatStore.isChatRoomActive" class="unread-badge">
+            {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
+          </span>
         </router-link>
         <div class="search-trigger" @click="goSearch">
           <el-icon><Search /></el-icon>
