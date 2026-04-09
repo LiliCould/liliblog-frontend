@@ -6,13 +6,14 @@
         <h1 class="chat-room-title">立里聊天室</h1>
         <div class="status-bar">
           <div class="online-count-mobile" @click="showOnlineMembers = !showOnlineMembers">
+            <el-icon><UserFilled /></el-icon>
             <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
-            <span class="count-label">在线</span>
           </div>
           <span class="status-text">
-            <span class="status-dot" :class="{ 'connected': chatStore.isConnected }">
-              {{ chatStore.isConnected ? '✨' : '○' }}
-            </span>
+            <el-icon :class="{ 'connected': chatStore.isConnected }" class="status-icon">
+              <Connection v-if="chatStore.isConnected" />
+              <CircleClose v-else />
+            </el-icon>
             {{ chatStore.isConnected ? '已连接' : '连接中...' }}
           </span>
         </div>
@@ -22,7 +23,10 @@
         <!-- 侧边栏：在线人数和在线用户 -->
         <div class="chat-sidebar" :class="{ 'show-mobile': showOnlineMembers }">
           <div class="sidebar-section">
-            <h3 class="sidebar-title">👥 在线用户</h3>
+            <h3 class="sidebar-title">
+              <el-icon><UserFilled /></el-icon>
+              在线用户
+            </h3>
             <div class="online-count">
               <span class="count-label">在线人数：</span>
               <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
@@ -202,7 +206,7 @@
                 <div class="tool-left">
                   <el-popover placement="top-start" :width="280" trigger="click" popper-class="emoji-popover">
                     <template #reference>
-                      <el-button type="text" class="tool-btn emoji-btn">😊</el-button>
+                      <el-button type="text" class="tool-btn"><el-icon><ChatDotRound /></el-icon></el-button>
                     </template>
                     <div class="emoji-picker">
                       <span v-for="emoji in emojiList" :key="emoji" class="emoji-item" @click="addEmoji(emoji)">
@@ -246,7 +250,7 @@
     <MobileNav />
 
     <!-- 预览弹窗 -->
-    <el-dialog v-model="previewDialogVisible" title="文件预览" width="80%" destroy-on-close>
+    <el-dialog v-model="previewDialogVisible" title="文件预览" width="85%" class="preview-dialog" destroy-on-close>
       <div class="preview-container">
         <VueOfficeDocx v-if="previewType === 'DOCX'" :src="previewUrl" />
         <VueOfficeExcel v-if="previewType === 'XLSX'" :src="previewUrl" />
@@ -260,7 +264,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder } from '@element-plus/icons-vue'
+import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder, UserFilled, Connection, ChatDotRound, CircleClose } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
 import { formatMessageTime } from '@/utils/format'
@@ -324,6 +328,12 @@ function getDisplayType(message: any): string {
 
 function getUrlType(url?: string): string {
   if (!url) return ''
+  
+  // 只有以 http 或 https 开头的才认为是 URL 并尝试解析类型
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return ''
+  }
+
   const extension = url.split('.').pop()?.toLowerCase() || ''
   
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'IMAGE'
@@ -369,15 +379,15 @@ const inputPlaceholder = computed(() => {
   return '输入消息...'
 })
 
-function touchStart(event: TouchEvent, message: any) {
-  event.preventDefault() // 阻止默认的复制行为
+function touchStart(_event: TouchEvent, message: any) {
+  // 移除 preventDefault，否则会阻止移动端滚动
   touchTimer = window.setTimeout(() => {
     startReply(message)
   }, 500) as unknown as number
 }
 
-function touchEnd(event: TouchEvent) {
-  event.preventDefault() // 阻止默认的复制行为
+function touchEnd(_event: TouchEvent) {
+  // 移除 preventDefault，确保点击和滚动正常
   if (touchTimer) {
     clearTimeout(touchTimer)
     touchTimer = null
@@ -654,6 +664,31 @@ onUnmounted(() => {
   box-shadow: var(--shadow-lg) !important;
 }
 
+.preview-dialog {
+  max-width: 1200px;
+}
+
+@media (max-width: 768px) {
+  .preview-dialog {
+    width: 95% !important;
+    margin-top: 5vh !important;
+  }
+}
+
+.preview-container {
+  min-height: 400px;
+  max-height: 75vh;
+  overflow: auto; /* 允许横向滚动如果内容太宽 */
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+}
+
+.preview-container > * {
+  min-width: 100%;
+  flex: 1;
+}
+
 .emoji-picker {
   display: grid;
   grid-template-columns: repeat(6, 40px);
@@ -711,7 +746,7 @@ onUnmounted(() => {
 .chat-room-container {
   flex: 1;
   padding: 12px;
-  padding-top: calc(12px + var(--header-height));
+  padding-top: calc(24px + var(--header-height)); /* 增加间距以防重叠 */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -724,7 +759,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .chat-room-container {
     padding: 8px;
-    padding-top: calc(20px + var(--header-height)); /* 增加移动端顶部间距 */
+    padding-top: calc(40px + var(--header-height)); /* 移动端增加更多间距 */
   }
   
   .chat-room-header {
@@ -766,10 +801,6 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-.status-dot.connected {
-  color: var(--color-primary);
-}
-
 .status-bar {
   display: flex;
   align-items: center;
@@ -794,6 +825,15 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.status-icon {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.status-icon.connected {
+  color: #67C23A; /* 使用更柔和的成功绿色 */
 }
 
 .chat-room-content {
@@ -1250,7 +1290,8 @@ onUnmounted(() => {
   .messages-container {
     padding: 12px;
     -webkit-overflow-scrolling: touch; /* 优化 iOS 滚动 */
-    touch-action: pan-y; /* 确保纵向滑动灵敏 */
+    overflow-y: auto;
+    height: 100%;
   }
 
   .message-body {
