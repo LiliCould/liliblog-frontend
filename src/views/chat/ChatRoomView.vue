@@ -61,7 +61,38 @@
               <div v-else class="message-content-wrapper">
                 <div v-if="(message.parentId ?? 0) > 0" class="message-quote">
                   <span class="quote-name">{{ message.parentSenderName || '用户' }}</span>
-                  <span class="quote-content">{{ message.parentContent || '引用内容被删除或尚未加载' }}</span>
+                  <div class="quote-content">
+                    <template v-if="getUrlType(message.parentContent) === 'IMAGE'">
+                      <el-image 
+                        :src="message.parentContent" 
+                        :preview-src-list="[message.parentContent]"
+                        preview-teleported
+                        fit="cover"
+                        class="quote-thumb"
+                      />
+                    </template>
+                    <template v-else-if="getUrlType(message.parentContent) === 'VIDEO'">
+                      <div class="quote-file-mini" @click="previewFile(message.parentContent)">
+                        <el-icon><VideoCamera /></el-icon>
+                        <span>视频消息</span>
+                      </div>
+                    </template>
+                    <template v-else-if="getUrlType(message.parentContent) === 'AUDIO'">
+                      <div class="quote-file-mini" @click="previewFile(message.parentContent)">
+                        <el-icon><Microphone /></el-icon>
+                        <span>音频消息</span>
+                      </div>
+                    </template>
+                    <template v-else-if="getUrlType(message.parentContent) === 'FILE'">
+                      <div class="quote-file-mini" @click="previewFile(message.parentContent)">
+                        <el-icon><Document /></el-icon>
+                        <span>{{ getFileName(message.parentContent) }}</span>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <span>{{ message.parentContent || '引用内容被删除或尚未加载' }}</span>
+                    </template>
+                  </div>
                 </div>
                 <div class="message-header">
                   <span class="sender-name">{{ message.senderName }}</span>
@@ -76,6 +107,7 @@
                   <el-image 
                     :src="message.content" 
                     :preview-src-list="[message.content]"
+                    preview-teleported
                     fit="cover"
                     class="chat-image"
                   />
@@ -279,13 +311,19 @@ function getDisplayType(message: any): string {
   
   // 综合考虑 message.type 和 后缀名
   const url = message.content
+  return getUrlType(url) || message.type || 'FILE'
+}
+
+function getUrlType(url: string): string {
+  if (!url) return ''
   const extension = url.split('.').pop()?.toLowerCase() || ''
   
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'IMAGE'
   if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) return 'VIDEO'
   if (['mp3', 'wav', 'flac'].includes(extension)) return 'AUDIO'
+  if (['pdf', 'docx', 'xlsx', 'pptx', 'md'].includes(extension)) return 'FILE'
   
-  return message.type || 'FILE'
+  return 'FILE'
 }
 
 // 预览相关
@@ -960,24 +998,57 @@ onUnmounted(() => {
 
 /* 引用效果 */
 .message-quote {
-  font-size: 12px;
-  color: #999;
-  background: rgba(0, 0, 0, 0.03);
-  border-left: 3px solid #ff69b4;
-  padding: 6px 10px;
   margin-bottom: 8px;
-  border-radius: 0 8px 8px 0;
-  line-height: 1.4;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .quote-name {
   font-weight: 600;
-  margin-right: 8px;
-  color: #666;
+  color: var(--color-primary);
+  font-size: 12px;
 }
 
 .quote-content {
-  color: #999;
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quote-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  cursor: zoom-in;
+  border: 1px solid var(--color-border);
+}
+
+.quote-file-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  transition: all 0.2s;
+}
+
+.quote-file-mini:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.quote-file-mini .el-icon {
+  font-size: 16px;
 }
 
 /* 回复菜单 */
