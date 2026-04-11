@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { uploadFile } from '@/api/file'
@@ -27,11 +27,32 @@ const emit = defineEmits<{
   (e: 'htmlChanged', html: string): void
 }>()
 
-const content = ref(props.modelValue)
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+}
+
+const processedContent = computed(() => {
+  if (!props.modelValue) return ''
+
+  return props.modelValue.replace(/(```[\s\S]*?```|`[^`]+`)/g, (match) => {
+    return decodeHtmlEntities(match)
+  })
+})
+
+const content = ref(processedContent.value)
 
 watch(() => props.modelValue, (val) => {
-  if (val !== content.value) {
-    content.value = val
+  const newProcessed = val ? val.replace(/(```[\s\S]*?```|`[^`]+`)/g, (match) => {
+    return decodeHtmlEntities(match)
+  }) : ''
+  if (newProcessed !== content.value) {
+    content.value = newProcessed
   }
 })
 
