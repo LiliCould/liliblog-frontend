@@ -39,10 +39,10 @@
       </el-dropdown>
     </div>
 
-    <MdPreview 
-      :id="editorId" 
-      :modelValue="content" 
-      :previewTheme="currentPreviewTheme" 
+    <MdPreview
+      :id="editorId"
+      :modelValue="processedContent"
+      :previewTheme="currentPreviewTheme"
       :codeTheme="currentCodeTheme"
     />
   </div>
@@ -59,6 +59,24 @@ const props = defineProps<{
 }>()
 
 const editorId = 'article-preview'
+
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+}
+
+const processedContent = computed(() => {
+  if (!props.content) return ''
+
+  return props.content.replace(/(```[\s\S]*?```|`[^`]+`)/g, (match) => {
+    return decodeHtmlEntities(match)
+  })
+})
 
 interface ThemeOption {
   label: string
