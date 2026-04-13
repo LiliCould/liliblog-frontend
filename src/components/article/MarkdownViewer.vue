@@ -39,12 +39,8 @@
       </el-dropdown>
     </div>
 
-    <MdPreview
-      :id="editorId"
-      :modelValue="processedContent"
-      :previewTheme="currentPreviewTheme"
-      :codeTheme="currentCodeTheme"
-    />
+    <MdPreview :id="editorId" :modelValue="processedContent" :previewTheme="currentPreviewTheme"
+      :codeTheme="currentCodeTheme" />
   </div>
 </template>
 
@@ -110,7 +106,7 @@ const codeThemes: ThemeOption[] = [
   { label: 'StackOverflow', value: 'stackoverflow' },
 ]
 
-const currentPreviewTheme = ref<PreviewThemeValue>('mk-cute')
+const currentPreviewTheme = ref<PreviewThemeValue>('github')
 const currentCodeTheme = ref<string>('atom')
 
 const themeConfig: Record<PreviewThemeValue, ThemeConfig> = {
