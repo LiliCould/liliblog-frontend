@@ -38,6 +38,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     EmptyState: typeof import('./components/common/EmptyState.vue')['default']
+    HeroSection: typeof import('./components/common/HeroSection.vue')['default']
     KleeCursor: typeof import('./components/common/KleeCursor.vue')['default']
     MarkdownEditor: typeof import('./components/article/MarkdownEditor.vue')['default']
     MarkdownViewer: typeof import('./components/article/MarkdownViewer.vue')['default']
