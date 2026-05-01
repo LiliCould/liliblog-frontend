@@ -3,10 +3,15 @@
     <!-- Hero Section -->
     <section class="hero-section" ref="heroRef" @mousemove="handleHeroMouseMove" @mouseenter="handleHeroMouseEnter"
       @mouseleave="handleHeroMouseLeave">
+      <!-- 第0层：视频背景层 (z-index: -1) - 可选 -->
+      <video v-if="useVideo" class="hero-video" :src="videoConfig.src" :poster="videoConfig.poster"
+        :muted="videoConfig.muted" :loop="videoConfig.loop" :autoplay="videoConfig.autoplay"
+        :playsinline="videoConfig.playsInline" preload="auto" ref="videoRef"></video>
+
       <!-- 第一层：图片轮播层 (z-index: 0) -->
       <div class="hero-carousel-layer">
-        <div v-for="(image, index) in heroImages" :key="index"
-          :class="['hero-image', `hero-image-${index}`]" :style="{ backgroundImage: `url(${image})` }"></div>
+        <div v-for="(image, index) in heroImages" :key="index" :class="['hero-image', `hero-image-${index}`]"
+          :style="{ backgroundImage: `url(${image})` }"></div>
       </div>
 
       <!-- 第二层：暗色遮罩 (z-index: 1) -->
@@ -36,8 +41,8 @@
       <!-- 轮播指示器 -->
       <div class="carousel-indicators">
         <button v-for="(image, index) in heroImages" :key="index"
-          :class="['carousel-dot', { active: currentIndex === index }]"
-          @click="carousel.goTo(index)" :aria-label="`切换到第 ${index + 1} 张图片`"></button>
+          :class="['carousel-dot', { active: currentIndex === index }]" @click="carousel.goTo(index)"
+          :aria-label="`切换到第 ${index + 1} 张图片`"></button>
       </div>
 
       <!-- 移动端进度条 -->
@@ -59,8 +64,8 @@
 
             <template v-else-if="articleStore.publicList.length > 0">
               <transition-group name="list" tag="div" class="articles-grid">
-                <ArticleCard v-for="(article, index) in articleStore.publicList" :key="article.id"
-                  :article="article" :style="{ animationDelay: `${index * 0.08}s` }" />
+                <ArticleCard v-for="(article, index) in articleStore.publicList" :key="article.id" :article="article"
+                  :style="{ animationDelay: `${index * 0.08}s` }" />
               </transition-group>
 
               <div class="load-more-section">
@@ -113,6 +118,7 @@ import ArticleCard from '@/components/common/ArticleCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { useHeroCarousel } from '@/composables/useHeroCarousel'
+import { useHeroVideo } from '@/composables/useHeroVideo'
 
 const articleStore = useArticleStore()
 const currentPage = ref(1)
@@ -126,14 +132,31 @@ const cursorState = inject<{ isHovering: ReturnType<typeof ref>; isText: ReturnT
   isText: ref(false)
 })
 
+// ========== 视频背景配置 ==========
+// 设置 useVideo = true 启用视频背景，false 使用图片轮播
+const useVideo = false
+
+const videoConfig = {
+  src: '/videos/hero-bg.mp4',      // 视频文件路径
+  poster: '/images/hero-1.jpg',    // 视频封面图（视频加载前显示）
+  muted: true,                     // 静音（必须为 true 才能自动播放）
+  loop: true,                      // 循环播放
+  autoplay: true,                  // 自动播放
+  playsInline: true                // 内联播放（iOS 兼容）
+}
+
+const videoRef = ref<HTMLVideoElement | null>(null)
+const video = useHeroVideo(videoConfig)
+
+// ========== 图片轮播配置 ==========
 const heroImages = [
-  '/images/hero-1.jpg',
-  '/images/hero-2.jpg',
-  '/images/hero-3.jpg',
+  '/images/hero-1.png',
+  '/images/hero-2.png',
+  '/images/hero-3.png',
   '/images/hero-4.jpg'
 ]
 
-const carousel = useHeroCarousel(heroImages)
+const carousel = useHeroCarousel(heroImages, useVideo ? 0 : 6000) // 如果使用视频，禁用图片轮播
 const currentIndex = carousel.currentIndex
 
 const heroRef = ref<HTMLElement | null>(null)
@@ -224,45 +247,45 @@ function initHeroAnimation() {
     duration: 500,
     easing: 'linear'
   })
-  .add({
-    targets: '.title-char',
-    opacity: [0, 1],
-    translateY: [30, 0],
-    duration: 800,
-    delay: anime.stagger(40),
-    easing: 'easeOutCubic'
-  }, '-=200')
-  .add({
-    targets: subtitleRef.value,
-    opacity: [0, 1],
-    translateY: [20, 0],
-    duration: 600,
-    easing: 'easeOutCubic'
-  }, '-=400')
-  .add({
-    targets: dividerRef.value,
-    scaleX: [0, 1],
-    duration: 600,
-    easing: 'easeOutCubic'
-  }, '-=300')
-  .add({
-    targets: scrollIndicatorRef.value,
-    opacity: [0, 1],
-    duration: 400,
-    easing: 'easeOutCubic',
-    complete: () => {
-      if (scrollIndicatorRef.value) {
-        anime({
-          targets: scrollIndicatorRef.value,
-          translateY: [0, 10],
-          direction: 'alternate',
-          loop: true,
-          duration: 1000,
-          easing: 'easeInOutSine'
-        })
+    .add({
+      targets: '.title-char',
+      opacity: [0, 1],
+      translateY: [30, 0],
+      duration: 800,
+      delay: anime.stagger(40),
+      easing: 'easeOutCubic'
+    }, '-=200')
+    .add({
+      targets: subtitleRef.value,
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      easing: 'easeOutCubic'
+    }, '-=400')
+    .add({
+      targets: dividerRef.value,
+      scaleX: [0, 1],
+      duration: 600,
+      easing: 'easeOutCubic'
+    }, '-=300')
+    .add({
+      targets: scrollIndicatorRef.value,
+      opacity: [0, 1],
+      duration: 400,
+      easing: 'easeOutCubic',
+      complete: () => {
+        if (scrollIndicatorRef.value) {
+          anime({
+            targets: scrollIndicatorRef.value,
+            translateY: [0, 10],
+            direction: 'alternate',
+            loop: true,
+            duration: 1000,
+            easing: 'easeInOutSine'
+          })
+        }
       }
-    }
-  }, '-=200')
+    }, '-=200')
 }
 
 function initScrollListener() {
@@ -321,7 +344,7 @@ function scrollToContent() {
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
-  
+
   if (backIconRef.value) {
     anime({
       targets: backIconRef.value,
@@ -353,6 +376,18 @@ onUnmounted(() => {
   --mouse-x: 50%;
   --mouse-y: 50%;
   --gradient-opacity: 0;
+}
+
+/* 第0层：视频背景层 (z-index: -1) - 可选 */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -1;
+  will-change: transform;
 }
 
 /* 第一层：图片轮播层 (z-index: 0) */
@@ -399,12 +434,10 @@ onUnmounted(() => {
 .mouse-gradient-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle var(--hero-gradient-radius) at var(--mouse-x) var(--mouse-y),
-    var(--hero-gradient-color-1) 0%,
-    var(--hero-gradient-color-2) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(circle var(--hero-gradient-radius) at var(--mouse-x) var(--mouse-y),
+      var(--hero-gradient-color-1) 0%,
+      var(--hero-gradient-color-2) 40%,
+      transparent 70%);
   z-index: var(--z-hero-gradient);
   pointer-events: none;
   opacity: var(--gradient-opacity);
@@ -748,6 +781,11 @@ onUnmounted(() => {
 
   .carousel-indicators {
     display: none;
+  }
+
+  /* 移动端视频优化 */
+  .hero-video {
+    object-position: center center;
   }
 }
 </style>

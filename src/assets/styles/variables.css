@@ -144,4 +144,8 @@
     --carousel-dot-size: 8px;
     --carousel-dot-active-width: 24px;
     --carousel-dot-height: 8px;
+
+    /* Video Background */
+    --z-hero-video: -1;
+    --video-overlay-darkness: rgba(0, 0, 0, 0.4);
 }
