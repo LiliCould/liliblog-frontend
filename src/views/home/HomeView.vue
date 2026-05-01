@@ -80,17 +80,20 @@
 
               <div class="load-more-section">
                 <template v-if="hasMore">
-                  <button class="btn-load-more clickable" :class="{ loading: articleStore.loading }"
+                  <!-- 替换原有 .btn-load-more：赛博朋克数据流加载按钮 -->
+                  <button class="cyber-load-btn clickable" :class="{ 'is-loading': articleStore.loading }"
                     @click="handleLoadMore" :disabled="articleStore.loading" @click.capture="createRipple">
-                    <svg v-if="!articleStore.loading" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                    <svg v-else class="spinner" viewBox="0 0 24 24" fill="none">
-                      <circle class="spinner-track" cx="12" cy="12" r="10"></circle>
-                      <circle class="spinner-head" cx="12" cy="12" r="10"></circle>
-                    </svg>
-                    <span>{{ articleStore.loading ? '正在加载' : '加载更多' }}</span>
+                    <span class="btn-text" v-if="!articleStore.loading">
+                      加载更多
+                      <span class="btn-arrow">↓</span>
+                    </span>
+
+                    <span class="btn-loading" v-else>
+                      <span class="loading-track">
+                        <span class="loading-bar"></span>
+                      </span>
+                      <span class="loading-text">LOADING</span>
+                    </span>
                   </button>
 
                   <!-- 新文章加载骨架屏 -->
@@ -792,119 +795,132 @@ onUnmounted(() => {
   text-align: center;
 }
 
-.btn-load-more {
+/* 替换原有 .btn-load-more：赛博朋克数据流加载按钮 */
+.cyber-load-btn {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px 48px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.5px;
-  color: white;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  border: none;
-  border-radius: 50px;
+  padding: 12px 48px;
+  background: transparent;
+  border: 1px solid rgba(0, 240, 255, 0.6);
+  color: #94a3b8;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(196, 93, 53, 0.25);
+  transition: all 0.3s ease;
+
+  /* 微弱呼吸光效 */
+  animation: border-breathe 3s ease-in-out infinite;
 }
 
-.btn-load-more::before {
+@keyframes border-breathe {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+}
+
+/* 边框流光效果 */
+.cyber-load-btn::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--color-primary-hover), #d4915a);
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: -1;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
-.btn-load-more:hover:not(:disabled) {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 16px 40px rgba(196, 93, 53, 0.4);
+.cyber-load-btn:hover:not(:disabled)::before {
+  left: 100%;
 }
 
-.btn-load-more:hover:not(:disabled)::before {
-  opacity: 1;
+.cyber-load-btn:hover:not(:disabled) {
+  color: #e2e8f0;
+  border-color: rgba(0, 240, 255, 0.9);
 }
 
-.btn-load-more:active:not(:disabled) {
-  transform: translateY(-3px) scale(0.98);
-  transition-duration: 0.15s;
+.cyber-load-btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
-.btn-load-more:disabled {
+/* 禁用状态 */
+.cyber-load-btn:disabled {
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #475569;
   cursor: not-allowed;
-  animation: pulse-loading 2s ease-in-out infinite;
+  animation: none;
 }
 
-@keyframes pulse-loading {
-
-  0%,
-  100% {
-    box-shadow: 0 4px 20px rgba(196, 93, 53, 0.25);
-  }
-
-  50% {
-    box-shadow: 0 8px 30px rgba(196, 93, 53, 0.35);
-  }
+/* 按钮文字和箭头 */
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.btn-icon {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+.btn-arrow {
+  transition: transform 0.3s ease;
 }
 
-.btn-load-more:hover .btn-icon {
+.cyber-load-btn:hover .btn-arrow {
   transform: translateY(3px);
 }
 
-/* Spinner Animation */
-.spinner {
-  width: 20px;
-  height: 20px;
-  animation: spin 0.8s linear infinite;
+/* 加载中状态容器 */
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.spinner-track {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
-  stroke-width: 2;
+/* 数据流动画轨道 */
+.loading-track {
+  position: relative;
+  width: 80px;
+  height: 2px;
+  background: rgba(0, 240, 255, 0.2);
+  overflow: hidden;
 }
 
-.spinner-head {
-  fill: none;
-  stroke: white;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 50;
-  stroke-dashoffset: 40;
-  transform-origin: center;
-  animation: spinner-rotate 0.8s linear infinite;
+/* 数据流动画条 */
+.loading-bar {
+  position: absolute;
+  left: -30%;
+  width: 30%;
+  height: 100%;
+  background: #00f0ff;
+  box-shadow: 0 0 10px #00f0ff;
+  animation: data-stream 1.2s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes data-stream {
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
-@keyframes spinner-rotate {
-  0% {
-    stroke-dashoffset: 40;
-  }
+/* 加载文字 */
+.loading-text {
+  font-size: 0.75rem;
+  color: #00f0ff;
+  letter-spacing: 0.2em;
+}
 
-  50% {
-    stroke-dashoffset: 15;
-  }
+/* 加载状态脉冲反馈 */
+.cyber-load-btn.is-loading {
+  animation: loading-pulse 0.5s ease;
+}
 
-  100% {
-    stroke-dashoffset: 40;
-  }
+@keyframes loading-pulse {
+  0% { border-color: rgba(0, 240, 255, 0.6); }
+  50% { border-color: rgba(0, 240, 255, 1); box-shadow: 0 0 30px rgba(0, 240, 255, 0.6); }
+  100% { border-color: rgba(0, 240, 255, 0.6); }
 }
 
 .ripple {
