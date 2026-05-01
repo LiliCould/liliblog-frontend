@@ -7,43 +7,63 @@
 }
 
 html {
-    font-size: 14px;
+    font-size: 15px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: var(--font-body);
     color: var(--color-body);
-    background-color: var(--color-bg);
-    line-height: 1.6;
+    background-color: var(--color-bg-warm);
+    line-height: var(--line-height-normal);
     min-height: 100vh;
-    background-image: 
-        linear-gradient(rgba(250, 250, 248, 0.4), rgba(250, 250, 248, 0.4)),
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        linear-gradient(135deg, rgba(248, 246, 243, 0.9) 0%, rgba(252, 250, 247, 0.85) 50%, rgba(248, 244, 240, 0.9) 100%),
         url('@/assets/background.png');
     background-size: cover, cover;
     background-position: center center, center center;
     background-repeat: no-repeat, no-repeat;
     background-attachment: fixed, fixed;
-    cursor: url('@/assets/keli.png') 16 16, auto;
+    z-index: -1;
+    pointer-events: none;
 }
 
 a {
     color: var(--color-primary);
     text-decoration: none;
-    transition: color 0.2s;
-    cursor: url('@/assets/keli.png') 16 16, pointer;
+    transition: color var(--transition-fast);
+    position: relative;
 }
 
 a:hover {
     color: var(--color-primary-hover);
 }
 
+a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
 img {
     max-width: 100%;
     height: auto;
     display: block;
+    user-select: none;
 }
 
 ul,
@@ -52,19 +72,39 @@ ol {
 }
 
 button {
-    cursor: url('@/assets/keli.png') 16 16, pointer;
+    cursor: pointer;
     font-family: inherit;
+    font-size: inherit;
+    border: none;
+    background: none;
+    padding: 0;
+    outline: none;
+}
+
+button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
 }
 
 input,
 textarea,
 select {
     font-family: inherit;
+    font-size: inherit;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-title);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -72,10 +112,46 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #d4d4d4;
-    border-radius: 3px;
+    background: rgba(196, 93, 53, 0.2);
+    border-radius: var(--radius-full);
+    transition: background var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
+    background: rgba(196, 93, 53, 0.35);
+}
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196, 93, 53, 0.2) transparent;
+}
+
+/* Selection */
+::selection {
+    background: var(--color-primary-light-2);
+    color: var(--color-title);
+}
+
+/* Focus Styles for Accessibility */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Page Container Utility */
+.page-container {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    html {
+        font-size: 14px;
+    }
 }

@@ -1,54 +1,82 @@
+/* Vue Transition Animations */
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.25s ease;
+    transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
-.fade-enter-from,
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
 .fade-leave-to {
     opacity: 0;
+    transform: translateY(-8px);
 }
 
 .slide-up-enter-active,
 .slide-up-leave-active {
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow);
 }
 
 .slide-up-enter-from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
 }
 
 .slide-up-leave-to {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-24px);
 }
 
 .slide-right-enter-active,
 .slide-right-leave-active {
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow);
 }
 
 .slide-right-enter-from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-24px);
 }
 
 .slide-right-leave-to {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(24px);
+}
+
+/* Scale Animation */
+.scale-enter-active,
+.scale-leave-active {
+    transition: all var(--transition-base);
+}
+
+.scale-enter-from,
+.scale-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
 }
 
 /* NProgress Override */
 #nprogress .bar {
-    background: var(--color-primary) !important;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%) !important;
     height: 3px !important;
+    border-radius: var(--radius-full) !important;
 }
 
 #nprogress .peg {
-    box-shadow: 0 0 10px var(--color-primary), 0 0 5px var(--color-primary) !important;
+    box-shadow:
+        0 0 12px var(--color-primary),
+        0 0 6px var(--color-primary) !important;
 }
 
 #nprogress .spinner-icon {
     border-top-color: var(--color-primary) !important;
     border-left-color: var(--color-primary) !important;
+    animation: nprogress-spinner 600ms linear infinite;
+}
+
+@keyframes nprogress-spinner {
+    to {
+        transform: rotate(360deg);
+    }
 }

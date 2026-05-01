@@ -1,23 +1,23 @@
 <template>
-  <header class="app-header">
+  <header class="app-header" :class="{ scrolled: isScrolled }">
     <div class="header-inner page-container">
       <router-link to="/" class="logo">
+        <span class="logo-icon">✦</span>
         <span class="logo-text">LiliBlog</span>
       </router-link>
 
       <nav class="desktop-nav">
-        <router-link to="/" class="nav-link" active-class="active">首页</router-link>
-        <router-link to="/about" class="nav-link" active-class="active">关于我</router-link>
-        <router-link to="/chat" class="nav-link chat-trigger">
-          <el-icon><ChatLineSquare /></el-icon>
-          <span>聊天室</span>
-          <span v-if="chatStore.unreadCount > 0 && !chatStore.isChatRoomActive" class="unread-badge">
-            {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
-          </span>
+        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link" active-class="active">
+          <span class="link-text">{{ item.label }}</span>
+          <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
         </router-link>
+
         <div class="search-trigger" @click="goSearch">
-          <el-icon><Search /></el-icon>
-          <span>搜索文章</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
         </div>
       </nav>
 
@@ -25,39 +25,59 @@
         <template v-if="userStore.isLoggedIn">
           <el-dropdown trigger="click" @command="handleCommand">
             <div class="user-avatar-wrapper">
-              <el-avatar :size="32" :src="userStore.avatar || undefined">
+              <el-avatar :size="34" :src="userStore.avatar || undefined" class="user-avatar">
                 {{ userStore.nickname?.charAt(0) || 'U' }}
               </el-avatar>
               <span class="username-text">{{ userStore.nickname || userStore.username }}</span>
-              <el-icon class="arrow-icon"><ArrowDown /></el-icon>
+              <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
             <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
-                <el-dropdown-item command="myArticles">我的文章</el-dropdown-item>
-                <el-dropdown-item command="write" divided>写文章</el-dropdown-item>
-                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+              <el-dropdown-menu class="custom-dropdown">
+                <el-dropdown-item command="profile">
+                  <span class="dropdown-icon">👤</span>
+                  个人信息
+                </el-dropdown-item>
+                <el-dropdown-item command="myArticles">
+                  <span class="dropdown-icon">📝</span>
+                  我的文章
+                </el-dropdown-item>
+                <el-dropdown-item command="write" divided>
+                  <span class="dropdown-icon">✏️</span>
+                  写文章
+                </el-dropdown-item>
+                <el-dropdown-item command="logout" divided>
+                  <span class="dropdown-icon">🚪</span>
+                  退出登录
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
         </template>
+
         <template v-else>
-          <router-link to="/login" class="btn-login">登录</router-link>
-          <router-link to="/register" class="btn-register">注册</router-link>
+          <router-link to="/login" class="btn-auth btn-login">登录</router-link>
+          <router-link to="/register" class="btn-auth btn-register">注册</router-link>
         </template>
 
-        <div class="mobile-menu-btn" @click="appStore.toggleMobileNav()">
-          <el-icon :size="22"><Menu /></el-icon>
-        </div>
+        <button class="mobile-menu-btn" @click="appStore.toggleMobileNav()" aria-label="菜单">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-// import { onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, ArrowDown, Menu, ChatLineSquare } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { useChatStore } from '@/stores/chat'
@@ -66,6 +86,38 @@ const router = useRouter()
 const userStore = useUserStore()
 const appStore = useAppStore()
 const chatStore = useChatStore()
+
+const isScrolled = ref(false)
+
+const navItems = computed(() => [
+  {
+    path: '/',
+    label: '首页',
+    badge: undefined
+  },
+  {
+    path: '/about',
+    label: '关于',
+    badge: undefined
+  },
+  {
+    path: '/chat',
+    label: '聊天室',
+    badge: chatStore.unreadCount > 0 && !chatStore.isChatRoomActive ? (chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount) : undefined
+  }
+])
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 20
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 
 function goSearch() {
   router.push('/search')
@@ -87,8 +139,6 @@ function handleCommand(command: string) {
       break
   }
 }
-
-// 只有在进入聊天室页面时才初始化
 </script>
 
 <style scoped>
@@ -98,10 +148,18 @@ function handleCommand(command: string) {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-border);
-  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border-bottom: 1px solid transparent;
+  z-index: var(--z-header);
+  transition: all var(--transition-base);
+}
+
+.app-header.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-inner {
@@ -109,84 +167,152 @@ function handleCommand(command: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: 0 20px;
 }
 
 .logo {
   display: flex;
   align-items: center;
+  gap: 10px;
   text-decoration: none;
+  transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+.logo-icon {
+  font-size: 22px;
+  color: var(--color-primary);
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
 }
 
 .logo-text {
   font-size: 20px;
-  font-weight: 700;
-  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.5px;
 }
 
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
 }
 
 .nav-link {
-  color: var(--color-body);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  padding: 6px 0;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.nav-link.active,
-.nav-link:hover {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
-}
-
-.chat-trigger {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  cursor: pointer;
-  position: relative;
+  padding: 10px 16px;
+  color: var(--color-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.unread-badge {
+.nav-link::before {
+  content: '';
   position: absolute;
-  top: -4px;
-  right: -8px;
-  background: var(--color-danger);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
   border-radius: var(--radius-full);
-  min-width: 16px;
-  text-align: center;
+  transition: transform var(--transition-base);
+}
+
+.nav-link:hover {
+  color: var(--color-title);
+  background: var(--color-primary-light);
+}
+
+.nav-link.active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-link.active::before {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.link-text {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-danger), var(--color-primary));
+  border-radius: var(--radius-full);
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .search-trigger {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--color-bg);
-  border-radius: var(--radius-full);
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-left: 8px;
+  border-radius: var(--radius-md);
   color: var(--color-muted);
-  font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
+}
+
+.search-trigger svg {
+  width: 18px;
+  height: 18px;
 }
 
 .search-trigger:hover {
-  background: var(--color-primary-light);
   color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: scale(1.05);
 }
 
 .header-right {
@@ -200,19 +326,33 @@ function handleCommand(command: string) {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: var(--radius-full);
-  transition: background 0.2s;
+  padding: 6px 12px;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .user-avatar-wrapper:hover {
-  background: var(--color-bg);
+  background: var(--color-bg-warm);
+  border-color: var(--color-border);
+}
+
+.user-avatar {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  transition: transform var(--transition-fast);
+}
+
+.user-avatar-wrapper:hover .user-avatar {
+  transform: rotate(-5deg) scale(1.05);
 }
 
 .username-text {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--color-title);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -220,44 +360,64 @@ function handleCommand(command: string) {
 }
 
 .arrow-icon {
-  font-size: 12px;
-  color: var(--color-muted);
+  width: 14px;
+  height: 14px;
+  color: var(--color-muted-light);
+  transition: transform var(--transition-fast);
+}
+
+.btn-auth {
+  padding: 8px 20px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-login {
-  padding: 6px 16px;
-  font-size: 13px;
   color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 500;
-  border-radius: var(--radius-full);
-  transition: background 0.2s;
+  border: 1.5px solid var(--color-border);
 }
 
 .btn-login:hover {
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary);
   background: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 .btn-register {
-  padding: 6px 16px;
-  font-size: 13px;
   color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  transition: background 0.2s;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  box-shadow: 0 4px 12px rgba(196, 93, 53, 0.25);
 }
 
 .btn-register:hover {
-  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(196, 93, 53, 0.35);
 }
 
 .mobile-menu-btn {
   display: none;
-  cursor: pointer;
-  padding: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   color: var(--color-title);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.mobile-menu-btn:hover {
+  background: var(--color-bg-warm);
+}
+
+.mobile-menu-btn svg {
+  width: 22px;
+  height: 22px;
 }
 
 @media (max-width: 768px) {
@@ -265,21 +425,21 @@ function handleCommand(command: string) {
     display: none;
   }
 
-  .username-text {
-    display: none;
-  }
-
+  .username-text,
   .arrow-icon {
     display: none;
   }
 
-  .btn-login,
-  .btn-register {
+  .btn-auth {
     display: none;
   }
 
   .mobile-menu-btn {
     display: flex;
+  }
+
+  .user-avatar-wrapper {
+    padding: 6px;
   }
 }
 </style>
