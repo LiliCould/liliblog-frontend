@@ -44,7 +44,7 @@
           </template>
 
           <template v-else>
-            <EmptyState text="暂无文章" icon="📝" />
+            <EmptyState text="暂无文章" />
           </template>
         </div>
       </main>

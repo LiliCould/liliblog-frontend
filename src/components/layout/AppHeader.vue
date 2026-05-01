@@ -149,8 +149,8 @@ function handleCommand(command: string) {
   right: 0;
   height: var(--header-height);
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid transparent;
   z-index: var(--z-header);
   transition: all var(--transition-base);
