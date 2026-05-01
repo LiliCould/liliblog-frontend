@@ -135,39 +135,45 @@ onUnmounted(() => {
   position: absolute;
   width: var(--cursor-outer-size);
   height: var(--cursor-outer-size);
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid #00f0ff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s ease,
               transform 0.15s ease-out;
   will-change: transform;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4), 0 0 20px rgba(0, 240, 255, 0.2);
 }
 
 .cursor-outer.cursor-hover {
   width: var(--cursor-hover-outer-size);
   height: var(--cursor-hover-outer-size);
-  border-color: var(--color-primary);
+  border-color: #ff003c;
+  box-shadow: 0 0 15px rgba(255, 0, 60, 0.5), 0 0 30px rgba(255, 0, 60, 0.3);
 }
 
 .cursor-outer.cursor-text {
   width: var(--cursor-text-outer-size);
   height: var(--cursor-text-outer-size);
-  border-color: rgba(255, 255, 255, 0.8);
+  border-color: #00f0ff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.6), 0 0 16px rgba(0, 240, 255, 0.3);
 }
 
 .cursor-inner {
   position: absolute;
   width: var(--cursor-inner-size);
   height: var(--cursor-inner-size);
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #ffffff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: opacity 0.2s ease,
               width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+              height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s ease;
   will-change: transform;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
 .cursor-inner.cursor-hidden {

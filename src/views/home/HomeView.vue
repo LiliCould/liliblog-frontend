@@ -830,10 +830,11 @@ onUnmounted(() => {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(0, 240, 255, 0.3),
+    rgba(0, 240, 255, 0.2),
     transparent
   );
   transition: left 0.5s ease;
+  z-index: -1;
 }
 
 .cyber-load-btn:hover:not(:disabled)::before {
@@ -841,8 +842,10 @@ onUnmounted(() => {
 }
 
 .cyber-load-btn:hover:not(:disabled) {
-  color: #e2e8f0;
-  border-color: rgba(0, 240, 255, 0.9);
+  color: #ffffff;
+  border-color: #00f0ff;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.1);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
 .cyber-load-btn:active:not(:disabled) {
