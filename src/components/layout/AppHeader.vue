@@ -278,41 +278,6 @@ function handleCommand(command: string) {
   font-weight: var(--font-weight-medium);
 }
 
-.nav-link::before {
-  content: '';
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 20px;
-  height: 2px;
-  background: #fff;
-  border-radius: var(--radius-full);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-}
-
-.app-header.scrolled .nav-link::before {
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-}
-
-.link-underline {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  width: 20px;
-  height: 2px;
-  background: #fff;
-  border-radius: var(--radius-full);
-  transform: translateX(-50%) scaleX(0);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-}
-
-.app-header.scrolled .link-underline {
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-}
-
 .nav-link:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.1);

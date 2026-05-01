@@ -179,7 +179,6 @@ const videoConfig = {
   playsInline: true                // 内联播放（iOS 兼容）
 }
 
-const videoRef = ref<HTMLVideoElement | null>(null)
 useHeroVideo(videoConfig) // 初始化视频控制
 
 // ========== 图片轮播配置 ==========
