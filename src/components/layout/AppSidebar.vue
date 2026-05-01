@@ -1,15 +1,25 @@
 <template>
   <aside class="app-sidebar">
-    <div class="sidebar-section category-section">
+    <div
+      v-for="(section, index) in sections"
+      :key="section.id"
+      class="sidebar-section"
+      :class="`section-${section.id}`"
+      :ref="el => { if (el) sectionRefs[index] = el }"
+    >
+      <div class="gradient-bar"></div>
       <div class="section-header">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          <path :d="section.iconPath"></path>
         </svg>
-        <h3 class="section-title">分类</h3>
+        <h3 class="section-title">{{ section.title }}</h3>
       </div>
-      <div class="category-list">
-        <router-link v-for="cat in appStore.categories" :key="cat.id" :to="`/category/${cat.id}`" class="category-item">
+
+      <div v-if="section.id === 'category'" class="category-list">
+        <router-link v-for="cat in appStore.categories" :key="cat.id" :to="`/category/${cat.id}`"
+          class="category-item clickable">
+          <span class="category-indicator"></span>
           <span class="category-name">{{ cat.name }}</span>
           <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -26,19 +36,10 @@
           <span>暂无分类</span>
         </div>
       </div>
-    </div>
 
-    <div class="sidebar-section tag-section">
-      <div class="section-header">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-          <line x1="7" y1="7" x2="7.01" y2="7"></line>
-        </svg>
-        <h3 class="section-title">标签</h3>
-      </div>
-      <div class="tag-cloud">
-        <TagBadge v-for="tag in appStore.tags" :key="tag.id" :tag="tag" />
+      <div v-else-if="section.id === 'tag'" class="tag-cloud">
+        <TagBadge v-for="(tag, tagIndex) in appStore.tags" :key="tag.id" :tag="tag"
+          :style="{ animationDelay: `${tagIndex * 0.05}s` }" />
         <div v-if="appStore.tags.length === 0" class="empty-hint">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
@@ -49,25 +50,14 @@
           <span>暂无标签</span>
         </div>
       </div>
-    </div>
 
-    <div class="sidebar-section stats-section">
-      <div class="section-header">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
-        </svg>
-        <h3 class="section-title">统计</h3>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-value">{{ appStore.categories.length }}</span>
+      <div v-else-if="section.id === 'stats'" class="stats-grid">
+        <div class="stat-item clickable">
+          <span class="stat-value" :ref="el => { if (el) statRefs[0] = el }">{{ animatedCategoriesCount }}</span>
           <span class="stat-label">分类</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ appStore.tags.length }}</span>
+        <div class="stat-item clickable">
+          <span class="stat-value" :ref="el => { if (el) statRefs[1] = el }">{{ animatedTagsCount }}</span>
           <span class="stat-label">标签</span>
         </div>
       </div>
@@ -76,10 +66,94 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, onMounted, computed } from 'vue'
+import { default as anime } from 'animejs'
 import { useAppStore } from '@/stores/app'
 import TagBadge from '@/components/common/TagBadge.vue'
 
 const appStore = useAppStore()
+
+const sections = [
+  {
+    id: 'category',
+    title: '分类',
+    iconPath: 'M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'
+  },
+  {
+    id: 'tag',
+    title: '标签',
+    iconPath: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z'
+  },
+  {
+    id: 'stats',
+    title: '统计',
+    iconPath: 'M18 20V10M12 20V4M6 20v-6'
+  }
+]
+
+const sectionRefs = ref<HTMLElement[]>([])
+const statRefs = ref<HTMLElement[]>([])
+
+const animatedCategoriesCount = ref(0)
+const animatedTagsCount = ref(0)
+
+onMounted(() => {
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px'
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const section = entry.target as HTMLElement
+        
+        if (section.classList.contains('section-stats')) {
+          animateStats()
+        }
+        
+        anime({
+          targets: section,
+          opacity: [0, 1],
+          translateY: [30, 0],
+          duration: 800,
+          easing: 'easeOutCubic'
+        })
+        
+        observer.unobserve(section)
+      }
+    })
+  }, observerOptions)
+  
+  sectionRefs.value.forEach(section => {
+    if (section) {
+      observer.observe(section)
+    }
+  })
+
+  setTimeout(() => {
+    animateStats()
+  }, 500)
+})
+
+function animateStats() {
+  anime({
+    targets: animatedCategoriesCount,
+    value: [0, appStore.categories.length],
+    round: 1,
+    duration: 1500,
+    easing: 'easeOutExpo'
+  })
+
+  anime({
+    targets: animatedTagsCount,
+    value: [0, appStore.tags.length],
+    round: 1,
+    duration: 1500,
+    delay: 200,
+    easing: 'easeOutExpo'
+  })
+}
 </script>
 
 <style scoped>
@@ -92,37 +166,35 @@ const appStore = useAppStore()
 }
 
 .sidebar-section {
-  background: var(--color-card);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: var(--spacing-lg);
-  transition: all var(--transition-base);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-.sidebar-section::before {
-  content: '';
+.gradient-bar {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
+  width: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-  opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-section:hover .gradient-bar {
+  width: 100%;
 }
 
 .sidebar-section:hover {
   box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
   border-color: var(--color-border-hover);
-}
-
-.sidebar-section:hover::before {
-  opacity: 1;
 }
 
 .section-header {
@@ -185,12 +257,11 @@ const appStore = useAppStore()
   text-decoration: none;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  transition: all var(--transition-fast);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
-.category-item::before {
-  content: '';
+.category-indicator {
   position: absolute;
   left: 0;
   top: 50%;
@@ -199,7 +270,7 @@ const appStore = useAppStore()
   height: 0;
   background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
   border-radius: var(--radius-full);
-  transition: height var(--transition-base);
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-item .arrow-icon {
@@ -207,16 +278,20 @@ const appStore = useAppStore()
   height: 14px;
   opacity: 0;
   transform: translateX(-4px);
-  transition: all var(--transition-fast);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-item:hover {
   color: var(--color-primary);
   background: var(--color-primary-light);
-  padding-left: 18px;
+  transform: translateX(4px);
 }
 
 .category-item:hover::before {
+  height: 60%;
+}
+
+.category-item:hover .category-indicator {
   height: 60%;
 }
 
@@ -261,11 +336,11 @@ const appStore = useAppStore()
   padding: var(--spacing-md) var(--spacing-sm);
   background: var(--color-bg-warm);
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stat-item:hover {
-  background: var(--color-primary-light);
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light));
   transform: scale(1.05);
 }
 

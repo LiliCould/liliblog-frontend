@@ -1,5 +1,5 @@
 <template>
-  <article class="article-card" @click="goDetail">
+  <article class="article-card clickable" @click="goDetail" ref="cardRef">
     <div class="card-inner">
       <div class="card-content">
         <div class="card-badges">
@@ -77,8 +77,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { default as anime } from 'animejs'
 import type { Article } from '@/types/article.d'
 import { formatRelativeTime, formatNumber } from '@/utils/format'
 import TagBadge from './TagBadge.vue'
@@ -88,6 +89,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const cardRef = ref<HTMLElement | null>(null)
 const MAX_TAGS = 10
 
 const displayTags = computed(() => {
@@ -107,19 +109,47 @@ function goDetail() {
     router.push(`/article/${props.article.id}`)
   }
 }
+
+onMounted(() => {
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '50px'
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.target === cardRef.value) {
+        anime({
+          targets: entry.target,
+          opacity: [0, 1],
+          translateY: [30, 0],
+          duration: 800,
+          easing: 'easeOutCubic'
+        })
+        
+        observer.unobserve(entry.target)
+      }
+    })
+  }, observerOptions)
+
+  if (cardRef.value) {
+    observer.observe(cardRef.value)
+  }
+})
 </script>
 
 <style scoped>
 .article-card {
   position: relative;
   cursor: pointer;
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-slow);
-  background: var(--color-card);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
+  border-radius: 16px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   overflow: hidden;
+  opacity: 0;
 }
 
 .article-card::before {
@@ -128,15 +158,16 @@ function goDetail() {
   inset: 0;
   background: linear-gradient(135deg, transparent 0%, rgba(196, 93, 53, 0.02) 100%);
   opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 1;
+  border-radius: 16px;
 }
 
 .article-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-float);
-  border-color: var(--color-border-hover);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: var(--color-primary);
 }
 
 .article-card:hover::before {
@@ -202,7 +233,7 @@ function goDetail() {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: color var(--transition-fast);
+  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-card:hover .card-title {
@@ -236,7 +267,7 @@ function goDetail() {
   gap: 6px;
   font-size: var(--font-size-xs);
   color: var(--color-muted);
-  transition: color var(--transition-fast);
+  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .meta-item svg {
@@ -269,7 +300,7 @@ function goDetail() {
   background: var(--color-bg-warm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  transition: all var(--transition-fast);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .more-tags-badge:hover {
@@ -282,7 +313,7 @@ function goDetail() {
   flex-shrink: 0;
   width: 200px;
   height: 140px;
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -290,7 +321,7 @@ function goDetail() {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -298,7 +329,7 @@ function goDetail() {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cover-overlay {
@@ -306,11 +337,11 @@ function goDetail() {
   inset: 0;
   background: linear-gradient(to top, rgba(196, 93, 53, 0.1), transparent);
   opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-card:hover .cover-wrapper img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .article-card:hover .cover-overlay {

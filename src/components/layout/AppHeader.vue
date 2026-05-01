@@ -7,12 +7,14 @@
       </router-link>
 
       <nav class="desktop-nav">
-        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link" active-class="active">
+        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link"
+          active-class="active">
           <span class="link-text">{{ item.label }}</span>
+          <span class="link-underline"></span>
           <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
         </router-link>
 
-        <div class="search-trigger" @click="goSearch">
+        <div class="search-trigger clickable" @click="goSearch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -24,7 +26,7 @@
       <div class="header-right">
         <template v-if="userStore.isLoggedIn">
           <el-dropdown trigger="click" @command="handleCommand">
-            <div class="user-avatar-wrapper">
+            <div class="user-avatar-wrapper clickable">
               <el-avatar :size="34" :src="userStore.avatar || undefined" class="user-avatar">
                 {{ userStore.nickname?.charAt(0) || 'U' }}
               </el-avatar>
@@ -58,11 +60,11 @@
         </template>
 
         <template v-else>
-          <router-link to="/login" class="btn-auth btn-login">登录</router-link>
-          <router-link to="/register" class="btn-auth btn-register">注册</router-link>
+          <router-link to="/login" class="btn-auth btn-login clickable">登录</router-link>
+          <router-link to="/register" class="btn-auth btn-register clickable">注册</router-link>
         </template>
 
-        <button class="mobile-menu-btn" @click="appStore.toggleMobileNav()" aria-label="菜单">
+        <button class="mobile-menu-btn clickable" @click="appStore.toggleMobileNav()" aria-label="菜单">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -108,7 +110,7 @@ const navItems = computed(() => [
 ])
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
+  isScrolled.value = window.scrollY > 100
 }
 
 onMounted(() => {
@@ -148,18 +150,18 @@ function handleCommand(command: string) {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: transparent;
   border-bottom: 1px solid transparent;
   z-index: var(--z-header);
-  transition: all var(--transition-base);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .app-header.scrolled {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom-color: var(--color-border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
 }
 
 .header-inner {
@@ -183,8 +185,12 @@ function handleCommand(command: string) {
 
 .logo-icon {
   font-size: 22px;
-  color: var(--color-primary);
+  color: #fff;
   animation: sparkle 3s ease-in-out infinite;
+}
+
+.app-header.scrolled .logo-icon {
+  color: var(--color-primary);
 }
 
 @keyframes sparkle {
@@ -205,11 +211,18 @@ function handleCommand(command: string) {
   font-size: 20px;
   font-weight: var(--font-weight-bold);
   font-family: var(--font-display);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.85) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+}
+
+.app-header.scrolled .logo-text {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .desktop-nav {
@@ -224,12 +237,16 @@ function handleCommand(command: string) {
   align-items: center;
   gap: 6px;
   padding: 10px 16px;
-  color: var(--color-body);
+  color: #fff;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+}
+
+.app-header.scrolled .nav-link {
+  color: var(--color-body);
 }
 
 .nav-link::before {
@@ -240,23 +257,55 @@ function handleCommand(command: string) {
   transform: translateX(-50%) scaleX(0);
   width: 20px;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  background: #fff;
   border-radius: var(--radius-full);
-  transition: transform var(--transition-base);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.app-header.scrolled .nav-link::before {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+}
+
+.link-underline {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: var(--radius-full);
+  transform: translateX(-50%) scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.app-header.scrolled .link-underline {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
 }
 
 .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-header.scrolled .nav-link:hover {
   color: var(--color-title);
   background: var(--color-primary-light);
 }
 
+.nav-link:hover .link-underline,
+.nav-link.active .link-underline {
+  transform: translateX(-50%) scaleX(1);
+}
+
 .nav-link.active {
-  color: var(--color-primary);
+  color: #fff;
   font-weight: var(--font-weight-semibold);
 }
 
-.nav-link.active::before {
-  transform: translateX(-50%) scaleX(1);
+.app-header.scrolled .nav-link.active {
+  color: var(--color-primary);
 }
 
 .link-text {
@@ -299,9 +348,13 @@ function handleCommand(command: string) {
   height: 38px;
   margin-left: 8px;
   border-radius: var(--radius-md);
-  color: var(--color-muted);
+  color: #fff;
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+
+.app-header.scrolled .search-trigger {
+  color: var(--color-muted);
 }
 
 .search-trigger svg {
@@ -310,6 +363,11 @@ function handleCommand(command: string) {
 }
 
 .search-trigger:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-header.scrolled .search-trigger:hover {
   color: var(--color-primary);
   background: var(--color-primary-light);
   transform: scale(1.05);
@@ -333,6 +391,11 @@ function handleCommand(command: string) {
 }
 
 .user-avatar-wrapper:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.app-header.scrolled .user-avatar-wrapper:hover {
   background: var(--color-bg-warm);
   border-color: var(--color-border);
 }
@@ -351,7 +414,7 @@ function handleCommand(command: string) {
 
 .username-text {
   font-size: var(--font-size-sm);
-  color: var(--color-title);
+  color: #fff;
   font-weight: var(--font-weight-medium);
   max-width: 100px;
   overflow: hidden;
@@ -359,11 +422,19 @@ function handleCommand(command: string) {
   white-space: nowrap;
 }
 
+.app-header.scrolled .username-text {
+  color: var(--color-title);
+}
+
 .arrow-icon {
   width: 14px;
   height: 14px;
-  color: var(--color-muted-light);
+  color: rgba(255, 255, 255, 0.7);
   transition: transform var(--transition-fast);
+}
+
+.app-header.scrolled .arrow-icon {
+  color: var(--color-muted-light);
 }
 
 .btn-auth {
@@ -378,15 +449,26 @@ function handleCommand(command: string) {
 }
 
 .btn-login {
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-border);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
 }
 
 .btn-login:hover {
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.app-header.scrolled .btn-login {
+  color: var(--color-primary);
+  border-color: var(--color-border);
+}
+
+.app-header.scrolled .btn-login:hover {
   color: var(--color-primary-hover);
   border-color: var(--color-primary);
   background: var(--color-primary-light);
-  transform: translateY(-1px);
 }
 
 .btn-register {
@@ -406,12 +488,20 @@ function handleCommand(command: string) {
   justify-content: center;
   width: 40px;
   height: 40px;
-  color: var(--color-title);
+  color: #fff;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
+.app-header.scrolled .mobile-menu-btn {
+  color: var(--color-title);
+}
+
 .mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-header.scrolled .mobile-menu-btn:hover {
   background: var(--color-bg-warm);
 }
 

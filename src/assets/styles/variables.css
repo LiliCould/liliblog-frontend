@@ -113,4 +113,12 @@
     --z-header: 1000;
     --z-modal: 1100;
     --z-tooltip: 1200;
+    --z-cursor: 9999;
+
+    /* Animation Variables */
+    --cursor-outer-size: 32px;
+    --cursor-inner-size: 8px;
+    --cursor-hover-outer-size: 48px;
+    --cursor-text-outer-size: 20px;
+    --cursor-text-inner-size: 4px;
 }
