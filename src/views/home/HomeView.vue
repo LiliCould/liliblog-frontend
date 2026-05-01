@@ -27,9 +27,9 @@
       <div class="hero-content">
         <!-- 替换原有 h1：Glitch 故障闪烁字 -->
         <h1 class="glitch-title" ref="titleRef">
-          <span v-for="(char, i) in titleChars" :key="i" class="glitch-char" :data-char="char"
-            :style="{ animationDelay: `${i * 0.05}s` }">
-            {{ char }}
+          <span v-for="(char, i) in titleChars" :key="i" :class="['glitch-char', { 'space-char': char === ' ' }]"
+            :data-char="char" :style="{ animationDelay: `${i * 0.05}s` }">
+            {{ char === ' ' ? '\u00A0' : char }}
           </span>
         </h1>
         <!-- 替换原有 p：赛博朋克打字机效果 -->
@@ -539,6 +539,12 @@ onUnmounted(() => {
   opacity: 0;
 }
 
+/* 空格字符特殊样式 - 增加可见宽度 */
+.space-char {
+  width: 0.6em;
+  display: inline-block;
+}
+
 /* 青色重影层 */
 .glitch-char::before {
   content: attr(data-char);
@@ -812,8 +818,15 @@ onUnmounted(() => {
 }
 
 @keyframes border-breathe {
-  0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
-  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  }
 }
 
 /* 边框流光效果 */
@@ -824,12 +837,10 @@ onUnmounted(() => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 240, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(0, 240, 255, 0.2),
+      transparent);
   transition: left 0.5s ease;
   z-index: -1;
 }
@@ -900,9 +911,17 @@ onUnmounted(() => {
 }
 
 @keyframes data-stream {
-  0% { left: -30%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -30%;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 /* 加载文字 */
@@ -918,9 +937,18 @@ onUnmounted(() => {
 }
 
 @keyframes loading-pulse {
-  0% { border-color: rgba(0, 240, 255, 0.6); }
-  50% { border-color: rgba(0, 240, 255, 1); box-shadow: 0 0 30px rgba(0, 240, 255, 0.6); }
-  100% { border-color: rgba(0, 240, 255, 0.6); }
+  0% {
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+
+  50% {
+    border-color: rgba(0, 240, 255, 1);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+  }
+
+  100% {
+    border-color: rgba(0, 240, 255, 0.6);
+  }
 }
 
 .ripple {
