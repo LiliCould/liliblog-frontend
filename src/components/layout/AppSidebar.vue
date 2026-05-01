@@ -50,13 +50,13 @@
         <div class="stat-item clickable">
           <span class="stat-value"
             :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[0] = el as HTMLElement }">{{
-              animatedCategoriesCount }}</span>
+              Math.round(animatedCategoriesCount) }}</span>
           <span class="stat-label">分类</span>
         </div>
         <div class="stat-item clickable">
           <span class="stat-value"
             :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[1] = el as HTMLElement }">{{
-              animatedTagsCount }}</span>
+              Math.round(animatedTagsCount) }}</span>
           <span class="stat-label">标签</span>
         </div>
       </div>

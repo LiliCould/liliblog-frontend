@@ -25,10 +25,20 @@
 
       <!-- 第五层：内容层 (z-index: 4) -->
       <div class="hero-content">
-        <h1 class="hero-title" ref="titleRef">
-          <span v-for="(char, index) in titleChars" :key="index" class="title-char">{{ char }}</span>
+        <!-- 替换原有 h1：Glitch 故障闪烁字 -->
+        <h1 class="glitch-title" ref="titleRef">
+          <span v-for="(char, i) in titleChars" :key="i" class="glitch-char" :data-char="char"
+            :style="{ animationDelay: `${i * 0.05}s` }">
+            {{ char }}
+          </span>
         </h1>
-        <p class="hero-subtitle" ref="subtitleRef">技术与生活的分享空间</p>
+        <!-- 替换原有 p：赛博朋克打字机效果 -->
+        <p class="cyber-subtitle" ref="subtitleRef">
+          <span class="tag">&lt;</span>
+          <span class="typing-text">{{ displayedSubtitle }}</span>
+          <span class="cursor" :class="{ 'cursor-blink': typingDone }">_</span>
+          <span class="tag">/&gt;</span>
+        </p>
         <div class="hero-divider" ref="dividerRef"></div>
         <div class="scroll-indicator" ref="scrollIndicatorRef" @click="scrollToContent">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -190,8 +200,14 @@ const backIconRef = ref<HTMLElement | null>(null)
 
 let rafId: number
 
-const titleText = '立里博客'
+// 替换原有标题文字
+const titleText = "LiliCould's Blog"
 const titleChars = computed(() => titleText.split(''))
+
+// 新增：打字机效果相关变量
+const fullSubtitle = '技术与生活的分享空间'
+const displayedSubtitle = ref('')
+const typingDone = ref(false)
 
 onMounted(async () => {
   await loadArticles()
@@ -257,6 +273,25 @@ watch([() => cursorState.isHovering.value, () => cursorState.isText.value], ([ho
   }
 })
 
+// 新增：打字机效果函数
+function startTyping() {
+  // 修复：显示副标题容器
+  if (subtitleRef.value) {
+    subtitleRef.value.style.opacity = '1'
+  }
+
+  let i = 0
+  const interval = setInterval(() => {
+    if (i <= fullSubtitle.length) {
+      displayedSubtitle.value = fullSubtitle.slice(0, i)
+      i++
+    } else {
+      clearInterval(interval)
+      typingDone.value = true
+    }
+  }, 100)
+}
+
 function initHeroAnimation() {
   const tl = createTimeline({
     ease: 'outExpo'
@@ -268,18 +303,18 @@ function initHeroAnimation() {
       duration: 500,
       ease: 'linear'
     })
-    .add('.title-char', {
+    // 替换原有标题动画：使用 glitch-char 类
+    .add('.glitch-char', {
       opacity: [0, 1],
       translateY: [30, 0],
       duration: 800,
       delay: stagger(40),
       ease: 'outCubic'
     }, '-=200')
-    .add(subtitleRef.value, {
-      opacity: [0, 1],
-      translateY: [20, 0],
-      duration: 600,
-      ease: 'outCubic'
+    // 替换原有副标题动画：改为打字机效果
+    .add({
+      duration: 100,
+      onComplete: () => startTyping()
     }, '-=400')
     .add(dividerRef.value, {
       scaleX: [0, 1],
@@ -302,6 +337,23 @@ function initHeroAnimation() {
         }
       }
     }, '-=200')
+    // 新增：anime.js 霓虹呼吸效果
+    .add({
+      duration: 100,
+      onComplete: () => {
+        animate('.glitch-title', {
+          textShadow: [
+            '0 0 10px rgba(0,240,255,0.3), 0 0 20px rgba(0,240,255,0.1)',
+            '0 0 15px rgba(0,240,255,0.6), 0 0 30px rgba(0,240,255,0.3), 0 0 45px rgba(0,240,255,0.1)',
+            '0 0 10px rgba(0,240,255,0.3), 0 0 20px rgba(0,240,255,0.1)',
+          ],
+          duration: 4000,
+          loop: true,
+          direction: 'alternate',
+          easing: 'easeInOutSine',
+        })
+      }
+    })
 }
 
 function initScrollListener() {
@@ -466,28 +518,199 @@ onUnmounted(() => {
   color: white;
 }
 
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 5rem);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.15em;
+/* 替换原有 .hero-title：Glitch 故障闪烁字样式 */
+.glitch-title {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #e2e8f0;
+  position: relative;
+  text-transform: uppercase;
   margin-bottom: var(--spacing-lg);
   display: flex;
   justify-content: center;
-  gap: 0.1em;
+  gap: 0.05em;
 }
 
-.title-char {
+.glitch-char {
+  position: relative;
   display: inline-block;
   opacity: 0;
 }
 
-.hero-subtitle {
-  font-size: 1.25rem;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.85);
+/* 青色重影层 */
+.glitch-char::before {
+  content: attr(data-char);
+  position: absolute;
+  left: -2px;
+  top: 0;
+  color: #00f0ff;
+  opacity: 0.8;
+  clip: rect(0, 900px, 0, 0);
+  animation: glitch-1 2.5s infinite linear alternate-reverse;
+}
+
+/* 玫红重影层 */
+.glitch-char::after {
+  content: attr(data-char);
+  position: absolute;
+  left: 2px;
+  top: 0;
+  color: #ff003c;
+  opacity: 0.8;
+  clip: rect(0, 900px, 0, 0);
+  animation: glitch-2 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-1 {
+  0% {
+    clip: rect(20px, 9999px, 15px, 0);
+    transform: skew(0.5deg);
+  }
+
+  10% {
+    clip: rect(80px, 9999px, 70px, 0);
+    transform: skew(-0.5deg);
+  }
+
+  20% {
+    clip: rect(10px, 9999px, 50px, 0);
+    transform: skew(0.3deg);
+  }
+
+  30% {
+    clip: rect(90px, 9999px, 100px, 0);
+    transform: skew(-0.8deg);
+  }
+
+  40% {
+    clip: rect(30px, 9999px, 20px, 0);
+    transform: skew(0.2deg);
+  }
+
+  50% {
+    clip: rect(70px, 9999px, 60px, 0);
+    transform: skew(-0.3deg);
+  }
+
+  60% {
+    clip: rect(15px, 9999px, 80px, 0);
+    transform: skew(0.6deg);
+  }
+
+  70% {
+    clip: rect(60px, 9999px, 40px, 0);
+    transform: skew(-0.4deg);
+  }
+
+  80% {
+    clip: rect(25px, 9999px, 90px, 0);
+    transform: skew(0.7deg);
+  }
+
+  90% {
+    clip: rect(85px, 9999px, 10px, 0);
+    transform: skew(-0.6deg);
+  }
+
+  100% {
+    clip: rect(40px, 9999px, 55px, 0);
+    transform: skew(0.4deg);
+  }
+}
+
+@keyframes glitch-2 {
+  0% {
+    clip: rect(65px, 9999px, 100px, 0);
+    transform: skew(-0.4deg);
+  }
+
+  10% {
+    clip: rect(10px, 9999px, 30px, 0);
+    transform: skew(0.6deg);
+  }
+
+  20% {
+    clip: rect(90px, 9999px, 20px, 0);
+    transform: skew(-0.7deg);
+  }
+
+  30% {
+    clip: rect(25px, 9999px, 60px, 0);
+    transform: skew(0.5deg);
+  }
+
+  40% {
+    clip: rect(70px, 9999px, 90px, 0);
+    transform: skew(-0.3deg);
+  }
+
+  50% {
+    clip: rect(15px, 9999px, 40px, 0);
+    transform: skew(0.8deg);
+  }
+
+  60% {
+    clip: rect(80px, 9999px, 10px, 0);
+    transform: skew(-0.5deg);
+  }
+
+  70% {
+    clip: rect(35px, 9999px, 75px, 0);
+    transform: skew(0.4deg);
+  }
+
+  80% {
+    clip: rect(55px, 9999px, 25px, 0);
+    transform: skew(-0.6deg);
+  }
+
+  90% {
+    clip: rect(5px, 9999px, 85px, 0);
+    transform: skew(0.7deg);
+  }
+
+  100% {
+    clip: rect(45px, 9999px, 50px, 0);
+    transform: skew(-0.4deg);
+  }
+}
+
+/* 替换原有 .hero-subtitle：赛博朋克打字机效果 */
+.cyber-subtitle {
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  margin-top: 1rem;
   margin-bottom: var(--spacing-xl);
   opacity: 0;
+}
+
+.cyber-subtitle .tag {
+  color: #00f0ff;
+  opacity: 0.7;
+}
+
+.cyber-subtitle .cursor {
+  color: #00f0ff;
+  opacity: 1;
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .hero-divider {
@@ -964,12 +1187,12 @@ onUnmounted(() => {
     padding-bottom: var(--spacing-2xl);
   }
 
-  .hero-title {
-    font-size: clamp(2rem, 10vw, 3rem);
+  .glitch-title {
+    font-size: clamp(2rem, 8vw, 3rem);
   }
 
-  .hero-subtitle {
-    font-size: 1rem;
+  .cyber-subtitle {
+    font-size: 0.95rem;
   }
 
   .article-list {
