@@ -150,8 +150,10 @@ function handleCommand(command: string) {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: var(--z-header);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -186,6 +188,7 @@ function handleCommand(command: string) {
 .logo-icon {
   font-size: 22px;
   color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   animation: sparkle 3s ease-in-out infinite;
 }
 
@@ -211,11 +214,12 @@ function handleCommand(command: string) {
   font-size: 20px;
   font-weight: var(--font-weight-bold);
   font-family: var(--font-display);
-  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.85) 100%);
+  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .app-header.scrolled .logo-text {
@@ -239,14 +243,17 @@ function handleCommand(command: string) {
   padding: 10px 16px;
   color: #fff;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .app-header.scrolled .nav-link {
   color: var(--color-body);
+  text-shadow: none;
+  font-weight: var(--font-weight-medium);
 }
 
 .nav-link::before {
@@ -351,6 +358,7 @@ function handleCommand(command: string) {
   color: #fff;
   cursor: pointer;
   transition: all var(--transition-fast);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .app-header.scrolled .search-trigger {

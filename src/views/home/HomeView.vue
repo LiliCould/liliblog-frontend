@@ -260,7 +260,7 @@ onUnmounted(() => {
 .hero-background {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #c45d35 80%, #d4915a 100%);
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
   opacity: 0;
