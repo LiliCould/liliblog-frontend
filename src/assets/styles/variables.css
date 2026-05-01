@@ -121,4 +121,27 @@
     --cursor-hover-outer-size: 48px;
     --cursor-text-outer-size: 20px;
     --cursor-text-inner-size: 4px;
+
+    /* Hero Background System */
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    --hero-gradient-color-1: rgba(102, 126, 234, 0.25);
+    --hero-gradient-color-2: rgba(118, 75, 162, 0.15);
+    --hero-gradient-radius: 400px;
+    --hero-gradient-radius-hover-text: 150px;
+    --hero-gradient-radius-hover-button: 500px;
+    --hero-overlay-darkness: rgba(0, 0, 0, 0.35);
+    --hero-vignette-darkness: rgba(0, 0, 0, 0.4);
+
+    /* Hero Z-index Layers */
+    --z-hero-images: 0;
+    --z-hero-overlay: 1;
+    --z-hero-vignette: 2;
+    --z-hero-gradient: 3;
+    --z-hero-content: 4;
+
+    /* Carousel Indicator */
+    --carousel-dot-size: 8px;
+    --carousel-dot-active-width: 24px;
+    --carousel-dot-height: 8px;
 }

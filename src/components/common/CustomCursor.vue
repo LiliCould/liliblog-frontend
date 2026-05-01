@@ -14,12 +14,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, provide } from 'vue'
 
 const isVisible = ref(true)
 const isMobile = ref(false)
 const isHovering = ref(false)
 const isText = ref(false)
+
+provide('cursorState', {
+  isHovering,
+  isText
+})
 
 const mouse = reactive({ x: -100, y: -100 })
 const outer = reactive({ x: -100, y: -100 })

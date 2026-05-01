@@ -1,8 +1,24 @@
 <template>
   <div class="home-page">
     <!-- Hero Section -->
-    <section class="hero-section" ref="heroRef" @mousemove="handleHeroMouseMove">
-      <div class="hero-background"></div>
+    <section class="hero-section" ref="heroRef" @mousemove="handleHeroMouseMove" @mouseenter="handleHeroMouseEnter"
+      @mouseleave="handleHeroMouseLeave">
+      <!-- 第一层：图片轮播层 (z-index: 0) -->
+      <div class="hero-carousel-layer">
+        <div v-for="(image, index) in heroImages" :key="index"
+          :class="['hero-image', `hero-image-${index}`]" :style="{ backgroundImage: `url(${image})` }"></div>
+      </div>
+
+      <!-- 第二层：暗色遮罩 (z-index: 1) -->
+      <div class="hero-dark-overlay"></div>
+
+      <!-- 第三层：全局暗角 vignette (z-index: 2) -->
+      <div class="hero-vignette"></div>
+
+      <!-- 第四层：鼠标渐变跟随层 (z-index: 3) -->
+      <div class="mouse-gradient-overlay" v-show="!isMobile"></div>
+
+      <!-- 第五层：内容层 (z-index: 4) -->
       <div class="hero-content">
         <h1 class="hero-title" ref="titleRef">
           <span v-for="(char, index) in titleChars" :key="index" class="title-char">{{ char }}</span>
@@ -15,6 +31,18 @@
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
+      </div>
+
+      <!-- 轮播指示器 -->
+      <div class="carousel-indicators">
+        <button v-for="(image, index) in heroImages" :key="index"
+          :class="['carousel-dot', { active: currentIndex === index }]"
+          @click="carousel.goTo(index)" :aria-label="`切换到第 ${index + 1} 张图片`"></button>
+      </div>
+
+      <!-- 移动端进度条 -->
+      <div class="carousel-progress" v-show="isMobile">
+        <div class="progress-bar" :style="{ width: `${((currentIndex + 1) / heroImages.length) * 100}%` }"></div>
       </div>
     </section>
 
@@ -78,18 +106,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject, watch } from 'vue'
 import { default as anime } from 'animejs'
 import { useArticleStore } from '@/stores/article'
 import ArticleCard from '@/components/common/ArticleCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
+import { useHeroCarousel } from '@/composables/useHeroCarousel'
 
 const articleStore = useArticleStore()
 const currentPage = ref(1)
 const pageSize = 10
 const hasMore = ref(true)
 const showBackToTop = ref(false)
+const isMobile = ref(false)
+
+const cursorState = inject<{ isHovering: ReturnType<typeof ref>; isText: ReturnType<typeof ref> }>('cursorState', {
+  isHovering: ref(false),
+  isText: ref(false)
+})
+
+const heroImages = [
+  '/images/hero-1.jpg',
+  '/images/hero-2.jpg',
+  '/images/hero-3.jpg',
+  '/images/hero-4.jpg'
+]
+
+const carousel = useHeroCarousel(heroImages)
+const currentIndex = carousel.currentIndex
 
 const heroRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
@@ -99,24 +144,74 @@ const scrollIndicatorRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const backIconRef = ref<HTMLElement | null>(null)
 
+let rafId: number
+
 const titleText = '立里博客'
 const titleChars = computed(() => titleText.split(''))
 
 onMounted(async () => {
   await loadArticles()
+  checkMobile()
   initHeroAnimation()
   initScrollListener()
+  preloadImages()
 })
 
-function handleHeroMouseMove(e: MouseEvent) {
-  if (!heroRef.value) return
-  
-  const rect = heroRef.value.getBoundingClientRect()
-  const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10
-  const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10
-  
-  heroRef.value.style.backgroundPosition = `${50 + x}% ${50 + y}%`
+function checkMobile() {
+  isMobile.value = window.innerWidth < 768 || 'ontouchstart' in window
 }
+
+function preloadImages() {
+  heroImages.forEach(src => {
+    const img = new Image()
+    img.src = src
+  })
+}
+
+function handleHeroMouseMove(e: MouseEvent) {
+  if (!heroRef.value || isMobile.value) return
+
+  cancelAnimationFrame(rafId)
+  rafId = requestAnimationFrame(() => {
+    const rect = heroRef.value!.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    heroRef.value!.style.setProperty('--mouse-x', `${x}px`)
+    heroRef.value!.style.setProperty('--mouse-y', `${y}px`)
+  })
+}
+
+function handleHeroMouseEnter() {
+  carousel.pause()
+  if (heroRef.value) {
+    heroRef.value.style.setProperty('--gradient-opacity', '1')
+  }
+}
+
+function handleHeroMouseLeave() {
+  carousel.resume()
+  if (heroRef.value) {
+    heroRef.value.style.setProperty('--gradient-opacity', '0')
+  }
+}
+
+watch([() => cursorState.isHovering.value, () => cursorState.isText.value], ([hovering, isText]) => {
+  if (!heroRef.value || isMobile.value) return
+
+  if (isText) {
+    heroRef.value.style.setProperty('--hero-gradient-radius', '150px')
+    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(196, 93, 53, 0.25)')
+    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(212, 145, 90, 0.15)')
+  } else if (hovering) {
+    heroRef.value.style.setProperty('--hero-gradient-radius', '500px')
+    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(102, 126, 234, 0.35)')
+    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(118, 75, 162, 0.25)')
+  } else {
+    heroRef.value.style.setProperty('--hero-gradient-radius', '400px')
+    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(102, 126, 234, 0.25)')
+    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(118, 75, 162, 0.15)')
+  }
+})
 
 function initHeroAnimation() {
   const tl = anime.timeline({
@@ -255,43 +350,70 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --gradient-opacity: 0;
 }
 
-.hero-background {
+/* 第一层：图片轮播层 (z-index: 0) */
+.hero-carousel-layer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #c45d35 80%, #d4915a 100%);
-  background-size: 400% 400%;
-  animation: gradientFlow 15s ease infinite;
+  z-index: var(--z-hero-images);
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   opacity: 0;
+  will-change: opacity, transform;
+  transform: scale(1);
 }
 
-.hero-background::before {
-  content: '';
+.hero-image:first-child {
+  opacity: 1;
+}
+
+/* 第二层：暗色遮罩 (z-index: 1) */
+.hero-dark-overlay {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-                       radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  background: var(--hero-overlay-darkness);
+  z-index: var(--z-hero-overlay);
   pointer-events: none;
 }
 
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
+/* 第三层：全局暗角 vignette (z-index: 2) */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, var(--hero-vignette-darkness) 100%);
+  z-index: var(--z-hero-vignette);
+  pointer-events: none;
+}
 
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+/* 第四层：鼠标渐变跟随层 (z-index: 3) */
+.mouse-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle var(--hero-gradient-radius) at var(--mouse-x) var(--mouse-y),
+    var(--hero-gradient-color-1) 0%,
+    var(--hero-gradient-color-2) 40%,
+    transparent 70%
+  );
+  z-index: var(--z-hero-gradient);
+  pointer-events: none;
+  opacity: var(--gradient-opacity);
+  transition: opacity 0.5s ease-out, background 0.3s ease-out;
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-hero-content);
   text-align: center;
   color: white;
 }
@@ -537,6 +659,58 @@ onUnmounted(() => {
   height: 24px;
 }
 
+/* Carousel Indicators */
+.carousel-indicators {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: var(--z-hero-content);
+}
+
+.carousel-dot {
+  width: var(--carousel-dot-size);
+  height: var(--carousel-dot-height);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.carousel-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.carousel-dot.active {
+  width: var(--carousel-dot-active-width);
+  background: white;
+}
+
+/* Mobile Progress Bar */
+.carousel-progress {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  z-index: var(--z-hero-content);
+}
+
+.progress-bar {
+  height: 100%;
+  background: white;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @media (max-width: 1024px) {
   .home-layout {
     flex-direction: column;
@@ -570,6 +744,10 @@ onUnmounted(() => {
     right: 24px;
     width: 40px;
     height: 40px;
+  }
+
+  .carousel-indicators {
+    display: none;
   }
 }
 </style>
