@@ -122,11 +122,12 @@ onMounted(() => {
         anime({
           targets: entry.target,
           opacity: [0, 1],
-          translateY: [30, 0],
-          duration: 800,
-          easing: 'easeOutCubic'
+          translateY: [40, 0],
+          scale: [0.95, 1],
+          duration: 1000,
+          easing: 'easeOutElastic(1, .8)'
         })
-        
+
         observer.unobserve(entry.target)
       }
     })

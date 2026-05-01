@@ -40,7 +40,7 @@
 
       <!-- 轮播指示器 -->
       <div class="carousel-indicators">
-        <button v-for="(image, index) in heroImages" :key="index"
+        <button v-for="(_image, index) in heroImages" :key="index"
           :class="['carousel-dot', { active: currentIndex === index }]" @click="carousel.goTo(index)"
           :aria-label="`切换到第 ${index + 1} 张图片`"></button>
       </div>
@@ -76,8 +76,29 @@
                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
-                    <span>{{ articleStore.loading ? '加载中...' : '加载更多' }}</span>
+                    <svg v-else class="spinner" viewBox="0 0 24 24" fill="none">
+                      <circle class="spinner-track" cx="12" cy="12" r="10"></circle>
+                      <circle class="spinner-head" cx="12" cy="12" r="10"></circle>
+                    </svg>
+                    <span>{{ articleStore.loading ? '正在加载' : '加载更多' }}</span>
                   </button>
+
+                  <!-- 新文章加载骨架屏 -->
+                  <div v-if="articleStore.loading && articleStore.publicList.length > 0" class="loading-skeletons">
+                    <div v-for="i in 3" :key="`skeleton-${i}`" class="skeleton-card-animated">
+                      <div class="skeleton-shimmer">
+                        <div class="skeleton-line title-line"></div>
+                        <div class="skeleton-line text-line"></div>
+                        <div class="skeleton-line text-line short"></div>
+                        <div class="skeleton-meta">
+                          <div class="skeleton-circle"></div>
+                          <div class="skeleton-line meta-line"></div>
+                          <div class="skeleton-circle"></div>
+                          <div class="skeleton-line meta-line"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </template>
 
                 <div v-else class="no-more-indicator">
@@ -146,7 +167,7 @@ const videoConfig = {
 }
 
 const videoRef = ref<HTMLVideoElement | null>(null)
-const video = useHeroVideo(videoConfig)
+useHeroVideo(videoConfig) // 初始化视频控制
 
 // ========== 图片轮播配置 ==========
 const heroImages = [
@@ -559,32 +580,34 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 40px;
+  gap: 10px;
+  padding: 16px 48px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.5px;
   color: white;
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   border: none;
-  border-radius: 2rem;
+  border-radius: 50px;
   cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(196, 93, 53, 0.25);
 }
 
 .btn-load-more::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-accent));
+  background: linear-gradient(135deg, var(--color-primary-hover), #d4915a);
   opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
 }
 
 .btn-load-more:hover:not(:disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(196, 93, 53, 0.35);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(196, 93, 53, 0.4);
 }
 
 .btn-load-more:hover:not(:disabled)::before {
@@ -592,22 +615,79 @@ onUnmounted(() => {
 }
 
 .btn-load-more:active:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(0.98);
+  transition-duration: 0.15s;
 }
 
 .btn-load-more:disabled {
-  opacity: 0.7;
   cursor: not-allowed;
+  animation: pulse-loading 2s ease-in-out infinite;
+}
+
+@keyframes pulse-loading {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(196, 93, 53, 0.25);
+  }
+
+  50% {
+    box-shadow: 0 8px 30px rgba(196, 93, 53, 0.35);
+  }
 }
 
 .btn-icon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 18px;
+  height: 18px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-load-more:hover .btn-icon {
-  transform: translateY(2px);
+  transform: translateY(3px);
+}
+
+/* Spinner Animation */
+.spinner {
+  width: 20px;
+  height: 20px;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 2;
+}
+
+.spinner-head {
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 50;
+  stroke-dashoffset: 40;
+  transform-origin: center;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-rotate {
+  0% {
+    stroke-dashoffset: 40;
+  }
+
+  50% {
+    stroke-dashoffset: 15;
+  }
+
+  100% {
+    stroke-dashoffset: 40;
+  }
 }
 
 .ripple {
@@ -646,20 +726,150 @@ onUnmounted(() => {
   letter-spacing: 1px;
 }
 
-/* List Transition */
-.list-enter-active,
+/* List Transition - 优化版 */
+.list-enter-active {
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .list-leave-active {
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .list-enter-from {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(40px) scale(0.95);
 }
 
 .list-leave-to {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateX(-30px) scale(0.9);
+}
+
+.list-move {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading Skeletons - Shimmer Effect */
+.loading-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  animation: fade-in-down 0.5s ease-out;
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-card-animated {
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.skeleton-shimmer {
+  position: relative;
+  width: 100%;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%);
+  animation: shimmer 1.5s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-line {
+  height: 16px;
+  background: linear-gradient(90deg,
+      var(--color-border) 25%,
+      rgba(200, 195, 188, 0.3) 50%,
+      var(--color-border) 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.title-line {
+  width: 70%;
+  height: 24px;
+  margin-bottom: 16px;
+}
+
+.text-line {
+  width: 100%;
+}
+
+.text-line.short {
+  width: 60%;
+}
+
+.meta-line {
+  width: 80px;
+  height: 14px;
+  margin-bottom: 0;
+}
+
+.skeleton-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.skeleton-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+      var(--color-border) 25%,
+      rgba(200, 195, 188, 0.3) 50%,
+      var(--color-border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 /* Back to Top Button */

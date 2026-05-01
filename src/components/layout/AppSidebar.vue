@@ -5,7 +5,7 @@
       :key="section.id"
       class="sidebar-section"
       :class="`section-${section.id}`"
-      :ref="el => { if (el) sectionRefs[index] = el }"
+      :ref="(el: Element | ComponentPublicInstance | null) => { if (el) sectionRefs[index] = el as HTMLElement }"
     >
       <div class="gradient-bar"></div>
       <div class="section-header">
@@ -53,11 +53,11 @@
 
       <div v-else-if="section.id === 'stats'" class="stats-grid">
         <div class="stat-item clickable">
-          <span class="stat-value" :ref="el => { if (el) statRefs[0] = el }">{{ animatedCategoriesCount }}</span>
+          <span class="stat-value" :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[0] = el as HTMLElement }">{{ animatedCategoriesCount }}</span>
           <span class="stat-label">分类</span>
         </div>
         <div class="stat-item clickable">
-          <span class="stat-value" :ref="el => { if (el) statRefs[1] = el }">{{ animatedTagsCount }}</span>
+          <span class="stat-value" :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[1] = el as HTMLElement }">{{ animatedTagsCount }}</span>
           <span class="stat-label">标签</span>
         </div>
       </div>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { default as anime } from 'animejs'
 import { useAppStore } from '@/stores/app'
 import TagBadge from '@/components/common/TagBadge.vue'

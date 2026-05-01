@@ -1443,6 +1443,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/animejs@npm:^3.1.13":
+  version: 3.1.13
+  resolution: "@types/animejs@npm:3.1.13"
+  checksum: 10c0/6c1c977417a699bf4c3eaf6fdb948ea29011543f69370f98f7c7bac42aadb3309dda23a8415738f7480eed1a355b6ee130d1405339cd031a876774fc8e6f6c47
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:1.0.8, @types/estree@npm:^1.0.0":
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
@@ -2765,6 +2772,7 @@ __metadata:
   resolution: "liliblog-front@workspace:."
   dependencies:
     "@element-plus/icons-vue": "npm:^2.3.2"
+    "@types/animejs": "npm:^3.1.13"
     "@types/node": "npm:^24.12.0"
     "@types/nprogress": "npm:^0.2.3"
     "@unocss/preset-attributify": "npm:^66.6.7"
