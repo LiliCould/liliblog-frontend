@@ -296,9 +296,7 @@ function startTyping() {
 }
 
 function initHeroAnimation() {
-  const tl = createTimeline({
-    ease: 'outExpo'
-  })
+  const tl = createTimeline({})
 
   tl
     .add('.hero-carousel-layer', {
@@ -319,12 +317,12 @@ function initHeroAnimation() {
       duration: 100,
       onComplete: () => startTyping()
     }, '-=400')
-    .add(dividerRef.value, {
+    .add(dividerRef.value!, {
       scaleX: [0, 1],
       duration: 600,
       ease: 'outCubic'
     }, '-=300')
-    .add(scrollIndicatorRef.value, {
+    .add(scrollIndicatorRef.value!, {
       opacity: [0, 1],
       duration: 400,
       ease: 'outCubic',

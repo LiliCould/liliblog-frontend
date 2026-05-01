@@ -4,7 +4,10 @@
       <div class="footer-content">
         <div class="footer-brand">
           <div class="brand-logo">
-            <span class="logo-icon">✦</span>
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+            </svg>
             <span class="logo-text">LiliBlog</span>
           </div>
           <p class="brand-desc">记录生活，分享技术，探索无限可能</p>
@@ -95,7 +98,8 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 .brand-logo .logo-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   color: var(--color-primary);
 }
 
