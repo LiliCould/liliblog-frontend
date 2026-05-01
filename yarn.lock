@@ -1443,13 +1443,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/animejs@npm:^3.1.13":
-  version: 3.1.13
-  resolution: "@types/animejs@npm:3.1.13"
-  checksum: 10c0/6c1c977417a699bf4c3eaf6fdb948ea29011543f69370f98f7c7bac42aadb3309dda23a8415738f7480eed1a355b6ee130d1405339cd031a876774fc8e6f6c47
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:1.0.8, @types/estree@npm:^1.0.0":
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
@@ -2075,10 +2068,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"animejs@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "animejs@npm:3.2.2"
-  checksum: 10c0/f43dfcc0c743a2774e76fbfcb16a22350da7104f413d9d1b85c48128b0c078090642809deb631e21dfa0a40651111be39d9d7f694c9c1b70d8637ce8b6d63116
+"animejs@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "animejs@npm:4.4.1"
+  checksum: 10c0/fed82adea748494d261378564eaeebfbe95987366671ddd4f06522174358bbf2c09d06facaa5ac9b3e7b004410b1ea69d5abf7a292be7bb448f4df03b0a0fae8
   languageName: node
   linkType: hard
 
@@ -2772,7 +2765,6 @@ __metadata:
   resolution: "liliblog-front@workspace:."
   dependencies:
     "@element-plus/icons-vue": "npm:^2.3.2"
-    "@types/animejs": "npm:^3.1.13"
     "@types/node": "npm:^24.12.0"
     "@types/nprogress": "npm:^0.2.3"
     "@unocss/preset-attributify": "npm:^66.6.7"
@@ -2784,7 +2776,7 @@ __metadata:
     "@vue-office/pdf": "npm:^2.0.10"
     "@vue-office/pptx": "npm:^1.0.1"
     "@vue/tsconfig": "npm:^0.9.0"
-    animejs: "npm:^3.2.2"
+    animejs: "npm:^4.4.1"
     axios: "npm:^1.14.0"
     dayjs: "npm:^1.11.20"
     dompurify: "npm:^3.3.3"

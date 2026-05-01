@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
-import anime from 'animejs'
+import { animate } from 'animejs'
 
 export function useHeroCarousel(images: string[], interval = 6000) {
   const currentIndex = ref(0)
@@ -13,19 +13,17 @@ export function useHeroCarousel(images: string[], interval = 6000) {
 
     if (!currentEl || !nextEl) return
 
-    anime({
-      targets: currentEl,
+    animate(currentEl, {
       opacity: 0,
       duration: 1200,
-      easing: 'easeOutQuad'
+      ease: 'outQuad'
     })
 
-    anime({
-      targets: nextEl,
+    animate(nextEl, {
       opacity: [0, 1],
       scale: [1.05, 1],
       duration: 1200,
-      easing: 'easeInOutQuad'
+      ease: 'inOutQuad'
     })
 
     currentIndex.value = nextIndex

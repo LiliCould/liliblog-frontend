@@ -1,12 +1,7 @@
 <template>
   <aside class="app-sidebar">
-    <div
-      v-for="(section, index) in sections"
-      :key="section.id"
-      class="sidebar-section"
-      :class="`section-${section.id}`"
-      :ref="(el: Element | ComponentPublicInstance | null) => { if (el) sectionRefs[index] = el as HTMLElement }"
-    >
+    <div v-for="(section, index) in sections" :key="section.id" class="sidebar-section" :class="`section-${section.id}`"
+      :ref="(el: Element | ComponentPublicInstance | null) => { if (el) sectionRefs[index] = el as HTMLElement }">
       <div class="gradient-bar"></div>
       <div class="section-header">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -53,11 +48,15 @@
 
       <div v-else-if="section.id === 'stats'" class="stats-grid">
         <div class="stat-item clickable">
-          <span class="stat-value" :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[0] = el as HTMLElement }">{{ animatedCategoriesCount }}</span>
+          <span class="stat-value"
+            :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[0] = el as HTMLElement }">{{
+              animatedCategoriesCount }}</span>
           <span class="stat-label">分类</span>
         </div>
         <div class="stat-item clickable">
-          <span class="stat-value" :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[1] = el as HTMLElement }">{{ animatedTagsCount }}</span>
+          <span class="stat-value"
+            :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[1] = el as HTMLElement }">{{
+              animatedTagsCount }}</span>
           <span class="stat-label">标签</span>
         </div>
       </div>
@@ -67,7 +66,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { default as anime } from 'animejs'
+import { animate } from 'animejs'
 import { useAppStore } from '@/stores/app'
 import TagBadge from '@/components/common/TagBadge.vue'
 
@@ -107,24 +106,23 @@ onMounted(() => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const section = entry.target as HTMLElement
-        
+
         if (section.classList.contains('section-stats')) {
           animateStats()
         }
-        
-        anime({
-          targets: section,
+
+        animate(section, {
           opacity: [0, 1],
           translateY: [30, 0],
           duration: 800,
-          easing: 'easeOutCubic'
+          ease: 'outCubic'
         })
-        
+
         observer.unobserve(section)
       }
     })
   }, observerOptions)
-  
+
   sectionRefs.value.forEach(section => {
     if (section) {
       observer.observe(section)
@@ -137,21 +135,19 @@ onMounted(() => {
 })
 
 function animateStats() {
-  anime({
-    targets: animatedCategoriesCount,
+  animate(animatedCategoriesCount, {
     value: [0, appStore.categories.length],
     round: 1,
     duration: 1500,
-    easing: 'easeOutExpo'
+    ease: 'outExpo'
   })
 
-  anime({
-    targets: animatedTagsCount,
+  animate(animatedTagsCount, {
     value: [0, appStore.tags.length],
     round: 1,
     duration: 1500,
     delay: 200,
-    easing: 'easeOutExpo'
+    ease: 'outExpo'
   })
 }
 </script>

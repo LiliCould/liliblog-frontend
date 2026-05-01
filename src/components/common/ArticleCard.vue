@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { default as anime } from 'animejs'
+import { animate } from 'animejs'
 import type { Article } from '@/types/article.d'
 import { formatRelativeTime, formatNumber } from '@/utils/format'
 import TagBadge from './TagBadge.vue'
@@ -119,13 +119,12 @@ onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting && entry.target === cardRef.value) {
-        anime({
-          targets: entry.target,
+        animate(entry.target, {
           opacity: [0, 1],
           translateY: [40, 0],
           scale: [0.95, 1],
           duration: 1000,
-          easing: 'easeOutElastic(1, .8)'
+          ease: 'outElastic(1, .8)'
         })
 
         observer.unobserve(entry.target)

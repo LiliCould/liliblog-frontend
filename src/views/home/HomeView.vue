@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, inject, watch } from 'vue'
-import { default as anime } from 'animejs'
+import { animate, createTimeline, stagger } from 'animejs'
 import { useArticleStore } from '@/stores/article'
 import ArticleCard from '@/components/common/ArticleCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -258,51 +258,46 @@ watch([() => cursorState.isHovering.value, () => cursorState.isText.value], ([ho
 })
 
 function initHeroAnimation() {
-  const tl = anime.timeline({
-    easing: 'easeOutExpo'
+  const tl = createTimeline({
+    ease: 'outExpo'
   })
 
-  tl.add({
-    targets: '.hero-background',
-    opacity: [0, 1],
-    duration: 500,
-    easing: 'linear'
-  })
-    .add({
-      targets: '.title-char',
+  tl
+    .add('.hero-carousel-layer', {
+      opacity: [0, 1],
+      duration: 500,
+      ease: 'linear'
+    })
+    .add('.title-char', {
       opacity: [0, 1],
       translateY: [30, 0],
       duration: 800,
-      delay: anime.stagger(40),
-      easing: 'easeOutCubic'
+      delay: stagger(40),
+      ease: 'outCubic'
     }, '-=200')
-    .add({
-      targets: subtitleRef.value,
+    .add(subtitleRef.value, {
       opacity: [0, 1],
       translateY: [20, 0],
       duration: 600,
-      easing: 'easeOutCubic'
+      ease: 'outCubic'
     }, '-=400')
-    .add({
-      targets: dividerRef.value,
+    .add(dividerRef.value, {
       scaleX: [0, 1],
       duration: 600,
-      easing: 'easeOutCubic'
+      ease: 'outCubic'
     }, '-=300')
-    .add({
-      targets: scrollIndicatorRef.value,
+    .add(scrollIndicatorRef.value, {
       opacity: [0, 1],
       duration: 400,
-      easing: 'easeOutCubic',
-      complete: () => {
+      ease: 'outCubic',
+      onComplete: () => {
         if (scrollIndicatorRef.value) {
-          anime({
-            targets: scrollIndicatorRef.value,
+          animate(scrollIndicatorRef.value, {
             translateY: [0, 10],
-            direction: 'alternate',
+            alternate: true,
             loop: true,
             duration: 1000,
-            easing: 'easeInOutSine'
+            ease: 'inOutSine'
           })
         }
       }
@@ -367,11 +362,10 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 
   if (backIconRef.value) {
-    anime({
-      targets: backIconRef.value,
+    animate(backIconRef.value, {
       translateY: [0, -10, 0],
       duration: 400,
-      easing: 'easeOutCubic'
+      ease: 'outCubic'
     })
   }
 }
