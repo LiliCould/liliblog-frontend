@@ -2,10 +2,7 @@
   <header class="app-header" :class="{ scrolled: isScrolled }">
     <div class="header-inner page-container">
       <router-link to="/" class="logo">
-        <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-        </svg>
-        <span class="logo-text">LiliBlog</span>
+        <img class="logo-icon" :src="logoSvg" alt="LiliBlog" />
       </router-link>
 
       <nav class="desktop-nav">
@@ -104,6 +101,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { useChatStore } from '@/stores/chat'
+import logoSvg from '@/assets/logo.svg'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -207,15 +205,14 @@ function handleCommand(command: string) {
 }
 
 .logo-icon {
-  width: 22px;
-  height: 22px;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  width: 120px;
+  height: auto;
+  object-fit: contain;
   animation: sparkle 3s ease-in-out infinite;
 }
 
 .app-header.scrolled .logo-icon {
-  color: var(--color-primary);
+  filter: none;
 }
 
 @keyframes sparkle {
@@ -230,25 +227,6 @@ function handleCommand(command: string) {
     opacity: 0.7;
     transform: scale(1.1);
   }
-}
-
-.logo-text {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-display);
-  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.app-header.scrolled .logo-text {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .desktop-nav {

@@ -1,1 +1,74 @@
-<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1775049164227" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6380" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M51.2 0h716.8a256 256 0 0 1 256 256v716.8a51.2 51.2 0 0 1-51.2 51.2H256A256 256 0 0 1 0 768V51.2a51.2 51.2 0 0 1 51.2-51.2z" fill="#F5AD30" p-id="6381"></path><path d="M140.8 435.2m51.2 0l640 0q51.2 0 51.2 51.2l0 320q0 51.2-51.2 51.2l-640 0q-51.2 0-51.2-51.2l0-320q0-51.2 51.2-51.2Z" fill="#FFFFFF" p-id="6382"></path><path d="M192 179.2h435.2a128 128 0 0 1 128 128v192a51.2 51.2 0 0 1-51.2 51.2h-512a51.2 51.2 0 0 1-51.2-51.2v-268.8a51.2 51.2 0 0 1 51.2-51.2z" fill="#FFFFFF" p-id="6383"></path><path d="M256 281.6m38.4 0l204.8 0q38.4 0 38.4 38.4l0 0q0 38.4-38.4 38.4l-204.8 0q-38.4 0-38.4-38.4l0 0q0-38.4 38.4-38.4Z" fill="#F5AD30" p-id="6384"></path><path d="M256 486.4m38.4 0l128 0q38.4 0 38.4 38.4l0 0q0 38.4-38.4 38.4l-128 0q-38.4 0-38.4-38.4l0 0q0-38.4 38.4-38.4Z" fill="#F5AD30" p-id="6385"></path><path d="M256 678.4m38.4 0l371.2 0q38.4 0 38.4 38.4l0 0q0 38.4-38.4 38.4l-371.2 0q-38.4 0-38.4-38.4l0 0q0-38.4 38.4-38.4Z" fill="#F5AD30" p-id="6386"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <!-- 画笔风格滤镜：轻微噪点位移，模拟手绘不规则感 -->
+    <filter id="brush" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    
+    <!-- 橙色渐变，增加立体感 -->
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fb923c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 聊天气泡小尾巴（右上角，强化博客分享属性） -->
+  <path d="M 105 15 Q 115 5, 125 0 Q 120 10, 115 18 Z" 
+        fill="#f97316" opacity="0.9"/>
+  
+  <!-- 创可贴主体轮廓 - 流畅画笔线条风格 -->
+  <path d="M 20 30 
+           Q 20 15, 35 15 
+           L 95 15 
+           Q 110 15, 110 30 
+           L 110 90 
+           Q 110 105, 95 105 
+           L 35 105 
+           Q 20 105, 20 90 
+           Z" 
+        fill="none" 
+        stroke="url(#orangeGrad)" 
+        stroke-width="4.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#brush)"
+        opacity="0.95"/>
+  
+  <!-- 创可贴透气孔纹理（点缀元素） -->
+  <line x1="30" y1="45" x2="45" y2="45" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <line x1="30" y1="60" x2="40" y2="60" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <line x1="30" y1="75" x2="45" y2="75" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  
+  <!-- LB 字母抽象连写 - 充满动感 -->
+  <!-- L 的流畅笔画 -->
+  <path d="M 48 48 
+           Q 48 75, 48 82 
+           Q 48 88, 55 88 
+           L 72 88" 
+        fill="none" 
+        stroke="#f97316" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#brush)"/>
+  
+  <!-- B 的流畅笔画 - 与 L 自然连笔 -->
+  <path d="M 72 48 
+           L 72 88 
+           M 72 48 
+           Q 88 48, 88 58 
+           Q 88 68, 72 68 
+           M 72 68 
+           Q 92 68, 92 78 
+           Q 92 88, 72 88" 
+        fill="none" 
+        stroke="#f97316" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#brush)"/>
+        
+  <!-- 连笔处的动感点缀 - 小圆点 -->
+  <circle cx="72" cy="68" r="3.5" fill="#f97316" opacity="0.8"/>
+</svg>
