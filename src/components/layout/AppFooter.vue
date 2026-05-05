@@ -42,11 +42,18 @@
             </a>
           </div>
         </div>
+
+        <div class="footer-friends-section">
+          <h4 class="footer-heading">友情链接</h4>
+          <nav class="footer-nav">
+            <a href="https://traums.cn" target="_blank" rel="noopener" class="footer-link">TraumSpace</a>
+          </nav>
+        </div>
       </div>
 
       <div class="footer-bottom">
         <div class="copyright">
-          <span>© {{ currentYear }} LiliCould.</span>
+          <span>© 2025-{{ currentYear }} LiliCould.</span>
           <span class="separator">·</span>
           <span>All rights reserved.</span>
         </div>
@@ -79,7 +86,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .footer-content {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
+  grid-template-columns: 2fr 1fr 1.5fr 1fr;
   gap: var(--spacing-2xl);
   margin-bottom: var(--spacing-xl);
   padding-bottom: var(--spacing-xl);
@@ -246,11 +253,7 @@ const currentYear = computed(() => new Date().getFullYear())
   }
 }
 
-@media (max-width: 640px) {
-  .footer-inner {
-    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
-  }
-
+@media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
@@ -271,6 +274,10 @@ const currentYear = computed(() => new Date().getFullYear())
 
   .copyright {
     justify-content: center;
+  }
+
+  .footer-inner {
+    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
   }
 }
 </style>
