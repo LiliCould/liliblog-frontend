@@ -6,6 +6,9 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+// 检查是否为生产环境
+const isProduction = process.env.NODE_ENV === 'production'
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -30,46 +33,34 @@ export default defineConfig({
   build: {
     target: 'es2020',
     
-    // 启用CSS代码分割
     cssCodeSplit: true,
     
-    // chunk 分包策略 - 减少首屏加载体积
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vue核心库
           'vue-vendor': ['vue', 'vue-router', 'pinia'],
-          
-          // UI框架
           'element-plus': ['element-plus'],
-          
-          // 动画库
           'animejs': ['animejs'],
-          
-          // 工具库
-          'utils': ['axios', 'dayjs'],
         },
         
-        // 文件命名规则（带hash缓存）
         entryFileNames: 'assets/js/[name].[hash].js',
         chunkFileNames: 'assets/js/[name].[hash].js',
         assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.')
-          let extType = info[info.length - 1]
+          const name = assetInfo.name || ''
           
-          if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)$/.test(assetInfo.name)) {
+          if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)$/.test(name)) {
             return `assets/media/[name].[hash][extname]`
           }
           
-          if (/\.(png|jpe?g|gif|svg|ico|webp|avif)$/.test(assetInfo.name)) {
+          if (/\.(png|jpe?g|gif|svg|ico|webp|avif)$/.test(name)) {
             return `assets/img/[name].[hash][extname]`
           }
           
-          if (/\.css$/.test(assetInfo.name)) {
+          if (/\.css$/.test(name)) {
             return `assets/css/[name].[hash][extname]`
           }
           
-          if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
+          if (/\.(woff2?|eot|ttf|otf)$/.test(name)) {
             return `assets/fonts/[name].[hash][extname]`
           }
           
@@ -78,47 +69,45 @@ export default defineConfig({
       },
     },
     
-    // 压缩配置
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false, // 生产环境可改为true
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.debug'], // 移除调试日志
-      },
-      format: {
-        comments: false,
-      },
-    },
+    // ========== 智能压缩策略 ==========
+    // 生产环境：terser（极致压缩，体积小 2-5%）
+    // 开发环境：esbuild（快速构建，速度快 10 倍）
+    minify: isProduction ? 'terser' : 'esbuild',
     
-    // chunk大小警告阈值
+    // terser 配置（仅生产环境生效）
+    ...(isProduction && {
+      terserOptions: {
+        compress: {
+          drop_console: true,           // 移除 console
+          drop_debugger: true,           // 移除 debugger
+          pure_funcs: [                 // 移除指定函数
+            'console.log',
+            'console.debug',
+            'console.info',
+            'console.warn',
+          ],
+          passes: 3,                    // 压缩次数（越多越彻底）
+        },
+        format: {
+          comments: false,              // 移除注释
+        },
+        mangle: {                       // 变量名混淆
+          toplevel: true,
+          properties: {
+            regex: /^_/,
+          },
+        },
+      },
+    }),
+    
     chunkSizeWarningLimit: 1000,
   },
   
-  // ========== 开发服务器优化 ==========
+  // ========== 开发服务器配置 ==========
   server: {
     port: 3000,
-    open: true,
+    open: false,
     
-    // 预热文件（减少首次启动等待）
-    warmup: {
-      clientFiles: ['./src/main.ts', './src/App.vue'],
-    },
-    
-    // 强制依赖预构建
-    optimizeDeps: {
-      include: [
-        'vue',
-        'vue-router',
-        'pinia',
-        'element-plus',
-        'axios',
-        'animejs',
-        '@vueuse/core',
-      ],
-    },
-    
-    // 代理配置（如果需要API代理）
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
@@ -128,9 +117,7 @@ export default defineConfig({
     },
   },
   
-  // ========== 性能优化 ==========
-  
-  // 预构建依赖
+  // ========== 依赖预构建 ==========
   optimizeDeps: {
     include: [
       'vue',
@@ -140,13 +127,5 @@ export default defineConfig({
       'axios',
       'animejs',
     ],
-  },
-  
-  // CSS优化
-  css: {
-    preprocessorOptions: {},
-    
-    // PostCSS配置
-    postcss: {},
   },
 })
