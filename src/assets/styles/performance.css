@@ -1,0 +1,144 @@
+/* ========== 全局性能优化 ========== */
+
+/* 1. 减少重绘和回流 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 2. GPU 加速基础层 */
+img,
+video,
+canvas,
+svg {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 3. 滚动容器优化 */
+.page-container {
+  contain: layout style;
+}
+
+/* 4. 动画元素通用优化 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 5. 链接和按钮优化 */
+a,
+button,
+.clickable {
+  will-change: auto;
+  transition: all var(--transition-fast) ease-out;
+}
+
+a:hover,
+button:hover,
+.clickable:hover {
+  will-change: transform;
+}
+
+/* 6. 图片懒加载优化 */
+img[loading="lazy"] {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"].loaded,
+img[loading="lazy"]:not([src=""]) {
+  opacity: 1;
+}
+
+/* 7. 减少动画偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .custom-cursor {
+    display: none !important;
+  }
+}
+
+/* 8. 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: rgba(0, 0, 0, 0.3);
+    --color-card: rgba(255, 255, 255, 1);
+  }
+  
+  .article-card {
+    border-width: 2px;
+  }
+}
+
+/* 9. 省电模式优化 */
+@media (prefers-reduced-data: reduce) {
+  .hero-video,
+  .hero-image {
+    display: none;
+  }
+  
+  .hero-section {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  }
+}
+
+/* 10. 全局动画性能提示 */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px) translateZ(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
+  will-change: auto;
+}

@@ -10,6 +10,17 @@
   <meta name="robots" content="index, follow" />
   <meta name="author" content="LiliCould" />
 
+  <!-- 性能优化：DNS预解析 -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+  
+  <!-- 性能优化：预连接关键域名 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- 性能优化：预加载首屏关键资源 -->
+  <link rel="preload" as="image" href="/images/hero-1.png" fetchpriority="high" />
+
   <!-- Open Graph 标签 -->
   <meta property="og:title" content="立里博客 - 技术与生活的分享空间" />
   <meta property="og:description" content="立里博客是一个分享技术、生活和思考的个人博客网站，记录前端开发、后端开发等技术内容以及个人生活感悟。" />

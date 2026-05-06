@@ -1,17 +1,34 @@
 :root {
     /* Typography System */
-    --font-display: 'Georgia', 'Noto Serif SC', 'STSong', serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
     
-    /* Color Palette - Warm Earth Tones */
+    /* ========== 双重色彩系统 ==========
+     * Hero区域：赛博朋克风格（青+玫红）
+     * 内容区：温暖橙棕色系
+     * ================================ */
+    
+    /* Hero赛博朋克专用色 */
+    --color-cyber-cyan: #00f0ff;
+    --color-cyber-pink: #ff003c;
+    --color-cyber-purple: #b967ff;
+    --color-cyber-yellow: #f0ff00;
+
+    /* Color Palette - 原始暖色调（内容区使用） */
     --color-primary: #C45D35;
     --color-primary-hover: #A84B28;
     --color-primary-light: rgba(196, 93, 53, 0.08);
     --color-primary-light-2: rgba(196, 93, 53, 0.15);
     --color-primary-glow: rgba(196, 93, 53, 0.25);
+    
+    /* Hero区域专用色（赛博朋克） */
+    --color-hero-accent: #00f0ff;
+    --color-hero-warm: #ff003c;
+    --color-hero-text: #e2e8f0;
+    --color-hero-subtle: rgba(148, 163, 184, 0.9);
 
-    /* Text Colors */
+    /* Text Colors - 保持原样 */
     --color-title: #1A1A1A;
     --color-title-secondary: #2C2C2C;
     --color-body: #5A5A5A;
@@ -19,15 +36,15 @@
     --color-muted: #9A9A9A;
     --color-muted-light: #BEBEBE;
 
-    /* Background Colors */
-    --color-bg: rgba(248, 246, 243, 0.75);
+    /* Background Colors - 原始暖色调 */
+    --color-bg: rgba(248, 246, 243, 0.85);
     --color-bg-warm: #FAF8F5;
-    --color-card: rgba(255, 255, 255, 0.88);
+    --color-card: rgba(255, 255, 255, 0.92);
     --color-card-solid: #FFFFFF;
-    --color-border: rgba(200, 195, 188, 0.35);
-    --color-border-hover: rgba(196, 93, 53, 0.2);
+    --color-border: rgba(200, 195, 188, 0.4);
+    --color-border-hover: rgba(196, 93, 53, 0.25);
 
-    /* Accent Colors */
+    /* Accent Colors - 暖色调 */
     --color-accent: #D4915A;
     --color-accent-light: rgba(212, 145, 90, 0.12);
     --color-success: #5B9A5B;
@@ -54,14 +71,14 @@
     --radius-xl: 24px;
     --radius-full: 9999px;
 
-    /* Shadow System */
-    --shadow-xs: 0 1px 2px rgba(26, 26, 26, 0.03);
-    --shadow-sm: 0 2px 8px rgba(26, 26, 26, 0.04);
-    --shadow-md: 0 4px 16px rgba(26, 26, 26, 0.06);
-    --shadow-lg: 0 8px 32px rgba(26, 26, 26, 0.08);
-    --shadow-xl: 0 16px 48px rgba(26, 26, 26, 0.1);
-    --shadow-card: 0 2px 20px rgba(196, 93, 53, 0.06);
-    --shadow-card-hover: 0 8px 32px rgba(196, 93, 53, 0.14);
+    /* Shadow System - 原始暖色调阴影 */
+    --shadow-xs: 0 1px 3px rgba(26, 26, 26, 0.04);
+    --shadow-sm: 0 2px 8px rgba(26, 26, 26, 0.06);
+    --shadow-md: 0 4px 16px rgba(26, 26, 26, 0.08);
+    --shadow-lg: 0 8px 32px rgba(26, 26, 26, 0.1);
+    --shadow-xl: 0 16px 48px rgba(26, 26, 26, 0.12);
+    --shadow-card: 0 2px 20px rgba(196, 93, 53, 0.08);
+    --shadow-card-hover: 0 8px 32px rgba(196, 93, 53, 0.16);
     --shadow-float: 0 12px 40px rgba(26, 26, 26, 0.12);
 
     /* Font Size Scale */
@@ -122,11 +139,11 @@
     --cursor-text-outer-size: 20px;
     --cursor-text-inner-size: 4px;
 
-    /* Hero Background System */
+    /* Hero Background System - 赛博朋克 */
     --mouse-x: 50%;
     --mouse-y: 50%;
-    --hero-gradient-color-1: rgba(102, 126, 234, 0.25);
-    --hero-gradient-color-2: rgba(118, 75, 162, 0.15);
+    --hero-gradient-color-1: rgba(102, 126, 234, 0.35);
+    --hero-gradient-color-2: rgba(118, 75, 162, 0.25);
     --hero-gradient-radius: 400px;
     --hero-gradient-radius-hover-text: 150px;
     --hero-gradient-radius-hover-button: 500px;

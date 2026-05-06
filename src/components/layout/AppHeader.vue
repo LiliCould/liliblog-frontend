@@ -58,8 +58,10 @@
                 <el-dropdown-item command="write" divided>
                   <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"></path>
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    ></path>
                   </svg>
                   写文章
                 </el-dropdown-item>
@@ -124,7 +126,12 @@ const navItems = computed(() => [
   {
     path: '/chat',
     label: '聊天室',
-    badge: chatStore.unreadCount > 0 && !chatStore.isChatRoomActive ? (chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount) : undefined
+    badge:
+      chatStore.unreadCount > 0 && !chatStore.isChatRoomActive
+        ? chatStore.unreadCount > 99
+          ? '99+'
+          : chatStore.unreadCount
+        : undefined
   }
 ])
 
@@ -169,20 +176,22 @@ function handleCommand(command: string) {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: var(--z-header);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  contain: layout style;
 }
 
+/* 滚动后切换为暖色调 */
 .app-header.scrolled {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom-color: var(--color-border);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-inner {
@@ -208,31 +217,22 @@ function handleCommand(command: string) {
   width: 120px;
   height: auto;
   object-fit: contain;
-  animation: sparkle 3s ease-in-out infinite;
+  will-change: opacity;
+  transition: opacity 0.4s ease;
 }
 
 .app-header.scrolled .logo-icon {
   filter: none;
 }
 
-@keyframes sparkle {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
+.logo:hover .logo-icon {
+  opacity: 0.85;
 }
 
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-link {
@@ -250,6 +250,7 @@ function handleCommand(command: string) {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+/* 滚动后切换为暖色调文字 */
 .app-header.scrolled .nav-link {
   color: var(--color-body);
   text-shadow: none;
@@ -261,8 +262,9 @@ function handleCommand(command: string) {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* 滚动后暖色调悬浮效果 */
 .app-header.scrolled .nav-link:hover {
-  color: var(--color-title);
+  color: var(--color-primary);
   background: var(--color-primary-light);
 }
 
@@ -276,6 +278,7 @@ function handleCommand(command: string) {
   font-weight: var(--font-weight-semibold);
 }
 
+/* 滚动后活跃状态为暖色调 */
 .app-header.scrolled .nav-link.active {
   color: var(--color-primary);
 }
@@ -295,21 +298,14 @@ function handleCommand(command: string) {
   font-size: 10px;
   font-weight: var(--font-weight-semibold);
   color: #fff;
-  background: linear-gradient(135deg, var(--color-danger), var(--color-primary));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   border-radius: var(--radius-full);
   animation: pulse-badge 2s ease-in-out infinite;
 }
 
 @keyframes pulse-badge {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .search-trigger {
@@ -343,7 +339,7 @@ function handleCommand(command: string) {
 .app-header.scrolled .search-trigger:hover {
   color: var(--color-primary);
   background: var(--color-primary-light);
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .header-right {
@@ -376,13 +372,14 @@ function handleCommand(command: string) {
 .user-avatar {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
+  /* 暖色调头像渐变 */
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   color: white;
   transition: transform var(--transition-fast);
 }
 
 .user-avatar-wrapper:hover .user-avatar {
-  transform: rotate(-5deg) scale(1.05);
+  transform: rotate(-3deg) scale(1.04);
 }
 
 .username-text {
@@ -446,6 +443,7 @@ function handleCommand(command: string) {
 
 .btn-register {
   color: #fff;
+  /* 暖色调注册按钮 */
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   box-shadow: 0 4px 12px rgba(196, 93, 53, 0.25);
 }

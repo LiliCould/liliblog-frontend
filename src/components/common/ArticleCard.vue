@@ -12,7 +12,8 @@
           <span v-if="article.isRecommend" class="badge badge-recommend">
             <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
               <polygon
-                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
             </svg>
             推荐
           </span>
@@ -35,7 +36,9 @@
           <div v-if="article.categoryName" class="meta-item category-meta">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              <path
+                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+              ></path>
             </svg>
             <span>{{ article.categoryName }}</span>
           </div>
@@ -123,8 +126,8 @@ onMounted(() => {
           opacity: [0, 1],
           translateY: [40, 0],
           scale: [0.95, 1],
-          duration: 1000,
-          ease: 'outElastic(1, .8)'
+          duration: 800,
+          ease: 'outCubic'
         })
 
         observer.unobserve(entry.target)
@@ -142,32 +145,36 @@ onMounted(() => {
 .article-card {
   position: relative;
   cursor: pointer;
-  border-radius: 16px;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--color-border);
   overflow: hidden;
   opacity: 0;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  contain: layout style paint;
 }
 
+/* 温暖渐变背景 */
 .article-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(196, 93, 53, 0.02) 100%);
+  background: linear-gradient(135deg, transparent 0%, rgba(196, 93, 53, 0.03) 100%);
   opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 1;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
 }
 
 .article-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  border-color: var(--color-primary);
+  transform: translateY(-6px) translateZ(0);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-hover);
 }
 
 .article-card:hover::before {
@@ -233,9 +240,10 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 暖色调悬浮效果 */
 .article-card:hover .card-title {
   color: var(--color-primary);
 }
@@ -267,7 +275,7 @@ onMounted(() => {
   gap: 6px;
   font-size: var(--font-size-xs);
   color: var(--color-muted);
-  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .meta-item svg {
@@ -300,7 +308,7 @@ onMounted(() => {
   background: var(--color-bg-warm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .more-tags-badge:hover {
@@ -313,7 +321,7 @@ onMounted(() => {
   flex-shrink: 0;
   width: 200px;
   height: 140px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -321,7 +329,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -330,18 +338,20 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
+/* 暖色调覆盖层 */
 .cover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(196, 93, 53, 0.1), transparent);
+  background: linear-gradient(to top, rgba(196, 93, 53, 0.08), transparent);
   opacity: 0;
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-card:hover .cover-wrapper img {
-  transform: scale(1.05);
+  transform: scale(1.03) translateZ(0);
 }
 
 .article-card:hover .cover-overlay {
