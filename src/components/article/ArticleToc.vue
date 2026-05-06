@@ -2,13 +2,8 @@
   <div v-if="tocItems.length > 0" class="article-toc">
     <h4 class="toc-title">目录</h4>
     <nav class="toc-nav">
-      <a
-        v-for="item in tocItems"
-        :key="item.id"
-        :href="'#' + item.id"
-        :class="['toc-link', `toc-level-${item.level}`]"
-        @click.prevent="scrollToHeading(item.id)"
-      >
+      <a v-for="item in tocItems" :key="item.id" :href="'#' + item.id" :class="['toc-link', `toc-level-${item.level}`]"
+        @click.prevent="scrollToHeading(item.id)">
         {{ item.text }}
       </a>
     </nav>
@@ -32,8 +27,18 @@ const tocItems = computed<TocItem[]>(() => {
   if (!props.markdownContent) return []
   const items: TocItem[] = []
   const lines = props.markdownContent.split('\n')
-  
+  let inCodeBlock = false
+
   lines.forEach((line, index) => {
+    const trimmedLine = line.trim()
+
+    if (trimmedLine.startsWith('```')) {
+      inCodeBlock = !inCodeBlock
+      return
+    }
+
+    if (inCodeBlock) return
+
     const headingMatch = line.match(/^(#{1,4})\s+(.*)$/)
     if (headingMatch) {
       const level = headingMatch[1].length
@@ -101,7 +106,17 @@ function scrollToHeading(id: string) {
   color: var(--color-primary);
 }
 
-.toc-level-2 { padding-left: 16px; }
-.toc-level-3 { padding-left: 28px; font-size: 12px; }
-.toc-level-4 { padding-left: 40px; font-size: 12px; }
+.toc-level-2 {
+  padding-left: 16px;
+}
+
+.toc-level-3 {
+  padding-left: 28px;
+  font-size: 12px;
+}
+
+.toc-level-4 {
+  padding-left: 40px;
+  font-size: 12px;
+}
 </style>
