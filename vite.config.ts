@@ -45,28 +45,28 @@ export default defineConfig({
           'animejs': ['animejs'],
         },
         
-        entryFileNames: 'assets/js/[name].[hash].js',
-        chunkFileNames: 'assets/js/[name].[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        chunkFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || ''
           
           if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)$/.test(name)) {
-            return `assets/media/[name].[hash][extname]`
+            return `assets/media/[name]-[hash][extname]`
           }
           
           if (/\.(png|jpe?g|gif|svg|ico|webp|avif)$/.test(name)) {
-            return `assets/img/[name].[hash][extname]`
+            return `assets/img/[name]-[hash][extname]`
           }
           
           if (/\.css$/.test(name)) {
-            return `assets/css/[name].[hash][extname]`
+            return `assets/css/[name]-[hash][extname]`
           }
           
           if (/\.(woff2?|eot|ttf|otf)$/.test(name)) {
-            return `assets/fonts/[name].[hash][extname]`
+            return `assets/fonts/[name]-[hash][extname]`
           }
           
-          return `assets/[extType]/[name].[hash][extname]`
+          return `assets/[extType]/[name]-[hash][extname]`
         },
       },
     },
