@@ -6,7 +6,9 @@
         <h1 class="chat-room-title">立里聊天室</h1>
         <div class="status-bar">
           <div class="online-count-mobile" @click="showOnlineMembers = !showOnlineMembers">
-            <el-icon><UserFilled /></el-icon>
+            <el-icon>
+              <UserFilled />
+            </el-icon>
             <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
           </div>
           <span class="status-text">
@@ -24,7 +26,9 @@
         <div class="chat-sidebar pc-only">
           <div class="sidebar-section">
             <h3 class="sidebar-title">
-              <el-icon><UserFilled /></el-icon>
+              <el-icon>
+                <UserFilled />
+              </el-icon>
               在线用户
             </h3>
             <div class="online-count">
@@ -43,13 +47,8 @@
         </div>
 
         <!-- 移动端侧边抽屉 -->
-        <el-drawer
-          v-model="showOnlineMembers"
-          title="在线用户"
-          direction="rtl"
-          size="280px"
-          custom-class="mobile-online-drawer"
-        >
+        <el-drawer v-model="showOnlineMembers" title="在线用户" direction="rtl" size="280px"
+          custom-class="mobile-online-drawer">
           <div class="online-count">
             <span class="count-label">在线人数：</span>
             <span class="count-value">{{ chatStore.onlineUsers.length }}</span>
@@ -86,35 +85,37 @@
                   <span class="sender-name">{{ message.senderName }}</span>
                   <span class="message-time">{{ formatMessageTime(message.createTime) }}</span>
                 </div>
-                
+
                 <div class="message-content-wrapper">
                   <div v-if="(message.parentId ?? 0) > 0" class="message-quote">
                     <span class="quote-name">{{ message.parentSenderName || '用户' }}</span>
                     <div class="quote-content">
                       <template v-if="getUrlType(message.parentContent) === 'IMAGE'">
-                        <el-image 
-                          :src="message.parentContent" 
-                          :preview-src-list="message.parentContent ? [message.parentContent] : []"
-                          preview-teleported
-                          fit="cover"
-                          class="quote-thumb"
-                        />
+                        <el-image :src="message.parentContent"
+                          :preview-src-list="message.parentContent ? [message.parentContent] : []" preview-teleported
+                          fit="cover" class="quote-thumb" />
                       </template>
                       <template v-else-if="getUrlType(message.parentContent) === 'VIDEO'">
                         <div class="quote-file-mini" @click="previewFile(message.parentContent)">
-                          <el-icon><VideoCamera /></el-icon>
+                          <el-icon>
+                            <VideoCamera />
+                          </el-icon>
                           <span>视频消息</span>
                         </div>
                       </template>
                       <template v-else-if="getUrlType(message.parentContent) === 'AUDIO'">
                         <div class="quote-file-mini" @click="previewFile(message.parentContent)">
-                          <el-icon><Microphone /></el-icon>
+                          <el-icon>
+                            <Microphone />
+                          </el-icon>
                           <span>音频消息</span>
                         </div>
                       </template>
                       <template v-else-if="getUrlType(message.parentContent) === 'FILE'">
                         <div class="quote-file-mini" @click="previewFile(message.parentContent)">
-                          <el-icon><Document /></el-icon>
+                          <el-icon>
+                            <Document />
+                          </el-icon>
                           <span>{{ getFileName(message.parentContent) }}</span>
                         </div>
                       </template>
@@ -123,38 +124,35 @@
                       </template>
                     </div>
                   </div>
-                  
+
                   <!-- 文字消息 -->
                   <div v-if="getDisplayType(message) === 'TEXT'" class="message-content text-bubble">
                     {{ message.content }}
                   </div>
-                  
+
                   <!-- 图片消息 -->
                   <div v-else-if="getDisplayType(message) === 'IMAGE'" class="message-content image-content">
-                    <el-image 
-                      :src="message.content" 
-                      :preview-src-list="[message.content]"
-                      preview-teleported
-                      fit="cover"
-                      class="chat-image"
-                    />
+                    <el-image :src="message.content" :preview-src-list="[message.content]" preview-teleported
+                      fit="cover" class="chat-image" />
                   </div>
-                  
+
                   <!-- 视频消息 -->
                   <div v-else-if="getDisplayType(message) === 'VIDEO'" class="message-content video-content">
                     <video :src="message.content" controls class="chat-video"></video>
                   </div>
-                  
+
                   <!-- 音频消息 -->
                   <div v-else-if="getDisplayType(message) === 'AUDIO'" class="message-content audio-content">
                     <audio :src="message.content" controls class="chat-audio"></audio>
                   </div>
-                  
+
                   <!-- 文件消息 (QQ风格卡片) -->
                   <div v-else class="message-content file-card">
                     <div class="file-info">
                       <div class="file-icon-wrapper">
-                        <el-icon :size="32" color="#409EFE"><Document /></el-icon>
+                        <el-icon :size="32" color="#409EFE">
+                          <Document />
+                        </el-icon>
                       </div>
                       <div class="file-details">
                         <div class="file-name-text">{{ getFileName(message.content) }}</div>
@@ -165,7 +163,9 @@
                       <el-button type="primary" link @click="previewFile(message.content)">预览</el-button>
                       <el-divider direction="vertical" />
                       <a :href="message.content" :download="getFileName(message.content)" class="download-btn">
-                        <el-icon :size="16"><Download /></el-icon>
+                        <el-icon :size="16">
+                          <Download />
+                        </el-icon>
                       </a>
                     </div>
                   </div>
@@ -198,34 +198,32 @@
             <!-- 选中文件展示 -->
             <div v-if="selectedFile" class="selected-file-info">
               <div class="file-item">
-                <el-icon><Document /></el-icon>
+                <el-icon>
+                  <Document />
+                </el-icon>
                 <span class="file-name">{{ selectedFile.name }}</span>
                 <el-button link @click="cancelFileSelection" class="cancel-file">
-                  <el-icon><Close /></el-icon>
+                  <el-icon>
+                    <Close />
+                  </el-icon>
                 </el-button>
               </div>
             </div>
 
-            <el-input 
-              v-model="inputMessage" 
-              type="textarea" 
-              :autosize="{ minRows: 3, maxRows: 8 }"
-              :placeholder="inputPlaceholder" 
-              @keyup.enter.exact.prevent="sendMessage"
-              @paste="handlePaste"
-              :disabled="!chatStore.isConnected || isUploading || !!selectedFile" 
-              class="message-input"
-              resize="none"
-              :class="{ 'has-content': inputMessage.trim() || selectedFile, 'replying': isReplying, 'disconnected': !chatStore.isConnected }"
-            />
-            
+            <el-input v-model="inputMessage" type="textarea" :autosize="{ minRows: 3, maxRows: 8 }"
+              :placeholder="inputPlaceholder" @keyup.enter.exact.prevent="sendMessage" @paste="handlePaste"
+              :disabled="!chatStore.isConnected || isUploading || !!selectedFile" class="message-input" resize="none"
+              :class="{ 'has-content': inputMessage.trim() || selectedFile, 'replying': isReplying, 'disconnected': !chatStore.isConnected }" />
+
             <div class="input-actions-row">
               <!-- 工具栏 -->
               <div class="input-toolbar">
                 <div class="tool-left">
                   <el-popover placement="top-start" :width="280" trigger="click" popper-class="emoji-popover">
                     <template #reference>
-                      <el-button link class="tool-btn"><el-icon><ChatDotRound /></el-icon></el-button>
+                      <el-button link class="tool-btn"><el-icon>
+                          <ChatDotRound />
+                        </el-icon></el-button>
                     </template>
                     <div class="emoji-picker">
                       <span v-for="emoji in emojiList" :key="emoji" class="emoji-item" @click="addEmoji(emoji)">
@@ -233,31 +231,30 @@
                       </span>
                     </div>
                   </el-popover>
-                  
-                  <el-button link class="tool-btn" @click="triggerFileInput('IMAGE')"><el-icon><Picture /></el-icon></el-button>
-                  <el-button link class="tool-btn" @click="triggerFileInput('VIDEO')"><el-icon><VideoCamera /></el-icon></el-button>
-                  <el-button link class="tool-btn" @click="triggerFileInput('AUDIO')"><el-icon><Microphone /></el-icon></el-button>
-                  <el-button link class="tool-btn" @click="triggerFileInput('FILE')"><el-icon><Folder /></el-icon></el-button>
-                  
-                  <input 
-                    ref="fileInputRef" 
-                    type="file" 
-                    :accept="fileAccept"
-                    style="display: none" 
-                    @change="handleFileSelect"
-                  />
+
+                  <el-button link class="tool-btn" @click="triggerFileInput('IMAGE')"><el-icon>
+                      <Picture />
+                    </el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('VIDEO')"><el-icon>
+                      <VideoCamera />
+                    </el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('AUDIO')"><el-icon>
+                      <Microphone />
+                    </el-icon></el-button>
+                  <el-button link class="tool-btn" @click="triggerFileInput('FILE')"><el-icon>
+                      <Folder />
+                    </el-icon></el-button>
+
+                  <input ref="fileInputRef" type="file" :accept="fileAccept" style="display: none"
+                    @change="handleFileSelect" />
                 </div>
               </div>
 
               <div class="input-footer">
-                <el-button 
-                  type="primary" 
-                  @click="sendMessage"
-                  :disabled="!chatStore.isConnected || (!inputMessage.trim() && !selectedFile) || isUploading" 
-                  class="send-button"
-                  :loading="isUploading"
-                  :class="{ 'can-send': chatStore.isConnected && (inputMessage.trim() || selectedFile) }"
-                >
+                <el-button type="primary" @click="sendMessage"
+                  :disabled="!chatStore.isConnected || (!inputMessage.trim() && !selectedFile) || isUploading"
+                  class="send-button" :loading="isUploading"
+                  :class="{ 'can-send': chatStore.isConnected && (inputMessage.trim() || selectedFile) }">
                   {{ isUploading ? '上传中...' : '发送' }}
                 </el-button>
               </div>
@@ -334,7 +331,7 @@ const fileAccept = computed(() => {
 function getDisplayType(message: any): string {
   if (message.type === 'SYSTEM') return 'SYSTEM'
   if (message.type === 'TEXT') return 'TEXT'
-  
+
   // 综合考虑 message.type 和 后缀名
   const url = message.content
   return getUrlType(url) || message.type || 'FILE'
@@ -342,19 +339,19 @@ function getDisplayType(message: any): string {
 
 function getUrlType(url?: string): string {
   if (!url) return ''
-  
+
   // 只有以 http 或 https 开头的才认为是 URL 并尝试解析类型
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     return ''
   }
 
   const extension = url.split('.').pop()?.toLowerCase() || ''
-  
+
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'IMAGE'
   if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) return 'VIDEO'
   if (['mp3', 'wav', 'flac'].includes(extension)) return 'AUDIO'
   if (['pdf', 'docx', 'xlsx', 'pptx', 'md'].includes(extension)) return 'FILE'
-  
+
   return 'FILE'
 }
 
@@ -366,11 +363,11 @@ const markdownContent = ref('')
 
 // 表情列表
 const emojiList = ['😊', '😂', '🤣', '😍', '😒', '😘',
-                  '😁', '😉', '🙌', '👍', '🌹', '🎉', 
-                  '🔥', '✨', '🎈', '🎁', '🎂', '🌈', 
-                  '🍦', '🍓', '🐶', '🐱', '🐭', '🐹', 
-                  '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', 
-                  '🦁', '🐮', '🐷', '🐸', '🐵']
+  '😁', '😉', '🙌', '👍', '🌹', '🎉',
+  '🔥', '✨', '🎈', '🎁', '🎂', '🌈',
+  '🍦', '🍓', '🐶', '🐱', '🐭', '🐹',
+  '🐰', '🦊', '🐻', '🐼', '🐨', '🐯',
+  '🦁', '🐮', '🐷', '🐸', '🐵']
 
 // 输入框提示词计算
 const inputPlaceholder = computed(() => {
@@ -477,11 +474,11 @@ function cancelFileSelection() {
 function getFileType(url?: string): string {
   if (!url) return 'FILE'
   const extension = url.split('.').pop()?.toLowerCase() || ''
-  
+
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'IMAGE'
   if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) return 'VIDEO'
   if (['mp3', 'wav', 'ogg', 'flac'].includes(extension)) return 'AUDIO'
-  
+
   // 对于不可直接预览的文件，也返回大写的后缀名作为类型显示
   return extension.toUpperCase() || 'FILE'
 }
@@ -548,7 +545,7 @@ async function sendMessage() {
           content: fileUrl,
           type: selectedFileType.value
         }
-        
+
         chatStore.sendMessage(messageData)
         selectedFile.value = null
         isReplying.value = false
@@ -575,7 +572,7 @@ async function sendMessage() {
     isReplying.value = false
     replyToMessage.value = null
   }
-  
+
   scrollToBottom()
 }
 
@@ -653,7 +650,7 @@ onMounted(async () => {
   if (!chatStore.isConnected && !chatStore.isConnecting) {
     await chatStore.initialize()
   }
-  
+
   // 更新阅读位置
   chatStore.updateReadPosition()
 
@@ -711,7 +708,7 @@ onUnmounted(() => {
   -webkit-overflow-scrolling: touch;
 }
 
-.preview-container > * {
+.preview-container>* {
   min-width: 100%;
   flex: 1;
 }
@@ -788,7 +785,7 @@ onUnmounted(() => {
     padding: 8px;
     padding-top: calc(40px + var(--header-height));
   }
-  
+
   .chat-room-header {
     padding: 10px 16px;
     margin-bottom: 8px;
@@ -985,13 +982,11 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   background:
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 2px,
       rgba(0, 240, 255, 0.01) 2px,
-      rgba(0, 240, 255, 0.01) 4px
-    );
+      rgba(0, 240, 255, 0.01) 4px);
   pointer-events: none;
 }
 
@@ -1056,6 +1051,7 @@ onUnmounted(() => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1162,7 +1158,9 @@ onUnmounted(() => {
   text-align: left;
 }
 
-.image-content, .video-content, .audio-content {
+.image-content,
+.video-content,
+.audio-content {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-xs);

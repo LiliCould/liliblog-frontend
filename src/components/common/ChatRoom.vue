@@ -1,11 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    title="聊天室"
-    width="400px"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-  >
+  <el-dialog v-model="visible" title="聊天室" width="400px" :close-on-click-modal="false" :close-on-press-escape="false">
     <div class="chat-room">
       <div class="status-bar">
         <span class="status-text">
@@ -16,29 +10,17 @@
         </span>
       </div>
 
-      <div 
-        class="messages-container" 
-        ref="messagesContainer"
-        @scroll="handleScroll"
-      >
-        <div 
-          v-for="message in chatStore.messages" 
-          :key="message.id || message.content"
-          class="message-item"
-          :class="{
-            'system-message': message.type === 'SYSTEM',
-            'own-message': message.senderUsername === userStore.username
-          }"
-        >
+      <div class="messages-container" ref="messagesContainer" @scroll="handleScroll">
+        <div v-for="message in chatStore.messages" :key="message.id || message.content" class="message-item" :class="{
+          'system-message': message.type === 'SYSTEM',
+          'own-message': message.senderUsername === userStore.username
+        }">
           <template v-if="message.type === 'SYSTEM'">
             <div class="system-content">{{ message.content }}</div>
           </template>
           <template v-else>
-            <el-avatar 
-              class="message-avatar" 
-              :size="32" 
-              :src="message.senderAvatar || 'https://lilicould.cn/xiaodingdang.png'"
-            >
+            <el-avatar class="message-avatar" :size="32"
+              :src="message.senderAvatar || 'https://lilicould.cn/xiaodingdang.png'">
               {{ message.senderName?.charAt(0) || 'U' }}
             </el-avatar>
             <div class="message-content-wrapper">
@@ -56,52 +38,29 @@
                       <i :class="getFileIconClass(message.fileType || 'other')"></i>
                     </div>
                     <template v-else-if="message.fileType === 'image'">
-                      <img 
-                        :src="message.content" 
-                        class="preview-image" 
-                        @click="previewFile(message.content, message.fileType || 'other')"
-                      />
+                      <img :src="message.content" class="preview-image"
+                        @click="previewFile(message.content, message.fileType || 'other')" />
                     </template>
                     <template v-else-if="message.fileType === 'video'">
-                      <video 
-                        :src="message.content" 
-                        class="preview-video" 
-                        controls 
-                        @click="previewFile(message.content, message.fileType || 'other')"
-                      />
+                      <video :src="message.content" class="preview-video" controls
+                        @click="previewFile(message.content, message.fileType || 'other')" />
                     </template>
                     <template v-else-if="message.fileType === 'audio'">
-                      <audio 
-                        :src="message.content" 
-                        class="preview-audio" 
-                        controls
-                      />
+                      <audio :src="message.content" class="preview-audio" controls />
                     </template>
                     <template v-else-if="message.fileType === 'pdf'">
-                      <a 
-                        :href="message.content" 
-                        target="_blank" 
-                        class="file-link"
-                      >
+                      <a :href="message.content" target="_blank" class="file-link">
                         <i class="el-icon-document"></i>
                         <span>{{ getFileName(message.content) }}</span>
                       </a>
                     </template>
                     <template v-else-if="message.fileType === 'markdown'">
-                      <a 
-                        :href="message.content" 
-                        target="_blank" 
-                        class="file-link"
-                      >
+                      <a :href="message.content" target="_blank" class="file-link">
                         <i class="el-icon-document"></i>
                         <span>{{ getFileName(message.content) }}</span>
                       </a>
                     </template>
-                    <a 
-                      :href="message.content" 
-                      download 
-                      class="download-link"
-                    >
+                    <a :href="message.content" download class="download-link">
                       <i class="el-icon-download"></i>
                     </a>
                   </div>
@@ -114,49 +73,24 @@
 
       <div class="input-area">
         <div class="input-tools">
-          <el-button 
-            link 
-            @click="triggerFileInput"
-            :disabled="!chatStore.isConnected"
-          >
+          <el-button link @click="triggerFileInput" :disabled="!chatStore.isConnected">
             <i class="el-icon-upload"></i>
           </el-button>
-          <input 
-            ref="fileInput" 
-            type="file" 
-            multiple 
-            style="display: none" 
-            @change="handleFileSelect"
-          />
+          <input ref="fileInput" type="file" multiple style="display: none" @change="handleFileSelect" />
         </div>
-        <el-input
-          v-model="inputMessage"
-          placeholder="输入消息..."
-          @keyup.enter="sendMessage"
-          :disabled="!chatStore.isConnected"
-        >
+        <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendMessage"
+          :disabled="!chatStore.isConnected">
           <template #append>
-            <el-button 
-              type="primary" 
-              @click="sendMessage"
-              :disabled="!chatStore.isConnected || (!inputMessage.trim() && !uploadingFiles.length)"
-            >
+            <el-button type="primary" @click="sendMessage"
+              :disabled="!chatStore.isConnected || (!inputMessage.trim() && !uploadingFiles.length)">
               发送
             </el-button>
           </template>
         </el-input>
         <div class="uploading-files" v-if="uploadingFiles.length > 0">
-          <div 
-            v-for="(file, index) in uploadingFiles" 
-            :key="index"
-            class="uploading-file-item"
-          >
+          <div v-for="(file, index) in uploadingFiles" :key="index" class="uploading-file-item">
             <span class="file-name">{{ file.name }}</span>
-            <el-progress 
-              :percentage="file.progress" 
-              :stroke-width="6" 
-              :show-text="false"
-            />
+            <el-progress :percentage="file.progress" :stroke-width="6" :show-text="false" />
           </div>
         </div>
       </div>
@@ -220,14 +154,14 @@ async function handleFileSelect(event: Event) {
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
     uploadingFiles.value.push({ name: file.name, progress: 0 })
-    
+
     try {
       const response = await uploadFile(file, 'chat')
       const apiResponse = response as any
       if (apiResponse.code === 200) {
         const fileUrl = apiResponse.message
         const fileType = getFileType(file.name)
-        
+
         chatStore.sendMessage({
           content: fileUrl,
           type: 'FILE',
@@ -251,7 +185,7 @@ async function handleFileSelect(event: Event) {
 
 function getFileType(filename: string): string {
   const extension = filename.split('.').pop()?.toLowerCase()
-  
+
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) {
     return 'image'
   } else if (['mp4', 'webm', 'ogg', 'mov'].includes(extension || '')) {
@@ -399,8 +333,13 @@ defineExpose({
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .message-item {
@@ -593,7 +532,11 @@ defineExpose({
   border: 1px solid var(--color-border);
 }
 
-.file-type-image, .file-type-video, .file-type-audio, .file-type-pdf, .file-type-markdown {
+.file-type-image,
+.file-type-video,
+.file-type-audio,
+.file-type-pdf,
+.file-type-markdown {
   display: flex;
   flex-direction: column;
   gap: 4px;

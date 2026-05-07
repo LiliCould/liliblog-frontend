@@ -59,9 +59,7 @@
                   <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"></path>
-                    <path
-                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                    ></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                   </svg>
                   写文章
                 </el-dropdown-item>
@@ -189,13 +187,11 @@ function handleCommand(command: string) {
   content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 240, 255, var(--scanline-opacity)) 2px,
-    rgba(0, 240, 255, var(--scanline-opacity)) 4px
-  );
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 240, 255, var(--scanline-opacity)) 2px,
+      rgba(0, 240, 255, var(--scanline-opacity)) 4px);
   pointer-events: none;
   z-index: 1;
 }
@@ -303,15 +299,22 @@ function handleCommand(command: string) {
   font-size: 10px;
   font-weight: var(--font-weight-semibold);
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: var(--color-primary);
   border-radius: var(--radius-full);
   animation: pulse-badge 2s ease-in-out infinite;
   box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 @keyframes pulse-badge {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 .search-trigger {
@@ -363,7 +366,7 @@ function handleCommand(command: string) {
 .user-avatar {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-tertiary));
+  background: var(--color-primary);
   color: white;
   transition: transform var(--transition-fast);
 }
@@ -416,7 +419,7 @@ function handleCommand(command: string) {
 
 .btn-register {
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: var(--color-primary);
   box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25);
 }
 
