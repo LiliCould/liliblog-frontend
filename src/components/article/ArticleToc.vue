@@ -63,12 +63,12 @@ function scrollToHeading(id: string) {
 
 <style scoped>
 .article-toc {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-card);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .toc-title {
@@ -79,6 +79,7 @@ function scrollToHeading(id: string) {
   padding-bottom: 8px;
   border-bottom: 2px solid var(--color-primary);
   display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 240, 255, 0.2);
 }
 
 .toc-nav {
@@ -99,11 +100,14 @@ function scrollToHeading(id: string) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-left: 2px solid transparent;
 }
 
 .toc-link:hover {
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.06);
   color: var(--color-primary);
+  border-left-color: rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .toc-level-2 {

@@ -142,12 +142,11 @@ onUnmounted(() => {
   contain: strict;
 }
 
-/* ========== 霓虹外圈光标 ========== */
 .cursor-outer {
   position: absolute;
   width: var(--cursor-outer-size);
   height: var(--cursor-outer-size);
-  border: 2px solid #00f0ff;
+  border: 2px solid var(--color-primary);
   border-radius: 50%;
   transform: translate(-50%, -50%) translateZ(0);
   transition: 
@@ -155,40 +154,34 @@ onUnmounted(() => {
     height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s ease;
-  will-change: transform;
-  
-  /* 霓虹发光效果 */
+  contain: strict;
   box-shadow: 
     0 0 10px rgba(0, 240, 255, 0.5),
     0 0 20px rgba(0, 240, 255, 0.25),
     inset 0 0 8px rgba(0, 240, 255, 0.15);
-  
   backface-visibility: hidden;
 }
 
-/* 悬浮状态 - 玫红霓虹 */
 .cursor-outer.cursor-hover {
   width: var(--cursor-hover-outer-size);
   height: var(--cursor-hover-outer-size);
-  border-color: #ff003c;
+  border-color: var(--color-accent);
   box-shadow: 
-    0 0 15px rgba(255, 0, 60, 0.65),
-    0 0 30px rgba(255, 0, 60, 0.35),
-    inset 0 0 12px rgba(255, 0, 60, 0.2);
+    0 0 15px rgba(255, 45, 120, 0.65),
+    0 0 30px rgba(255, 45, 120, 0.35),
+    inset 0 0 12px rgba(255, 45, 120, 0.2);
 }
 
-/* 文字选择状态 - 青色聚焦 */
 .cursor-outer.cursor-text {
   width: var(--cursor-text-outer-size);
   height: var(--cursor-text-outer-size);
-  border-color: #00f0ff;
+  border-color: var(--color-primary);
   box-shadow: 
     0 0 8px rgba(0, 240, 255, 0.7),
     0 0 16px rgba(0, 240, 255, 0.4),
     inset 0 0 6px rgba(0, 240, 255, 0.25);
 }
 
-/* ========== 内核光标 ========== */
 .cursor-inner {
   position: absolute;
   width: var(--cursor-inner-size);
@@ -201,13 +194,10 @@ onUnmounted(() => {
     width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
     height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
     background-color 0.2s ease;
-  will-change: transform;
-  
-  /* 白色内核发光 */
+  contain: strict;
   box-shadow: 
     0 0 10px rgba(255, 255, 255, 0.95),
     0 0 20px rgba(0, 240, 255, 0.5);
-  
   backface-visibility: hidden;
 }
 

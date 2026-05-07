@@ -320,9 +320,9 @@ function scrollToBottom() {
   })
 }
 
-watch(() => chatStore.messages, () => {
+watch(() => chatStore.messages.length, () => {
   scrollToBottom()
-}, { deep: true })
+})
 
 watch(visible, (newVal) => {
   if (newVal) {
@@ -353,7 +353,11 @@ defineExpose({
 .status-bar {
   padding: 0 10px 10px;
   font-size: 12px;
-  color: var(--color-muted);
+  color: var(--color-body);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  font-family: monospace;
 }
 
 .status-text {
@@ -368,7 +372,8 @@ defineExpose({
 }
 
 .status-dot.connected {
-  color: var(--color-success);
+  color: var(--color-primary);
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
 }
 
 .messages-container {
@@ -383,7 +388,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
   padding: 10px 0;
-  color: var(--color-muted);
+  color: var(--color-body);
   font-size: 12px;
   gap: 6px;
 }
@@ -410,11 +415,13 @@ defineExpose({
 }
 
 .system-content {
-  background: var(--color-bg);
-  color: var(--color-muted);
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--color-primary);
   padding: 6px 12px;
   border-radius: var(--radius-full);
   font-size: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  font-family: monospace;
 }
 
 .message-item.own-message {
@@ -434,15 +441,16 @@ defineExpose({
 
 .message-content-wrapper {
   max-width: 70%;
-  background: var(--color-bg);
+  background: var(--color-card-solid);
   border-radius: var(--radius-lg);
   padding: 10px 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border);
 }
 
 .message-item.own-message .message-content-wrapper {
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.08);
   color: var(--color-primary);
+  border-color: rgba(0, 240, 255, 0.2);
 }
 
 .message-header {
@@ -459,7 +467,7 @@ defineExpose({
 }
 
 .message-time {
-  color: var(--color-muted);
+  color: var(--color-body);
   margin-left: 8px;
 }
 
@@ -467,18 +475,21 @@ defineExpose({
   font-size: 14px;
   line-height: 1.4;
   word-break: break-word;
+  color: var(--color-body);
 }
 
 .no-more-message {
   text-align: center;
   padding: 10px 0;
-  color: var(--color-muted);
+  color: var(--color-body);
   font-size: 12px;
 }
 
 .input-area {
   margin-top: 10px;
   padding: 0 10px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
 }
 
 .input-tools {
@@ -497,7 +508,7 @@ defineExpose({
   gap: 8px;
   margin-bottom: 4px;
   font-size: 12px;
-  color: var(--color-muted);
+  color: var(--color-body);
 }
 
 .file-name {
@@ -516,7 +527,7 @@ defineExpose({
 
 .file-icon {
   font-size: 24px;
-  color: var(--color-muted);
+  color: var(--color-body);
 }
 
 .preview-image {
@@ -525,6 +536,7 @@ defineExpose({
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: transform 0.2s;
+  border: 1px solid var(--color-border);
 }
 
 .preview-image:hover {
@@ -536,6 +548,7 @@ defineExpose({
   max-height: 150px;
   border-radius: var(--radius-md);
   cursor: pointer;
+  border: 1px solid var(--color-border);
 }
 
 .preview-audio {
@@ -557,11 +570,11 @@ defineExpose({
 }
 
 .file-link:hover {
-  text-decoration: underline;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
 }
 
 .download-link {
-  color: var(--color-muted);
+  color: var(--color-body);
   font-size: 14px;
   margin-left: auto;
 }
@@ -571,12 +584,13 @@ defineExpose({
 }
 
 .file-type-other {
-  background: var(--color-bg);
+  background: var(--color-card-solid);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   gap: 8px;
+  border: 1px solid var(--color-border);
 }
 
 .file-type-image, .file-type-video, .file-type-audio, .file-type-pdf, .file-type-markdown {

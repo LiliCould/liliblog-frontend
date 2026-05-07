@@ -176,22 +176,34 @@ function handleCommand(command: string) {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
   z-index: var(--z-header);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   contain: layout style;
 }
 
-/* 滚动后切换为暖色调 */
+.app-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, var(--scanline-opacity)) 2px,
+    rgba(0, 240, 255, var(--scanline-opacity)) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
 .app-header.scrolled {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom-color: var(--color-border);
-  box-shadow: var(--shadow-sm);
+  background: rgba(10, 10, 15, 0.95);
+  border-bottom-color: rgba(0, 240, 255, 0.25);
+  box-shadow: 0 2px 20px rgba(0, 240, 255, 0.08), 0 1px 0 rgba(0, 240, 255, 0.15);
 }
 
 .header-inner {
@@ -199,6 +211,8 @@ function handleCommand(command: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 2;
 }
 
 .logo {
@@ -217,16 +231,12 @@ function handleCommand(command: string) {
   width: 120px;
   height: auto;
   object-fit: contain;
-  will-change: opacity;
-  transition: opacity 0.4s ease;
-}
-
-.app-header.scrolled .logo-icon {
-  filter: none;
+  will-change: filter;
+  transition: filter 0.4s ease;
 }
 
 .logo:hover .logo-icon {
-  opacity: 0.85;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.3));
 }
 
 .desktop-nav {
@@ -241,31 +251,17 @@ function handleCommand(command: string) {
   align-items: center;
   gap: 6px;
   padding: 10px 16px;
-  color: #fff;
+  color: var(--color-body);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-/* 滚动后切换为暖色调文字 */
-.app-header.scrolled .nav-link {
-  color: var(--color-body);
-  text-shadow: none;
-  font-weight: var(--font-weight-medium);
 }
 
 .nav-link:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* 滚动后暖色调悬浮效果 */
-.app-header.scrolled .nav-link:hover {
   color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.08);
 }
 
 .nav-link:hover .link-underline,
@@ -274,13 +270,22 @@ function handleCommand(command: string) {
 }
 
 .nav-link.active {
-  color: #fff;
+  color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
-/* 滚动后活跃状态为暖色调 */
-.app-header.scrolled .nav-link.active {
-  color: var(--color-primary);
+.link-underline {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
 }
 
 .link-text {
@@ -301,6 +306,7 @@ function handleCommand(command: string) {
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   border-radius: var(--radius-full);
   animation: pulse-badge 2s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 @keyframes pulse-badge {
@@ -316,14 +322,9 @@ function handleCommand(command: string) {
   height: 38px;
   margin-left: 8px;
   border-radius: var(--radius-md);
-  color: #fff;
+  color: var(--color-body);
   cursor: pointer;
   transition: all var(--transition-fast);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.app-header.scrolled .search-trigger {
-  color: var(--color-muted);
 }
 
 .search-trigger svg {
@@ -332,14 +333,9 @@ function handleCommand(command: string) {
 }
 
 .search-trigger:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.app-header.scrolled .search-trigger:hover {
   color: var(--color-primary);
-  background: var(--color-primary-light);
-  transform: scale(1.03);
+  background: rgba(0, 240, 255, 0.08);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .header-right {
@@ -360,31 +356,26 @@ function handleCommand(command: string) {
 }
 
 .user-avatar-wrapper:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.app-header.scrolled .user-avatar-wrapper:hover {
-  background: var(--color-bg-warm);
-  border-color: var(--color-border);
+  background: rgba(0, 240, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.2);
 }
 
 .user-avatar {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  /* 暖色调头像渐变 */
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-tertiary));
   color: white;
   transition: transform var(--transition-fast);
 }
 
 .user-avatar-wrapper:hover .user-avatar {
   transform: rotate(-3deg) scale(1.04);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .username-text {
   font-size: var(--font-size-sm);
-  color: #fff;
+  color: var(--color-title);
   font-weight: var(--font-weight-medium);
   max-width: 100px;
   overflow: hidden;
@@ -392,19 +383,11 @@ function handleCommand(command: string) {
   white-space: nowrap;
 }
 
-.app-header.scrolled .username-text {
-  color: var(--color-title);
-}
-
 .arrow-icon {
   width: 14px;
   height: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-muted);
   transition: transform var(--transition-fast);
-}
-
-.app-header.scrolled .arrow-icon {
-  color: var(--color-muted-light);
 }
 
 .btn-auth {
@@ -419,38 +402,27 @@ function handleCommand(command: string) {
 }
 
 .btn-login {
-  color: #fff;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  color: var(--color-primary);
+  border: 1.5px solid rgba(0, 240, 255, 0.4);
 }
 
 .btn-login:hover {
   color: #fff;
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
-}
-
-.app-header.scrolled .btn-login {
-  color: var(--color-primary);
-  border-color: var(--color-border);
-}
-
-.app-header.scrolled .btn-login:hover {
-  color: var(--color-primary-hover);
   border-color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.1);
+  transform: translateY(-1px);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .btn-register {
   color: #fff;
-  /* 暖色调注册按钮 */
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  box-shadow: 0 4px 12px rgba(196, 93, 53, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25);
 }
 
 .btn-register:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(196, 93, 53, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35), var(--neon-glow-md);
 }
 
 .mobile-menu-btn {
@@ -459,21 +431,14 @@ function handleCommand(command: string) {
   justify-content: center;
   width: 40px;
   height: 40px;
-  color: #fff;
+  color: var(--color-title);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
-.app-header.scrolled .mobile-menu-btn {
-  color: var(--color-title);
-}
-
 .mobile-menu-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.app-header.scrolled .mobile-menu-btn:hover {
-  background: var(--color-bg-warm);
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--color-primary);
 }
 
 .mobile-menu-btn svg {

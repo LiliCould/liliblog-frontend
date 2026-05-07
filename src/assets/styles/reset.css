@@ -17,7 +17,7 @@ html {
 body {
     font-family: var(--font-body);
     color: var(--color-body);
-    background-color: var(--color-bg-warm);
+    background-color: var(--color-bg);
     line-height: var(--line-height-normal);
     min-height: 100vh;
     position: relative;
@@ -32,12 +32,13 @@ body::before {
     right: 0;
     bottom: 0;
     background:
-        linear-gradient(135deg, rgba(248, 246, 243, 0.9) 0%, rgba(252, 250, 247, 0.85) 50%, rgba(248, 244, 240, 0.9) 100%),
-        url('@/assets/background.png');
-    background-size: cover, cover;
-    background-position: center center, center center;
-    background-repeat: no-repeat, no-repeat;
-    background-attachment: fixed, fixed;
+        linear-gradient(180deg, #0a0a0f 0%, #12121a 100%),
+        repeating-linear-gradient(0deg, var(--grid-line-color) 0px, var(--grid-line-color) 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(90deg, var(--grid-line-color) 0px, var(--grid-line-color) 1px, transparent 1px, transparent 60px);
+    background-size: cover, cover, cover;
+    background-position: center, center, center;
+    background-repeat: no-repeat, repeat, repeat;
+    background-attachment: fixed, fixed, fixed;
     z-index: -1;
     pointer-events: none;
 }
@@ -57,6 +58,7 @@ a:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: var(--radius-xs);
+    box-shadow: var(--neon-glow-sm);
 }
 
 img {
@@ -85,6 +87,7 @@ button:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: var(--radius-xs);
+    box-shadow: var(--neon-glow-sm);
 }
 
 input,
@@ -101,7 +104,6 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: var(--font-weight-bold);
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -112,34 +114,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(196, 93, 53, 0.2);
+    background: rgba(0, 240, 255, 0.3);
     border-radius: var(--radius-full);
     transition: background var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(196, 93, 53, 0.35);
+    background: rgba(0, 240, 255, 0.5);
 }
 
-/* Firefox Scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(196, 93, 53, 0.2) transparent;
+    scrollbar-color: rgba(0, 240, 255, 0.3) transparent;
 }
 
-/* Selection */
 ::selection {
-    background: var(--color-primary-light-2);
-    color: var(--color-title);
+    background: rgba(0, 240, 255, 0.25);
+    color: #e2e8f0;
 }
 
-/* Focus Styles for Accessibility */
 :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+    box-shadow: var(--neon-glow-sm);
 }
 
-/* Page Container Utility */
 .page-container {
     max-width: var(--content-max-width);
     margin: 0 auto;
@@ -150,7 +149,7 @@ h1, h2, h3, h4, h5, h6 {
     .page-container {
         padding: 0 var(--spacing-md);
     }
-    
+
     html {
         font-size: 14px;
     }

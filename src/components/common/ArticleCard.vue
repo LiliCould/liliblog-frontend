@@ -153,17 +153,15 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   overflow: hidden;
   opacity: 0;
-  will-change: transform, opacity;
   transform: translateZ(0);
   contain: layout style paint;
 }
 
-/* 温暖渐变背景 */
 .article-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(196, 93, 53, 0.03) 100%);
+  background: linear-gradient(135deg, transparent 0%, rgba(0, 240, 255, 0.03) 100%);
   opacity: 0;
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
@@ -171,14 +169,40 @@ onMounted(() => {
   border-radius: var(--radius-lg);
 }
 
+.article-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.08), transparent);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: var(--radius-lg);
+}
+
 .article-card:hover {
   transform: translateY(-6px) translateZ(0);
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: var(--neon-glow-sm);
   border-color: var(--color-border-hover);
 }
 
 .article-card:hover::before {
   opacity: 1;
+}
+
+.article-card:hover::after {
+  animation: flow-light 0.8s ease-out;
+}
+
+@keyframes flow-light {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .card-inner {
@@ -220,13 +244,15 @@ onMounted(() => {
 }
 
 .badge-top {
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-light-2));
+  background: rgba(0, 240, 255, 0.1);
   color: var(--color-primary);
+  border: 1px solid rgba(0, 240, 255, 0.3);
 }
 
 .badge-recommend {
-  background: linear-gradient(135deg, #FEF7ED, #FDECD0);
+  background: rgba(255, 45, 120, 0.1);
   color: var(--color-accent);
+  border: 1px solid rgba(255, 45, 120, 0.3);
 }
 
 .card-title {
@@ -243,14 +269,14 @@ onMounted(() => {
   transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 暖色调悬浮效果 */
 .article-card:hover .card-title {
   color: var(--color-primary);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
 }
 
 .card-summary {
   font-size: var(--font-size-sm);
-  color: var(--color-body-light);
+  color: var(--color-body);
   line-height: var(--line-height-relaxed);
   margin-bottom: var(--spacing-md);
   display: -webkit-box;
@@ -274,18 +300,24 @@ onMounted(() => {
   align-items: center;
   gap: 6px;
   font-size: var(--font-size-xs);
-  color: var(--color-muted);
+  color: var(--color-body);
   transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .meta-item svg {
   width: 14px;
   height: 14px;
-  opacity: 0.7;
+  color: var(--color-primary);
+  opacity: 0.6;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-card:hover .meta-item {
-  color: var(--color-body-light);
+  color: var(--color-primary);
+}
+
+.article-card:hover .meta-item svg {
+  opacity: 1;
 }
 
 .card-tags {
@@ -304,8 +336,8 @@ onMounted(() => {
   padding: 0 10px;
   font-size: 11px;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-  background: var(--color-bg-warm);
+  color: var(--color-body);
+  background: rgba(0, 240, 255, 0.05);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -314,7 +346,8 @@ onMounted(() => {
 .more-tags-badge:hover {
   color: var(--color-primary);
   border-color: var(--color-border-hover);
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .card-cover {
@@ -338,14 +371,12 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
 }
 
-/* 暖色调覆盖层 */
 .cover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(196, 93, 53, 0.08), transparent);
+  background: linear-gradient(to top, rgba(0, 240, 255, 0.08), transparent);
   opacity: 0;
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }

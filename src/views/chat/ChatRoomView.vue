@@ -282,7 +282,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick, toRaw } from 'vue'
 import { Picture, VideoCamera, Microphone, Document, Download, Close, Folder, UserFilled, Connection, ChatDotRound, CircleClose } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
@@ -291,18 +291,13 @@ import { uploadFile } from '@/api/file'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import MobileNav from '@/components/layout/MobileNav.vue'
 import { ElMessage } from 'element-plus'
+import { defineAsyncComponent } from 'vue'
 
-// vue-office components
-import VueOfficeDocx from '@vue-office/docx'
-import VueOfficeExcel from '@vue-office/excel'
-import VueOfficePdf from '@vue-office/pdf'
-import VueOfficePptx from '@vue-office/pptx'
-import '@vue-office/docx/lib/index.css'
-import '@vue-office/excel/lib/index.css'
-
-// Markdown preview
-import { MdPreview } from 'md-editor-v3'
-import 'md-editor-v3/lib/preview.css'
+const VueOfficeDocx = defineAsyncComponent(() => import('@vue-office/docx'))
+const VueOfficeExcel = defineAsyncComponent(() => import('@vue-office/excel'))
+const VueOfficePdf = defineAsyncComponent(() => import('@vue-office/pdf'))
+const VueOfficePptx = defineAsyncComponent(() => import('@vue-office/pptx'))
+const MdPreview = defineAsyncComponent(() => import('md-editor-v3').then(m => ({ default: m.MdPreview })))
 
 const messagesContainer = ref<HTMLElement>()
 const inputMessage = ref('')
@@ -607,32 +602,38 @@ function scrollToBottom() {
 
 // 处理消息的引用信息
 function processMessageReferences(messages: any[]) {
+  // 使用 toRaw 打破响应式追踪，避免修改响应式对象时触发无限循环
+  const rawMessages = toRaw(messages)
+  if (!rawMessages || rawMessages.length === 0) return
+
   // 创建消息ID到消息对象的映射
   const messageMap = new Map()
-  messages.forEach(msg => {
-    if (msg.id) {
-      messageMap.set(msg.id, msg)
+  rawMessages.forEach(msg => {
+    const rawMsg = toRaw(msg)
+    if (rawMsg.id) {
+      messageMap.set(rawMsg.id, rawMsg)
     }
   })
 
   // 为每条有parentId的消息添加引用信息
-  messages.forEach(msg => {
-    if (msg.parentId > 0 && !msg.parentContent) {
-      const parentMsg = messageMap.get(msg.parentId)
+  rawMessages.forEach(msg => {
+    const rawMsg = toRaw(msg)
+    if (rawMsg.parentId > 0 && !rawMsg.parentContent) {
+      const parentMsg = messageMap.get(rawMsg.parentId)
       if (parentMsg) {
-        msg.parentContent = parentMsg.content
-        msg.parentSenderName = parentMsg.senderName
+        rawMsg.parentContent = parentMsg.content
+        rawMsg.parentSenderName = parentMsg.senderName
       }
     }
   })
 }
 
 // 监听消息变化，处理引用信息
-watch(() => chatStore.messages, (newMessages) => {
-  if (newMessages && newMessages.length > 0) {
-    processMessageReferences(newMessages)
+watch(() => chatStore.messages.length, (newLength) => {
+  if (newLength > 0) {
+    nextTick(() => processMessageReferences(chatStore.messages))
   }
-}, { deep: true })
+})
 
 // 监听新消息，自动滚动到底部
 watch(() => chatStore.messages.length, (newLength, oldLength) => {
@@ -682,12 +683,12 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* 全局样式，用于处理 Teleport 后的弹出框 */
 .emoji-popover {
   padding: 0 !important;
   border-radius: 12px !important;
   border: 1px solid var(--color-border) !important;
   box-shadow: var(--shadow-lg) !important;
+  background: var(--color-card-solid) !important;
 }
 
 .preview-dialog {
@@ -704,7 +705,7 @@ onUnmounted(() => {
 .preview-container {
   min-height: 400px;
   max-height: 75vh;
-  overflow: auto; /* 允许横向滚动如果内容太宽 */
+  overflow: auto;
   display: flex;
   flex-direction: column;
   -webkit-overflow-scrolling: touch;
@@ -736,7 +737,7 @@ onUnmounted(() => {
 }
 
 .emoji-picker::-webkit-scrollbar-thumb {
-  background: #ddd;
+  background: var(--color-border);
   border-radius: 4px;
 }
 
@@ -762,7 +763,7 @@ onUnmounted(() => {
 .chat-room-view {
   min-height: 100vh;
   height: 100vh;
-  background: #fafafa;
+  background: var(--color-bg);
   font-family: var(--font-family);
   overflow: hidden;
   display: flex;
@@ -772,7 +773,7 @@ onUnmounted(() => {
 .chat-room-container {
   flex: 1;
   padding: 12px;
-  padding-top: calc(24px + var(--header-height)); /* 增加间距以防重叠 */
+  padding-top: calc(24px + var(--header-height));
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -785,7 +786,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .chat-room-container {
     padding: 8px;
-    padding-top: calc(40px + var(--header-height)); /* 移动端增加更多间距 */
+    padding-top: calc(40px + var(--header-height));
   }
   
   .chat-room-header {
@@ -797,7 +798,9 @@ onUnmounted(() => {
 .chat-room-header {
   margin-bottom: 12px;
   padding: 14px 20px;
-  background: white;
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -825,6 +828,7 @@ onUnmounted(() => {
   height: 14px;
   background: var(--color-primary);
   border-radius: 2px;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .status-bar {
@@ -860,7 +864,8 @@ onUnmounted(() => {
 }
 
 .status-icon.connected {
-  color: #67C23A; /* 使用更柔和的成功绿色 */
+  color: var(--color-success);
+  filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.4));
 }
 
 .chat-room-content {
@@ -873,14 +878,15 @@ onUnmounted(() => {
 
 .chat-sidebar {
   width: 240px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   overflow-y: auto;
   transition: all 0.3s;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 105, 180, 0.1);
+  border: 1px solid var(--color-border);
 }
 
 .sidebar-section {
@@ -890,28 +896,28 @@ onUnmounted(() => {
 .sidebar-title {
   font-size: 14px;
   font-weight: 600;
-  color: #ff69b4;
+  color: var(--color-primary);
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid rgba(255, 105, 180, 0.2);
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--color-border);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .online-count {
   margin-bottom: 12px;
   font-size: 13px;
-  color: #666;
+  color: var(--color-body);
   font-weight: 500;
 }
 
 .count-value {
   font-weight: 600;
-  color: #ff69b4;
-  background: rgba(255, 105, 180, 0.1);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
   padding: 2px 8px;
   border-radius: 12px;
   margin-left: 8px;
-  border: 1px solid rgba(255, 105, 180, 0.3);
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .user-list {
@@ -936,31 +942,32 @@ onUnmounted(() => {
 
 .user-name {
   font-size: 14px;
-  color: var(--color-text);
+  color: var(--color-body);
   font-weight: 500;
 }
 
 .no-online-users {
   font-size: 13px;
-  color: #999;
+  color: var(--color-muted);
   text-align: center;
   padding: 20px 0;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-bg-warm);
   border-radius: 12px;
-  border: 1px dashed rgba(255, 105, 180, 0.2);
+  border: 1px dashed var(--color-border);
 }
 
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
   transition: all 0.3s;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 105, 180, 0.1);
+  border: 1px solid var(--color-border);
   min-height: 0;
 }
 
@@ -969,7 +976,23 @@ onUnmounted(() => {
   overflow-y: auto;
   padding: 20px;
   scroll-behavior: smooth;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--color-bg-warm);
+  position: relative;
+}
+
+.messages-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 240, 255, 0.01) 2px,
+      rgba(0, 240, 255, 0.01) 4px
+    );
+  pointer-events: none;
 }
 
 .messages-container::-webkit-scrollbar {
@@ -977,18 +1000,17 @@ onUnmounted(() => {
 }
 
 .messages-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-bg-warm);
   border-radius: 4px;
 }
 
 .messages-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 105, 180, 0.3);
+  background: var(--color-border);
   border-radius: 4px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .messages-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 105, 180, 0.5);
+  background: var(--color-border-hover);
 }
 
 .loading-message {
@@ -996,19 +1018,19 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: 12px 0;
-  color: #666;
+  color: var(--color-body);
   font-size: 13px;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-card);
   border-radius: 12px;
   margin: 10px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-xs);
 }
 
 .loading-icon {
   font-size: 14px;
   animation: spin 1s linear infinite;
-  color: #ff69b4;
+  color: var(--color-primary);
 }
 
 @keyframes spin {
@@ -1047,12 +1069,13 @@ onUnmounted(() => {
 }
 
 .system-content {
-  background: rgba(0, 0, 0, 0.05);
-  color: #999;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
   padding: 4px 16px;
   border-radius: 20px;
   font-size: 12px;
   text-align: center;
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .message-item.own-message {
@@ -1061,7 +1084,7 @@ onUnmounted(() => {
 
 .message-avatar {
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -1093,7 +1116,7 @@ onUnmounted(() => {
 
 .sender-name {
   font-weight: 500;
-  color: #666;
+  color: var(--color-body);
 }
 
 .message-time {
@@ -1115,20 +1138,20 @@ onUnmounted(() => {
 }
 
 .text-bubble {
-  background: white;
+  background: var(--color-card-solid);
   padding: 10px 14px;
   border-radius: 4px 16px 16px 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   border: 1px solid var(--color-border);
   font-size: 14px;
   line-height: 1.6;
-  color: var(--color-text);
+  color: var(--color-body);
   word-break: normal;
   overflow-wrap: break-word;
   white-space: pre-wrap;
   width: fit-content;
   max-width: 100%;
-  display: block; /* 在 flex 容器下，inline-block 无效，用 block + fit-content */
+  display: block;
 }
 
 .message-item.own-message .text-bubble {
@@ -1139,11 +1162,10 @@ onUnmounted(() => {
   text-align: left;
 }
 
-/* 媒体内容样式 */
 .image-content, .video-content, .audio-content {
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .chat-image {
@@ -1163,18 +1185,17 @@ onUnmounted(() => {
   max-width: 100%;
 }
 
-/* 文件卡片 微信风格优化 */
 .file-card {
   width: 280px;
   max-width: 100%;
-  background: white;
+  background: var(--color-card-solid);
   border-radius: 12px;
   border: 1px solid var(--color-border);
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .message-item.own-message .file-card {
@@ -1234,22 +1255,22 @@ onUnmounted(() => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #f5f5f5;
-  color: #666;
+  background: var(--color-bg-warm);
+  color: var(--color-body);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .download-btn:hover {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-bg);
+  box-shadow: var(--neon-glow-sm);
 }
 
-/* 引用效果 */
 .message-quote {
   margin-bottom: 8px;
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(0, 240, 255, 0.03);
   border-left: 3px solid var(--color-primary);
   border-radius: 4px;
   font-size: 12px;
@@ -1292,7 +1313,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: white;
+  background: var(--color-card-solid);
   padding: 4px 10px;
   border-radius: 4px;
   cursor: pointer;
@@ -1306,7 +1327,6 @@ onUnmounted(() => {
   color: var(--color-primary);
 }
 
-/* 响应式设计补全 */
 @media (max-width: 768px) {
   .pc-only {
     display: none !important;
@@ -1328,7 +1348,7 @@ onUnmounted(() => {
 
   .messages-container {
     padding: 12px;
-    -webkit-overflow-scrolling: touch; /* 优化 iOS 滚动 */
+    -webkit-overflow-scrolling: touch;
     overflow-y: auto;
     height: 100%;
   }
@@ -1344,29 +1364,27 @@ onUnmounted(() => {
   }
 
   .text-bubble {
-    font-size: 15px; /* 移动端文字稍大 */
+    font-size: 15px;
     padding: 8px 12px;
   }
 }
 
-/* 回复菜单 */
 .reply-menu {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--color-card-solid);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   padding: 4px;
   min-width: 80px;
 }
 
-/* 回复状态 */
 .reply-status {
   padding: 10px 12px;
-  background: rgba(255, 105, 180, 0.1);
+  background: var(--color-primary-light);
   border-radius: 12px;
   margin-bottom: 8px;
   font-size: 12px;
-  border: 1px solid rgba(255, 105, 180, 0.2);
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .reply-header {
@@ -1377,26 +1395,26 @@ onUnmounted(() => {
 }
 
 .reply-label {
-  color: #666;
+  color: var(--color-body);
 }
 
 .reply-name {
   font-weight: 600;
-  color: #ff69b4;
+  color: var(--color-primary);
   flex: 1;
 }
 
 .reply-content {
-  color: #666;
+  color: var(--color-body);
   line-height: 1.4;
   word-break: break-word;
   padding-left: 20px;
-  border-left: 2px solid rgba(255, 105, 180, 0.3);
+  border-left: 2px solid var(--color-border-hover);
   margin-top: 4px;
 }
 
 .cancel-reply {
-  color: #999;
+  color: var(--color-muted);
   padding: 0;
   min-width: 20px;
   height: 20px;
@@ -1405,7 +1423,7 @@ onUnmounted(() => {
 }
 
 .cancel-reply:hover {
-  color: #ff69b4;
+  color: var(--color-primary);
 }
 
 .input-toggle {
@@ -1414,30 +1432,29 @@ onUnmounted(() => {
   justify-content: center;
   gap: 6px;
   padding: 10px;
-  border-top: 1px solid rgba(255, 105, 180, 0.2);
-  background: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-card);
   cursor: pointer;
   transition: all 0.3s;
   font-size: 12px;
-  color: #ff69b4;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .input-toggle:hover {
-  background: rgba(255, 105, 180, 0.1);
+  background: var(--color-primary-light);
   transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(255, 105, 180, 0.1);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .input-area {
   padding: 16px 20px;
   border-top: 1px solid var(--color-border);
-  background: white;
+  background: var(--color-card-solid);
   transition: all 0.3s ease;
   position: relative;
 }
 
-/* 消息内容类型样式 */
 .image-content {
   padding: 0 !important;
   background: transparent !important;
@@ -1466,17 +1483,16 @@ onUnmounted(() => {
   height: 40px;
 }
 
-/* 文件卡片 QQ风格 */
 .file-card {
   width: 280px;
-  background: white !important;
+  background: var(--color-card-solid) !important;
   border-radius: 12px;
   border: 1px solid var(--color-border) !important;
   padding: 12px !important;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .file-info {
@@ -1531,18 +1547,18 @@ onUnmounted(() => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #f5f5f5;
-  color: #666;
+  background: var(--color-bg-warm);
+  color: var(--color-body);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .download-btn:hover {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-bg);
+  box-shadow: var(--neon-glow-sm);
 }
 
-/* 输入区域增强 */
 .selected-file-info {
   margin-bottom: 12px;
   padding: 10px 14px;
@@ -1620,17 +1636,18 @@ onUnmounted(() => {
   border-radius: 12px;
   padding: 10px 14px;
   border: 1px solid var(--color-border);
-  background: #fafafa;
+  background: var(--color-bg-warm);
   font-family: inherit;
   font-size: 14px;
   line-height: 1.6;
   transition: all 0.2s;
+  color: var(--color-body);
 }
 
 .message-input :deep(.el-textarea__inner:focus) {
   border-color: var(--color-primary);
-  background: white;
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  background: var(--color-bg-deep);
+  box-shadow: 0 0 0 3px var(--color-primary-light), var(--neon-glow-sm);
 }
 
 .send-button {
@@ -1639,24 +1656,23 @@ onUnmounted(() => {
   height: 36px;
   font-weight: 500;
   border: none;
-  background: #f0f0f0;
-  color: #999;
+  background: var(--color-bg-warm);
+  color: var(--color-muted);
   transition: all 0.3s;
 }
 
 .send-button.can-send {
   background: var(--color-primary);
-  color: white;
-  box-shadow: var(--shadow-sm);
+  color: var(--color-bg);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .send-button.can-send:hover {
   background: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--neon-glow-md);
 }
 
-/* 响应式设计 */
 @media (max-width: 1024px) {
   .chat-sidebar {
     width: 200px;
@@ -1699,9 +1715,9 @@ onUnmounted(() => {
     width: 200px;
     max-height: 300px;
     z-index: 1000;
-    background: white;
+    background: var(--color-card-solid);
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
     padding: 12px;
     overflow-y: auto;
   }
@@ -1796,7 +1812,6 @@ onUnmounted(() => {
   }
 }
 
-/* 回到底部按钮样式 */
 .scroll-to-bottom-button {
   position: fixed;
   bottom: 220px;
@@ -1805,16 +1820,16 @@ onUnmounted(() => {
   height: 44px;
   font-size: 16px;
   z-index: 100;
-  background: white;
+  background: var(--color-card-solid);
   border: 1px solid var(--color-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   color: var(--color-primary);
   transition: all 0.3s ease;
 }
 
 .scroll-to-bottom-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg), var(--neon-glow-sm);
   background: var(--color-primary-light);
 }
 

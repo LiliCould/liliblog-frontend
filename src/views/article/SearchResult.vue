@@ -94,8 +94,9 @@ watch(() => route.query.keyword, (val) => {
 .search-title {
   font-size: 24px;
   font-weight: 700;
-  color: var(--color-warning);
+  color: var(--color-primary);
   margin-bottom: 20px;
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
 }
 
 .search-header :deep(.search-bar) {
@@ -106,12 +107,13 @@ watch(() => route.query.keyword, (val) => {
   text-align: center;
   margin: 0 auto;
   font-size: 14px;
-  color: var(--color-warning);
+  color: var(--color-body);
   max-width: 800px;
 }
 
 .search-info strong {
   color: var(--color-primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 .search-results {
@@ -132,7 +134,7 @@ watch(() => route.query.keyword, (val) => {
 .search-hint {
   text-align: center;
   padding: 60px 20px;
-  color: var(--color-warning);
+  color: var(--color-muted);
   font-size: 14px;
 }
 </style>

@@ -275,10 +275,18 @@ async function handleChangePassword() {
 
 .profile-card {
   background: var(--color-card);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 28px;
   margin-bottom: 20px;
+  transition: all var(--transition-base);
+}
+
+.profile-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .section-title {
@@ -323,6 +331,11 @@ async function handleChangePassword() {
   color: var(--color-title);
   flex: 1;
   cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.info-value:hover {
+  color: var(--color-primary);
 }
 
 .nickname-edit {
@@ -346,6 +359,10 @@ async function handleChangePassword() {
   position: relative;
 }
 
+.info-avatar :deep(.el-avatar) {
+  box-shadow: 0 0 0 3px var(--color-primary), var(--neon-glow-sm);
+}
+
 .avatar-upload {
   position: absolute;
   bottom: 0;
@@ -354,7 +371,7 @@ async function handleChangePassword() {
 }
 
 .avatar-upload .el-button {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), var(--neon-glow-sm);
 }
 
 @media (max-width: 640px) {

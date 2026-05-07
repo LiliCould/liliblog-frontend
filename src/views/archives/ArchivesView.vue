@@ -193,8 +193,8 @@ async function loadMore() {
 }
 
 .archives-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 32px;
@@ -207,7 +207,19 @@ async function loadMore() {
   gap: 14px;
   margin-bottom: 32px;
   padding-bottom: 20px;
-  border-bottom: 2px solid var(--color-primary-light);
+  border-bottom: 2px solid var(--color-border);
+  position: relative;
+}
+
+.card-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 .header-icon {
@@ -219,12 +231,13 @@ async function loadMore() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .header-icon svg {
   width: 24px;
   height: 24px;
-  color: white;
+  color: #0a0a0f;
 }
 
 .header-title {
@@ -232,6 +245,7 @@ async function loadMore() {
   font-weight: 700;
   color: var(--color-title);
   margin: 0;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
 }
 
 .article-count {
@@ -256,8 +270,27 @@ async function loadMore() {
   top: 12px;
   bottom: 12px;
   width: 2px;
-  background: linear-gradient(to bottom, var(--color-primary), var(--color-primary-light));
+  background: linear-gradient(to bottom, var(--color-primary), rgba(0, 240, 255, 0.15));
   border-radius: 1px;
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.3);
+}
+
+.timeline::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(to bottom, rgba(0, 240, 255, 0.8), transparent);
+  border-radius: 2px;
+  animation: data-stream 3s ease-in-out infinite;
+}
+
+@keyframes data-stream {
+  0% { top: 12px; opacity: 1; }
+  80% { opacity: 0.6; }
+  100% { top: calc(100% - 12px); opacity: 0; }
 }
 
 .timeline-year {
@@ -283,7 +316,7 @@ async function loadMore() {
   background: var(--color-primary);
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 0 4px var(--color-primary-light);
+  box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.15), 0 0 10px rgba(0, 240, 255, 0.4);
   z-index: 1;
 }
 
@@ -291,14 +324,16 @@ async function loadMore() {
   font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--color-title);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
 .year-count {
   font-size: var(--font-size-sm);
-  color: var(--color-muted);
-  background: var(--color-bg);
+  color: var(--color-primary);
+  background: rgba(0, 240, 255, 0.08);
   padding: 2px 10px;
   border-radius: var(--radius-full);
+  border: 1px solid rgba(0, 240, 255, 0.2);
 }
 
 .months-container {
@@ -339,7 +374,7 @@ async function loadMore() {
   background: var(--color-accent);
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(232, 158, 60, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.15), 0 0 8px rgba(255, 45, 120, 0.3);
   z-index: 1;
 }
 
@@ -369,7 +404,7 @@ async function loadMore() {
 }
 
 .article-item:hover {
-  background: var(--color-bg);
+  background: rgba(0, 240, 255, 0.04);
 }
 
 .item-dot {
@@ -378,11 +413,12 @@ async function loadMore() {
   background: var(--color-muted);
   border-radius: 50%;
   flex-shrink: 0;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .article-item:hover .item-dot {
   background: var(--color-primary);
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
 }
 
 .item-date {
@@ -402,11 +438,12 @@ async function loadMore() {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 400px;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .item-title:hover {
   color: var(--color-primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 .badge {
@@ -421,8 +458,9 @@ async function loadMore() {
 }
 
 .badge-top {
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.1);
   color: var(--color-primary);
+  border: 1px solid rgba(0, 240, 255, 0.3);
 }
 
 .empty-state {

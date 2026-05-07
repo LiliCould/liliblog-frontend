@@ -47,13 +47,14 @@
 
 .markdown-body a:hover {
     text-decoration: underline;
+    text-shadow: var(--neon-glow-sm);
 }
 
 .markdown-body blockquote {
     margin: 16px 0;
     padding: 12px 20px;
     border-left: 4px solid var(--color-primary);
-    background: var(--color-primary-light);
+    background: rgba(0, 240, 255, 0.04);
     color: var(--color-body);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
@@ -61,9 +62,10 @@
 .markdown-body pre {
     margin: 16px 0;
     padding: 16px;
-    background: #2d2d2d;
+    background: #0d0d1a;
     border-radius: var(--radius-md);
     overflow-x: auto;
+    border: 1px solid var(--color-border);
 }
 
 .markdown-body code {
@@ -73,7 +75,7 @@
 
 .markdown-body p code {
     padding: 2px 6px;
-    background: var(--color-primary-light);
+    background: rgba(0, 240, 255, 0.08);
     color: var(--color-primary);
     border-radius: 4px;
     font-size: 13px;
@@ -99,9 +101,13 @@
 }
 
 .markdown-body th {
-    background: var(--color-bg);
+    background: rgba(0, 240, 255, 0.06);
     font-weight: 600;
-    color: var(--color-title);
+    color: var(--color-primary);
+}
+
+.markdown-body tr:nth-child(even) {
+    background: rgba(10, 10, 15, 0.4);
 }
 
 .markdown-body ul,
@@ -115,8 +121,16 @@
     list-style-type: disc !important;
 }
 
+.markdown-body ul li::marker {
+    color: var(--color-primary);
+}
+
 .markdown-body ol {
     list-style-type: decimal !important;
+}
+
+.markdown-body ol li::marker {
+    color: var(--color-primary);
 }
 
 .markdown-body li {
@@ -126,5 +140,6 @@
 .markdown-body hr {
     margin: 24px 0;
     border: none;
-    border-top: 1px solid var(--color-border);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
 }

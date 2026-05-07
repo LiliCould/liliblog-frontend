@@ -1,0 +1,39 @@
+- [x] CSS 变量体系已统一为赛博朋克暗色主题，无暖色系残留
+- [x] body 背景已改为暗色渐变 + 网格图案，滚动条为霓虹青色
+- [x] Element Plus 组件主题已覆盖为暗色赛博朋克风格
+- [x] Markdown 渲染样式已适配暗色主题（终端风格代码块、霓虹链接、暗色表格）
+- [x] NProgress 进度条已更新为霓虹渐变风格
+- [x] 性能优化 CSS 已更新（减少 will-change 滥用、添加 content-visibility）
+- [x] AppHeader 使用暗色半透明背景 + 霓虹风格
+- [x] AppFooter 使用暗色背景 + 霓虹装饰
+- [x] AppSidebar 使用暗色毛玻璃面板 + 霓虹边框
+- [x] MobileNav 使用暗色底部导航 + 霓虹激活指示
+- [x] ArticleCard 使用暗色卡片 + 霓虹悬浮效果
+- [x] CustomCursor 性能已优化，保持赛博朋克风格
+- [x] SearchBar 使用暗色输入框 + 霓虹聚焦效果
+- [x] TagBadge 使用霓虹半透明背景
+- [x] ChatRoom 使用暗色终端风格
+- [x] ArticleMeta 使用暗色 + 霓虹图标
+- [x] ArticleToc 使用暗色 + 霓虹激活指示
+- [x] EmptyState 使用暗色背景 + 霓虹图标
+- [x] HomeView 内容区已改为暗色背景 + 霓虹卡片，Hero 动画性能已优化
+- [x] ArticleDetail 使用暗色阅读背景 + 终端风格代码块
+- [x] SearchResult 使用暗色列表 + 霓虹高亮
+- [x] ArchivesView 使用暗色时间轴 + 霓虹节点
+- [x] AboutView 使用暗色背景 + 霓虹技能条 + 全息信息卡
+- [x] LoginView 使用暗色表单 + 霓虹输入框
+- [x] RegisterView 使用暗色表单 + 霓虹输入框
+- [x] ProfileView 使用暗色卡片 + 全息头像框
+- [x] ChatRoomView 使用暗色终端风格 + 霓虹消息气泡
+- [x] ArticleEditor 使用暗色编辑器 + 终端风格工具栏
+- [x] MyArticles 使用暗色卡片列表 + 霓虹状态指示
+- [x] FilePreview 使用暗色查看器 + 霓虹工具栏
+- [x] uno.config.ts 主题色已更新为赛博朋克暗色系
+- [x] App.vue 全局样式已更新为暗色主题
+- [x] index.html 主题色 meta 标签已更新
+- [x] 首屏并发动画不超过3个
+- [x] 视口外动画使用 IntersectionObserver 延迟启动
+- [x] will-change 声明仅在交互时动态添加，无静态滥用
+- [x] prefers-reduced-motion 媒体查询正确禁用装饰性动画
+- [x] 暗色主题下正文文字对比度达到 WCAG AA 标准（4.5:1）
+- [x] yarn build 构建成功无错误

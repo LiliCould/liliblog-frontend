@@ -162,11 +162,12 @@ watch(article, updateMetaTags, { deep: true })
 .detail-skeleton {
   max-width: 800px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
   border-radius: var(--radius-lg);
   padding: 40px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
 }
 
 .detail-layout {
@@ -179,12 +180,12 @@ watch(article, updateMetaTags, { deep: true })
 .article-content {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: var(--color-card);
+  backdrop-filter: var(--blur-md);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 36px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-card);
 }
 
 .article-header {
@@ -197,6 +198,7 @@ watch(article, updateMetaTags, { deep: true })
   color: var(--color-title);
   line-height: 1.4;
   margin-bottom: 16px;
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
 }
 
 .article-tags {

@@ -47,6 +47,7 @@ withDefaults(defineProps<{
   animation: float 3s ease-in-out infinite;
   position: relative;
   z-index: 2;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
 }
 
 @keyframes float {
@@ -74,7 +75,7 @@ withDefaults(defineProps<{
 .circle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.08;
+  opacity: 0.1;
   animation: pulse-circle 4s ease-in-out infinite;
 }
 
@@ -85,6 +86,7 @@ withDefaults(defineProps<{
   top: 20px;
   left: 20px;
   animation-delay: 0s;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
 }
 
 .circle-2 {
@@ -94,15 +96,17 @@ withDefaults(defineProps<{
   top: 30px;
   right: 10px;
   animation-delay: 1s;
+  box-shadow: 0 0 20px rgba(255, 45, 120, 0.2);
 }
 
 .circle-3 {
   width: 40px;
   height: 40px;
-  background: var(--color-primary);
+  background: var(--color-tertiary);
   bottom: 10px;
   left: 40px;
   animation-delay: 2s;
+  box-shadow: 0 0 20px rgba(185, 103, 255, 0.2);
 }
 
 @keyframes pulse-circle {
@@ -110,12 +114,12 @@ withDefaults(defineProps<{
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.08;
+    opacity: 0.1;
   }
 
   50% {
     transform: scale(1.1);
-    opacity: 0.12;
+    opacity: 0.18;
   }
 }
 
@@ -123,13 +127,13 @@ withDefaults(defineProps<{
   font-family: var(--font-display);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-title);
+  color: var(--color-primary);
   margin: 0 0 var(--spacing-xs) 0;
 }
 
 .empty-description {
   font-size: var(--font-size-sm);
-  color: var(--color-muted);
+  color: var(--color-body);
   margin: 0;
   max-width: 280px;
 }

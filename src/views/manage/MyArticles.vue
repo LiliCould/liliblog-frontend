@@ -186,11 +186,12 @@ onMounted(loadArticles)
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   margin-bottom: 8px;
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .article-item:hover {
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--neon-glow-sm);
+  border-color: var(--color-border-hover);
 }
 
 .item-content {
@@ -207,10 +208,12 @@ onMounted(loadArticles)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color var(--transition-fast);
 }
 
 .item-title:hover {
   color: var(--color-primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .item-summary {
@@ -238,18 +241,21 @@ onMounted(loadArticles)
 }
 
 .meta-status.published {
-  background: #E8F5E9;
-  color: #2E7D32;
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .meta-status.draft {
-  background: #FFF3E0;
-  color: #E65100;
+  background: rgba(255, 170, 0, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(255, 170, 0, 0.2);
 }
 
 .meta-status.hidden {
-  background: #F5F5F5;
-  color: #757575;
+  background: var(--color-bg-warm);
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
 }
 
 .item-actions {
@@ -258,9 +264,8 @@ onMounted(loadArticles)
   flex-shrink: 0;
 }
 
-/* 自定义 el-tabs 配色 */
 :deep(.el-tabs__item) {
-  color: var(--color-text);
+  color: var(--color-body);
   font-weight: 500;
 }
 
@@ -270,6 +275,7 @@ onMounted(loadArticles)
 
 :deep(.el-tabs__active-bar) {
   background-color: var(--color-primary);
+  box-shadow: var(--neon-glow-sm);
 }
 
 :deep(.el-tabs__item:hover) {

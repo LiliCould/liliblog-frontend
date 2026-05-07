@@ -45,10 +45,32 @@ defineExpose({ keyword })
   border-radius: var(--radius-full);
   box-shadow: 0 0 0 1px var(--color-border);
   padding: 4px 16px;
+  background: var(--color-card-solid);
+  transition: box-shadow 0.3s ease;
 }
 
-.search-bar :deep(.el-input__wrapper:hover),
+.search-bar :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--color-border-hover);
+}
+
 .search-bar :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary), var(--neon-glow-sm);
+}
+
+.search-bar :deep(.el-input__inner) {
+  color: var(--color-title);
+}
+
+.search-bar :deep(.el-input__inner::placeholder) {
+  color: var(--color-body);
+}
+
+.search-bar :deep(.el-input__prefix .el-icon) {
+  color: var(--color-body);
+  transition: color 0.3s ease;
+}
+
+.search-bar :deep(.el-input__wrapper.is-focus .el-input__prefix .el-icon) {
+  color: var(--color-primary);
 }
 </style>

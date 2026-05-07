@@ -55,6 +55,21 @@ defineProps<{
   align-items: center;
   gap: 4px;
   font-size: 13px;
-  color: var(--color-muted);
+  color: var(--color-body);
+  transition: color 0.3s ease;
+}
+
+.meta-item :deep(.el-icon) {
+  color: var(--color-primary);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.meta-item:hover {
+  color: var(--color-primary);
+}
+
+.meta-item:hover :deep(.el-icon) {
+  opacity: 1;
 }
 </style>

@@ -72,6 +72,8 @@ watch(() => route.path, (path) => {
   display: flex;
   flex-direction: column;
   cursor: none;
+  background-color: #0a0a0f;
+  color: #e0e0e8;
 }
 
 @media (max-width: 768px) {
@@ -84,5 +86,6 @@ watch(() => route.path, (path) => {
   flex: 1;
   padding-top: var(--header-height);
   min-height: calc(100vh - var(--header-height));
+  background-color: #0a0a0f;
 }
 </style>

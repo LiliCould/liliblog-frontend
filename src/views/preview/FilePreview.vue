@@ -50,12 +50,12 @@
 
 <script>
 import { useRoute } from 'vue-router'
-import VueOfficeDocx from '@vue-office/docx'
-import VueOfficeExcel from '@vue-office/excel'
-import VueOfficePdf from '@vue-office/pdf'
-import VueOfficePptx from '@vue-office/pptx'
-import '@vue-office/docx/lib/index.css'
-import '@vue-office/excel/lib/index.css'
+import { defineAsyncComponent } from 'vue'
+
+const VueOfficePdf = defineAsyncComponent(() => import('@vue-office/pdf'))
+const VueOfficeDocx = defineAsyncComponent(() => import('@vue-office/docx'))
+const VueOfficeExcel = defineAsyncComponent(() => import('@vue-office/excel'))
+const VueOfficePptx = defineAsyncComponent(() => import('@vue-office/pptx'))
 
 export default {
   components: {
@@ -117,7 +117,7 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 .preview-header {
@@ -125,16 +125,16 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: var(--color-card-solid);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .preview-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-title);
   max-width: 60%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -149,26 +149,26 @@ export default {
 
 .download-link {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-tertiary));
+  color: var(--color-bg);
   text-decoration: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .download-link:hover {
-  background: linear-gradient(135deg, #06ad56, #059a4c);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(7, 193, 96, 0.25);
+  box-shadow: var(--neon-glow-md);
 }
 
 .close-btn {
   padding: 8px 16px;
-  background: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
+  background: var(--color-bg-warm);
+  color: var(--color-body);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
@@ -176,16 +176,17 @@ export default {
 }
 
 .close-btn:hover {
-  background: #ff4444;
-  color: #fff;
-  border-color: #ff4444;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+  box-shadow: var(--neon-glow-pink-sm);
 }
 
 .preview-content {
   flex: 1;
   overflow: auto;
   padding: 20px;
-  background: #fff;
+  background: var(--color-bg-warm);
 }
 
 .unsupported-preview {
@@ -195,7 +196,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  color: #999;
+  color: var(--color-muted);
 }
 
 .unsupported-icon {
@@ -210,19 +211,19 @@ export default {
 
 .download-btn-large {
   padding: 12px 28px;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-tertiary));
+  color: var(--color-bg);
   text-decoration: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(7, 193, 96, 0.25);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .download-btn-large:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(7, 193, 96, 0.35);
+  box-shadow: var(--neon-glow-md);
 }
 
 .loading-overlay {
@@ -231,7 +232,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(10, 10, 15, 0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -243,10 +244,11 @@ export default {
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #07c160;
+  border: 4px solid var(--color-border);
+  border-top: 4px solid var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  box-shadow: var(--neon-glow-sm);
 }
 
 @keyframes spin {
@@ -259,19 +261,27 @@ export default {
   }
 }
 
+.loading-overlay p {
+  color: var(--color-body);
+}
+
 .error-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(10, 10, 15, 0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
   z-index: 1000;
+}
+
+.error-overlay p {
+  color: var(--color-body);
 }
 
 .error-icon {

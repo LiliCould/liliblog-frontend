@@ -310,12 +310,12 @@ watch([() => cursorState.isHovering.value, () => cursorState.isText.value], ([ho
     heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(255, 0, 60, 0.2)')
   } else if (hovering) {
     heroRef.value.style.setProperty('--hero-gradient-radius', '500px')
-    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(102, 126, 234, 0.45)')
-    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(118, 75, 162, 0.35)')
+    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(0, 240, 255, 0.45)')
+    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(185, 103, 255, 0.35)')
   } else {
     heroRef.value.style.setProperty('--hero-gradient-radius', '400px')
-    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(102, 126, 234, 0.35)')
-    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(118, 75, 162, 0.25)')
+    heroRef.value.style.setProperty('--hero-gradient-color-1', 'rgba(0, 240, 255, 0.35)')
+    heroRef.value.style.setProperty('--hero-gradient-color-2', 'rgba(185, 103, 255, 0.25)')
   }
 })
 
@@ -484,8 +484,7 @@ onUnmounted(() => {
   --mouse-x: 50%;
   --mouse-y: 50%;
   --gradient-opacity: 0;
-  will-change: auto;
-  contain: strict;
+  contain: layout style;
 }
 
 /* 第0层：视频背景层 */
@@ -497,7 +496,6 @@ onUnmounted(() => {
   object-fit: cover;
   object-position: center;
   z-index: -1;
-  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
@@ -517,7 +515,6 @@ onUnmounted(() => {
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
-  will-change: opacity, transform;
   transform: scale(1) translateZ(0);
   backface-visibility: hidden;
 }
@@ -533,7 +530,7 @@ onUnmounted(() => {
   background: var(--hero-overlay-darkness);
   z-index: var(--z-hero-overlay);
   pointer-events: none;
-  contain: strict;
+  contain: layout style;
 }
 
 /* 第三层：暗角 */
@@ -543,7 +540,7 @@ onUnmounted(() => {
   background: radial-gradient(ellipse at center, transparent 50%, var(--hero-vignette-darkness) 100%);
   z-index: var(--z-hero-vignette);
   pointer-events: none;
-  contain: strict;
+  contain: layout style;
 }
 
 /* 第四层：鼠标渐变跟随层 */
@@ -559,8 +556,7 @@ onUnmounted(() => {
   opacity: var(--gradient-opacity);
   transition: opacity 0.5s ease-out;
   will-change: opacity;
-  transform: translateZ(0);
-  contain: strict;
+  contain: layout style;
 }
 
 .hero-content {
@@ -585,8 +581,6 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.05em;
   text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-  will-change: transform, text-shadow;
-  transform: translateZ(0);
 }
 
 .glitch-char {
@@ -594,7 +588,6 @@ onUnmounted(() => {
   display: inline-block;
   opacity: 0;
   transition: color 0.3s ease, transform 0.3s ease;
-  will-change: transform, opacity;
 }
 
 .space-char {
@@ -702,7 +695,6 @@ onUnmounted(() => {
   margin: 0 auto var(--spacing-3xl);
   transform: scaleX(0);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-  will-change: transform;
 }
 
 /* 滚动指示器 */
@@ -719,13 +711,11 @@ onUnmounted(() => {
   border: 1px solid rgba(0, 240, 255, 0.2);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
-  will-change: transform, box-shadow;
-  transform: translateZ(0);
 }
 
 .scroll-indicator:hover {
   background: rgba(0, 240, 255, 0.15);
-  transform: scale(1.08) translateZ(0);
+  transform: scale(1.08);
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
   border-color: rgba(0, 240, 255, 0.5);
 }
@@ -742,7 +732,7 @@ onUnmounted(() => {
   padding-top: var(--spacing-3xl);
   padding-bottom: var(--spacing-3xl);
   min-height: 100vh;
-  background: var(--color-bg);
+  background: #0a0a0f;
   transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   contain: layout style;
 }
@@ -799,11 +789,7 @@ onUnmounted(() => {
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: var(--radius-full);
-
-  /* 呼吸光效 */
   animation: cyber-border-glow 3s ease-in-out infinite;
-  will-change: transform, box-shadow;
-  transform: translateZ(0);
 }
 
 @keyframes cyber-border-glow {
@@ -840,11 +826,11 @@ onUnmounted(() => {
   border-color: #00f0ff;
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.5), inset 0 0 25px rgba(0, 240, 255, 0.12);
   text-shadow: 0 0 12px rgba(0, 240, 255, 0.65);
-  transform: translateY(-3px) scale(1.02) translateZ(0);
+  transform: translateY(-3px) scale(1.02);
 }
 
 .cyber-load-btn:active:not(:disabled) {
-  transform: translateY(-1px) scale(0.98) translateZ(0);
+  transform: translateY(-1px) scale(0.98);
 }
 
 /* 禁用状态 */
@@ -1043,7 +1029,7 @@ onUnmounted(() => {
   height: 16px;
   background: linear-gradient(90deg,
       var(--color-border) 25%,
-      rgba(200, 195, 188, 0.3) 50%,
+      rgba(0, 240, 255, 0.12) 50%,
       var(--color-border) 75%);
   background-size: 200% 100%;
   border-radius: 8px;
@@ -1092,7 +1078,7 @@ onUnmounted(() => {
   border-radius: 50%;
   background: linear-gradient(90deg,
       var(--color-border) 25%,
-      rgba(200, 195, 188, 0.3) 50%,
+      rgba(0, 240, 255, 0.12) 50%,
       var(--color-border) 75%);
   background-size: 200% 100%;
   animation: skeleton-pulse 1.5s ease-in-out infinite;
@@ -1117,12 +1103,10 @@ onUnmounted(() => {
   cursor: pointer;
   z-index: var(--z-sticky);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, box-shadow;
-  transform: translateZ(0);
 }
 
 .back-to-top:hover {
-  transform: translateY(-4px) scale(1.05) translateZ(0);
+  transform: translateY(-4px) scale(1.05);
   box-shadow: 0 8px 28px rgba(0, 240, 255, 0.6);
 }
 
@@ -1153,7 +1137,6 @@ onUnmounted(() => {
   padding: 0;
   transition: all 0.3s ease;
   outline: none;
-  will-change: transform, background-color;
 }
 
 .carousel-dot:hover {

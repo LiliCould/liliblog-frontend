@@ -75,9 +75,35 @@ const currentYear = computed(() => new Date().getFullYear())
 .app-footer {
   margin-top: auto;
   border-top: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
+  background: var(--color-bg);
+  position: relative;
+}
+
+.app-footer::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.6;
+}
+
+.app-footer::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -100%;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.8), transparent);
+  animation: data-stream 4s linear infinite;
+}
+
+@keyframes data-stream {
+  0% { left: -50%; }
+  100% { left: 100%; }
 }
 
 .footer-inner {
@@ -91,6 +117,18 @@ const currentYear = computed(() => new Date().getFullYear())
   margin-bottom: var(--spacing-xl);
   padding-bottom: var(--spacing-xl);
   border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.footer-content::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.4;
 }
 
 .footer-brand {
@@ -108,13 +146,14 @@ const currentYear = computed(() => new Date().getFullYear())
   width: 24px;
   height: 24px;
   color: var(--color-primary);
+  filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.4));
 }
 
 .brand-logo .logo-text {
   font-size: 22px;
   font-weight: var(--font-weight-bold);
   font-family: var(--font-display);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-tertiary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -122,7 +161,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .brand-desc {
   font-size: var(--font-size-sm);
-  color: var(--color-muted);
+  color: var(--color-body);
   line-height: var(--line-height-relaxed);
   margin: 0;
 }
@@ -145,7 +184,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .footer-link {
   font-size: var(--font-size-sm);
-  color: var(--color-body-light);
+  color: var(--color-body);
   text-decoration: none;
   transition: all var(--transition-fast);
   position: relative;
@@ -160,12 +199,14 @@ const currentYear = computed(() => new Date().getFullYear())
   left: 0;
   width: 0;
   height: 1.5px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-primary), var(--color-tertiary));
   transition: width var(--transition-base);
+  box-shadow: 0 0 4px rgba(0, 240, 255, 0.3);
 }
 
 .footer-link:hover {
   color: var(--color-primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .footer-link:hover::after {
@@ -183,7 +224,7 @@ const currentYear = computed(() => new Date().getFullYear())
   align-items: center;
   gap: 10px;
   font-size: var(--font-size-sm);
-  color: var(--color-body-light);
+  color: var(--color-body);
   text-decoration: none;
   transition: all var(--transition-fast);
   padding: 4px 0;
@@ -205,6 +246,7 @@ const currentYear = computed(() => new Date().getFullYear())
 .contact-item:hover svg {
   opacity: 1;
   transform: translateX(2px);
+  filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.5));
 }
 
 .footer-bottom {
@@ -217,7 +259,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .copyright {
   font-size: var(--font-size-xs);
-  color: var(--color-muted-light);
+  color: var(--color-muted);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -229,7 +271,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .icp-link {
   font-size: var(--font-size-xs);
-  color: var(--color-muted-light);
+  color: var(--color-muted);
   text-decoration: none;
   transition: color var(--transition-fast);
   padding: 4px 8px;
@@ -238,7 +280,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .icp-link:hover {
   color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: rgba(0, 240, 255, 0.08);
 }
 
 @media (max-width: 1024px) {

@@ -40,6 +40,8 @@ export default defineConfig({
         manualChunks: {
           'vue-vendor': ['vue', 'vue-router', 'pinia'],
           'element-plus': ['element-plus'],
+          'markdown': ['md-editor-v3'],
+          'utils': ['axios', 'dayjs', 'dompurify', 'nprogress'],
           'animejs': ['animejs'],
         },
         
@@ -93,9 +95,9 @@ export default defineConfig({
         },
         mangle: {                       // 变量名混淆
           toplevel: true,
-          properties: {
-            regex: /^_/,
-          },
+          // 注意：不要启用 properties 混淆，Vue/Pinia 内部使用 _ 开头的私有属性
+          // 混淆这些属性会破坏响应式系统的正常工作
+          // properties: { regex: /^_/ },
         },
       },
     }),

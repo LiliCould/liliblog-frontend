@@ -361,6 +361,8 @@ onMounted(() => {
 
 .sidebar-card {
   background: var(--color-card);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 20px;
@@ -394,7 +396,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background: var(--color-bg);
+  background: var(--color-bg-warm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -404,7 +406,8 @@ onMounted(() => {
 
 .selector-trigger:hover {
   border-color: var(--color-primary);
-  background: #fff;
+  background: var(--color-bg-deep);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .selected-value {
@@ -442,6 +445,7 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .more-count {
@@ -453,7 +457,7 @@ onMounted(() => {
   padding: 0 6px;
   border-radius: var(--radius-full);
   font-size: 11px;
-  background: var(--color-bg);
+  background: var(--color-bg-warm);
   color: var(--color-muted);
   border: 1px solid var(--color-border);
 }
@@ -476,7 +480,7 @@ onMounted(() => {
   gap: 12px;
   margin-bottom: 12px;
   padding: 12px;
-  background: var(--color-bg);
+  background: var(--color-bg-warm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
@@ -488,7 +492,6 @@ onMounted(() => {
   border-radius: var(--radius-sm);
 }
 
-/* 分类选择弹窗 */
 .category-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -509,17 +512,19 @@ onMounted(() => {
   transition: all 0.2s;
   position: relative;
   font-size: 13px;
+  color: var(--color-body);
 }
 
 .category-option:hover {
-  border-color: var(--color-primary-light);
-  background: var(--color-primary-lighter);
+  border-color: var(--color-primary-light-2);
+  background: var(--color-primary-light);
 }
 
 .category-option.active {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
   color: var(--color-primary);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .category-option .check-icon {
@@ -527,7 +532,6 @@ onMounted(() => {
   font-size: 14px;
 }
 
-/* 标签选择弹窗 */
 .tag-search {
   margin-bottom: 14px;
 }
@@ -552,17 +556,19 @@ onMounted(() => {
   transition: all 0.2s;
   position: relative;
   font-size: 13px;
+  color: var(--color-body);
 }
 
 .tag-option:hover {
-  border-color: var(--color-primary-light);
-  background: var(--color-primary-lighter);
+  border-color: var(--color-primary-light-2);
+  background: var(--color-primary-light);
 }
 
 .tag-option.active {
   border-color: var(--tag-color, var(--color-primary));
-  background: color-mix(in srgb, var(--tag-color, var(--color-primary)) 12%, white);
+  background: color-mix(in srgb, var(--tag-color, var(--color-primary)) 12%, var(--color-card-solid));
   color: var(--tag-color, var(--color-primary));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--tag-color, var(--color-primary)) 25%, transparent);
 }
 
 .tag-dot {

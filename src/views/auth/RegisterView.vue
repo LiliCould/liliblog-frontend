@@ -214,15 +214,60 @@ onUnmounted(() => {
   justify-content: center;
   background: var(--color-bg);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 240, 255, 0.015) 2px,
+      rgba(0, 240, 255, 0.015) 4px
+    );
+  pointer-events: none;
+}
+
+.register-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
 }
 
 .register-card {
   width: 100%;
   max-width: 400px;
   background: var(--color-card);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
   border-radius: var(--radius-lg);
   padding: 40px 36px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--neon-glow-sm);
+  border: 1px solid var(--color-border);
+  position: relative;
+  z-index: 1;
+}
+
+.register-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-tertiary));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .register-header {
@@ -235,6 +280,8 @@ onUnmounted(() => {
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 4px;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+  letter-spacing: 2px;
 }
 
 .register-subtitle {
@@ -247,6 +294,12 @@ onUnmounted(() => {
   border-radius: var(--radius-md);
   font-size: 15px;
   height: 44px;
+  box-shadow: var(--neon-glow-sm);
+  letter-spacing: 1px;
+}
+
+.register-btn:hover {
+  box-shadow: var(--neon-glow-md);
 }
 
 .register-footer {
@@ -260,5 +313,10 @@ onUnmounted(() => {
   color: var(--color-primary);
   font-weight: 500;
   margin-left: 4px;
+  transition: all var(--transition-fast);
+}
+
+.register-footer a:hover {
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 </style>

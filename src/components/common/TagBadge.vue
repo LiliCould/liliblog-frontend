@@ -39,7 +39,8 @@ const textColor = computed(() => {
   white-space: nowrap;
   cursor: default;
   transition: all var(--transition-fast);
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  background: rgba(0, 240, 255, 0.06);
 }
 
 .tag-badge::before {
@@ -47,16 +48,15 @@ const textColor = computed(() => {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.3));
+  background: linear-gradient(135deg, transparent, rgba(0, 240, 255, 0.1));
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
 
 .tag-badge:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-  border-color: currentColor;
-  opacity: 0.9;
+  box-shadow: var(--neon-glow-sm);
+  border-color: rgba(0, 240, 255, 0.4);
 }
 
 .tag-badge:hover::before {
@@ -69,5 +69,6 @@ const textColor = computed(() => {
   border-radius: 50%;
   background: currentColor;
   opacity: 0.7;
+  box-shadow: 0 0 6px currentColor;
 }
 </style>

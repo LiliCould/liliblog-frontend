@@ -295,6 +295,7 @@ const ageCalculator = () => {
   width: 120px;
   height: 2px;
   background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  box-shadow: var(--neon-glow-sm);
 }
 
 .page-title {
@@ -312,6 +313,7 @@ const ageCalculator = () => {
   font-size: var(--font-size-xl);
   color: var(--color-primary);
   animation: sparkle 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5));
 }
 
 @keyframes sparkle {
@@ -320,11 +322,13 @@ const ageCalculator = () => {
   100% {
     opacity: 1;
     transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5));
   }
 
   50% {
     opacity: 0.6;
     transform: scale(1.15);
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.8));
   }
 }
 
@@ -341,7 +345,6 @@ const ageCalculator = () => {
   gap: var(--spacing-xl);
 }
 
-/* Profile Card */
 .profile-card {
   background: var(--color-card);
   backdrop-filter: var(--blur-lg);
@@ -364,13 +367,29 @@ const ageCalculator = () => {
   right: 0;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(196, 93, 53, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.05) 0%, transparent 70%);
   pointer-events: none;
 }
 
+.profile-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.015) 2px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  border-radius: var(--radius-xl);
+}
+
 .profile-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--neon-glow-sm);
   transform: translateY(-2px);
+  border-color: var(--color-border-hover);
 }
 
 .profile-visual {
@@ -401,6 +420,7 @@ const ageCalculator = () => {
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   z-index: 1;
   animation: rotate-ring 8s linear infinite;
+  box-shadow: var(--neon-glow-md);
 }
 
 @keyframes rotate-ring {
@@ -424,12 +444,13 @@ const ageCalculator = () => {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 3px solid white;
+  border: 3px solid var(--color-card-solid);
   z-index: 3;
 }
 
 .status-indicator.online {
-  background: #52C41A;
+  background: var(--color-success);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
   animation: pulse-online 2s ease-in-out infinite;
 }
 
@@ -437,11 +458,11 @@ const ageCalculator = () => {
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.4);
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4), 0 0 8px rgba(0, 255, 136, 0.5);
   }
 
   50% {
-    box-shadow: 0 0 0 8px rgba(82, 196, 26, 0);
+    box-shadow: 0 0 0 8px rgba(0, 255, 136, 0), 0 0 8px rgba(0, 255, 136, 0.5);
   }
 }
 
@@ -468,6 +489,7 @@ const ageCalculator = () => {
 .highlight {
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .contact-grid {
@@ -484,6 +506,7 @@ const ageCalculator = () => {
   border-radius: var(--radius-md);
   background: var(--color-bg-warm);
   transition: all var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .contact-item.full-width {
@@ -496,11 +519,13 @@ const ageCalculator = () => {
   color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 2px;
+  filter: drop-shadow(0 0 3px rgba(0, 240, 255, 0.3));
 }
 
 .contact-item:hover {
   background: var(--color-primary-light);
   transform: translateX(4px);
+  border-color: var(--color-border);
 }
 
 .contact-content {
@@ -534,6 +559,7 @@ const ageCalculator = () => {
 
 .contact-value.link:hover {
   color: var(--color-primary-hover);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 .external-icon {
@@ -541,7 +567,6 @@ const ageCalculator = () => {
   height: 12px;
 }
 
-/* Content Sections */
 .content-section {
   background: var(--color-card);
   backdrop-filter: var(--blur-lg);
@@ -564,11 +589,13 @@ const ageCalculator = () => {
   background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
   opacity: 0;
   transition: opacity var(--transition-base);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .content-section:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--neon-glow-sm);
   transform: translateY(-2px);
+  border-color: var(--color-border-hover);
 }
 
 .content-section:hover::before {
@@ -593,7 +620,7 @@ const ageCalculator = () => {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(196, 93, 53, 0.25);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .section-icon-wrapper svg {
@@ -610,12 +637,12 @@ const ageCalculator = () => {
   margin: 0;
 }
 
-/* Education */
 .education-card {
   background: var(--color-bg-warm);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   border-left: 4px solid var(--color-primary);
+  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.02);
 }
 
 .edu-header {
@@ -631,11 +658,12 @@ const ageCalculator = () => {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-light-2));
+  background: var(--color-primary-light);
   color: var(--color-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .edu-time-badge svg {
@@ -669,6 +697,7 @@ const ageCalculator = () => {
 .tag-primary {
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   color: white;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .tag-secondary {
@@ -684,7 +713,6 @@ const ageCalculator = () => {
   margin: 0;
 }
 
-/* Skills */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -711,13 +739,14 @@ const ageCalculator = () => {
   background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
   transition: height var(--transition-base);
   border-radius: var(--radius-full);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .skill-card:hover {
-  background: white;
+  background: var(--color-bg-deep);
   border-color: var(--color-border);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--neon-glow-sm);
 }
 
 .skill-card:hover::before {
@@ -744,7 +773,6 @@ const ageCalculator = () => {
   margin: 0;
 }
 
-/* Projects */
 .projects-list {
   display: flex;
   flex-direction: column;
@@ -762,7 +790,7 @@ const ageCalculator = () => {
 
 .project-card.featured {
   border-color: var(--color-primary-light-2);
-  background: linear-gradient(135deg, rgba(196, 93, 53, 0.02), transparent);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.03), transparent);
 }
 
 .project-badge {
@@ -777,11 +805,12 @@ const ageCalculator = () => {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: var(--neon-glow-sm);
 }
 
 .project-card:hover {
   border-color: var(--color-border-hover);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--neon-glow-sm);
   transform: translateX(4px);
 }
 
@@ -814,6 +843,7 @@ const ageCalculator = () => {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   transition: all var(--transition-fast);
+  border: 1px solid var(--color-primary-light-2);
 }
 
 .project-link svg {
@@ -823,9 +853,9 @@ const ageCalculator = () => {
 
 .project-link:hover {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-bg);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(196, 93, 53, 0.3);
+  box-shadow: var(--neon-glow-md);
 }
 
 .tech-stack {
@@ -834,8 +864,9 @@ const ageCalculator = () => {
   color: var(--color-body-light);
   margin-bottom: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 240, 255, 0.04);
   border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
 }
 
 .tech-stack strong {
@@ -873,6 +904,7 @@ const ageCalculator = () => {
   height: 18px;
   background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
   border-radius: 2px;
+  box-shadow: var(--neon-glow-sm);
 }
 
 .project-highlights ul {
@@ -900,6 +932,7 @@ const ageCalculator = () => {
   left: 0;
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.4);
 }
 
 .project-highlights strong {
@@ -907,7 +940,6 @@ const ageCalculator = () => {
   font-weight: var(--font-weight-semibold);
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .skills-grid {
     grid-template-columns: 1fr;
