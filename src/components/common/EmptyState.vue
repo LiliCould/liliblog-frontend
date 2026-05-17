@@ -1,140 +1,25 @@
-<template>
-  <div class="empty-state">
-    <div class="empty-visual">
-      <span class="empty-icon">{{ icon }}</span>
-      <div class="empty-decoration">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
-      </div>
-    </div>
-
-    <h3 class="empty-title">{{ text }}</h3>
-    <p class="empty-description">这里还没有内容哦~</p>
-
-    <slot />
-  </div>
-</template>
-
 <script setup lang="ts">
-withDefaults(defineProps<{
-  text?: string
-  icon?: string
-}>(), {
-  text: '暂无数据',
-  icon: '📭',
+import { FileX } from 'lucide-vue-next'
+
+/**
+ * 空状态组件
+ * 机械图标 + 大字提示
+ */
+interface Props {
+  /** 提示文字 */
+  message?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  message: '暂无数据',
 })
 </script>
 
-<style scoped>
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-4xl) var(--spacing-xl);
-  text-align: center;
-}
-
-.empty-visual {
-  position: relative;
-  margin-bottom: var(--spacing-lg);
-}
-
-.empty-icon {
-  font-size: 64px;
-  display: block;
-  animation: float 3s ease-in-out infinite;
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
-}
-
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.empty-decoration {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120px;
-  height: 120px;
-  pointer-events: none;
-}
-
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.1;
-  animation: pulse-circle 4s ease-in-out infinite;
-}
-
-.circle-1 {
-  width: 80px;
-  height: 80px;
-  background: var(--color-primary);
-  top: 20px;
-  left: 20px;
-  animation-delay: 0s;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-}
-
-.circle-2 {
-  width: 60px;
-  height: 60px;
-  background: var(--color-accent);
-  top: 30px;
-  right: 10px;
-  animation-delay: 1s;
-  box-shadow: 0 0 20px rgba(255, 45, 120, 0.2);
-}
-
-.circle-3 {
-  width: 40px;
-  height: 40px;
-  background: var(--color-tertiary);
-  bottom: 10px;
-  left: 40px;
-  animation-delay: 2s;
-  box-shadow: 0 0 20px rgba(185, 103, 255, 0.2);
-}
-
-@keyframes pulse-circle {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.1;
-  }
-
-  50% {
-    transform: scale(1.1);
-    opacity: 0.18;
-  }
-}
-
-.empty-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-  margin: 0 0 var(--spacing-xs) 0;
-}
-
-.empty-description {
-  font-size: var(--font-size-sm);
-  color: var(--color-body);
-  margin: 0;
-  max-width: 280px;
-}
-</style>
+<template>
+  <div class="flex flex-col items-center justify-center py-16">
+    <FileX class="h-16 w-16 text-[var(--neutral-800)] dark:text-[var(--text-secondary)]" />
+    <p class="mt-4 text-lg font-bold">
+      {{ message }}
+    </p>
+  </div>
+</template>

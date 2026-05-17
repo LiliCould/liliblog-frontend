@@ -1,26 +1,43 @@
-import type { FormItemRule } from 'element-plus'
+/**
+ * 验证工具函数
+ * 提供表单验证相关的常用方法
+ */
 
-export const usernameRules: FormItemRule[] = [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度为 3-20 个字符', trigger: 'blur' },
-]
+/**
+ * 验证邮箱格式
+ * @param email 邮箱地址
+ * @returns 是否为有效邮箱
+ */
+export const isValidEmail = (email: string): boolean => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return regex.test(email)
+}
 
-export const passwordRules: FormItemRule[] = [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度为 6-20 个字符', trigger: 'blur' },
-]
+/**
+ * 验证用户名格式（字母、数字、下划线，3-20位）
+ * @param username 用户名
+ * @returns 是否为有效用户名
+ */
+export const isValidUsername = (username: string): boolean => {
+  const regex = /^[a-zA-Z0-9_]{3,20}$/
+  return regex.test(username)
+}
 
-export const emailRules: FormItemRule[] = [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' },
-]
+/**
+ * 验证密码格式（至少6位）
+ * @param password 密码
+ * @returns 是否为有效密码
+ */
+export const isValidPassword = (password: string): boolean => {
+  return password.length >= 6
+}
 
-export const nicknameRules: FormItemRule[] = [
-    { required: true, message: '请输入昵称', trigger: 'blur' },
-    { min: 1, max: 20, message: '昵称长度为 1-20 个字符', trigger: 'blur' },
-]
-
-export const titleRules: FormItemRule[] = [
-    { required: true, message: '请输入标题', trigger: 'blur' },
-    { min: 1, max: 100, message: '标题长度不能超过 100 个字符', trigger: 'blur' },
-]
+/**
+ * 验证验证码格式（6位数字）
+ * @param code 验证码
+ * @returns 是否为有效验证码
+ */
+export const isValidCode = (code: string): boolean => {
+  const regex = /^\d{6}$/
+  return regex.test(code)
+}

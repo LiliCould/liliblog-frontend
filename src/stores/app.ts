@@ -1,48 +1,60 @@
-import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getCategories as getCategoriesApi } from '@/api/category'
-import { getTagList as getTagListApi } from '@/api/tag'
-import type { Category } from '@/types/category.d'
-import type { Tag } from '@/types/tag.d'
-import type { ApiResponse } from '@/types/api.d'
+import { defineStore } from 'pinia'
 
+/**
+ * 应用状态管理 Store
+ * 管理全局 UI 状态，如侧边栏、加载状态等
+ */
 export const useAppStore = defineStore('app', () => {
-    const categories = ref<Category[]>([])
-    const tags = ref<Tag[]>([])
-    const globalLoading = ref(false)
-    const isMobileNavOpen = ref(false)
+  // State
+  /** 移动端左侧边栏是否展开 */
+  const sidebarOpen = ref(false)
+  /** 全局加载状态 */
+  const globalLoading = ref(false)
+  /** 页面标题 */
+  const pageTitle = ref('')
 
-    async function fetchCategories() {
-        const res = await getCategoriesApi() as unknown as ApiResponse<Category[]>
-        categories.value = res.data || []
-    }
+  // Actions
 
-    async function fetchTags() {
-        const res = await getTagListApi() as unknown as ApiResponse<Tag[]>
-        tags.value = res.data || []
-    }
+  /**
+   * 切换侧边栏状态
+   */
+  const toggleSidebar = () => {
+    sidebarOpen.value = !sidebarOpen.value
+  }
 
-    async function initAppData() {
-        await Promise.allSettled([fetchCategories(), fetchTags()])
-    }
+  /**
+   * 设置侧边栏状态
+   * @param open 是否展开
+   */
+  const setSidebarOpen = (open: boolean) => {
+    sidebarOpen.value = open
+  }
 
-    function toggleMobileNav() {
-        isMobileNavOpen.value = !isMobileNavOpen.value
-    }
+  /**
+   * 设置全局加载状态
+   * @param loading 是否加载中
+   */
+  const setGlobalLoading = (loading: boolean) => {
+    globalLoading.value = loading
+  }
 
-    function closeMobileNav() {
-        isMobileNavOpen.value = false
-    }
+  /**
+   * 设置页面标题
+   * @param title 标题
+   */
+  const setPageTitle = (title: string) => {
+    pageTitle.value = title
+    document.title = title ? `${title} - LiliBlog` : 'LiliBlog'
+  }
 
-    return {
-        categories,
-        tags,
-        globalLoading,
-        isMobileNavOpen,
-        fetchCategories,
-        fetchTags,
-        initAppData,
-        toggleMobileNav,
-        closeMobileNav,
-    }
+  return {
+    sidebarOpen,
+    globalLoading,
+    pageTitle,
+    toggleSidebar,
+    setSidebarOpen,
+    setGlobalLoading,
+    setPageTitle,
+  }
 })

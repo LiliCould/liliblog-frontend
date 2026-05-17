@@ -1,33 +1,20 @@
 import { createApp } from 'vue'
-import '@/assets/styles/variables.css'
-import '@/assets/styles/reset.css'
-import '@/assets/styles/transitions.css'
-import '@/assets/styles/performance.css'
-import '@/assets/styles/element-override.css'
-import '@/assets/styles/markdown.css'
-import 'virtual:uno.css'
-
-// 注册全局指令
-import { vLazy } from './directives/lazy'
-
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import pinia from './stores'
-import { useUserStore } from './stores/user'
-import { useAppStore } from './stores/app'
+import './assets/styles/global.css'
 
+/**
+ * 应用入口文件
+ * 创建 Vue 应用实例并挂载全局插件
+ */
 const app = createApp(App)
 
-app.use(pinia)
+// 注册 Pinia 状态管理
+app.use(createPinia())
+
+// 注册 Vue Router
 app.use(router)
 
-// 注册懒加载指令
-app.directive('lazy', vLazy)
-
-const userStore = useUserStore()
-userStore.init()
-
-const appStore = useAppStore()
-appStore.initAppData()
-
+// 挂载应用
 app.mount('#app')

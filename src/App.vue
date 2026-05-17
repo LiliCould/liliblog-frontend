@@ -1,91 +1,39 @@
-<template>
-  <div class="app-wrapper">
-    <CustomCursor />
-    <template v-if="isBlankLayout">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </template>
-    <template v-else>
-      <AppHeader />
-      <main class="main-content">
-        <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </main>
-      <AppFooter />
-      <MobileNav />
-    </template>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import AppHeader from '@/components/layout/AppHeader.vue'
-import AppFooter from '@/components/layout/AppFooter.vue'
-import MobileNav from '@/components/layout/MobileNav.vue'
-import CustomCursor from '@/components/common/CustomCursor.vue'
-import { useChatStore } from '@/stores/chat'
-import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
+import MainLayout from '@/components/layout/MainLayout.vue'
+import AdminLayout from '@/components/layout/AdminLayout.vue'
 
+/**
+ * 根组件
+ * 根据路由元信息动态切换布局
+ */
 const route = useRoute()
-const chatStore = useChatStore()
-const userStore = useUserStore()
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
-const isBlankLayout = computed(() => route.meta.layout === 'blank')
+// 根据路由布局类型选择对应布局组件
+const layoutComponent = computed(() => {
+  const layout = route.meta.layout as string
+  if (layout === 'admin') return AdminLayout
+  if (layout === 'main') return MainLayout
+  return null
+})
 
-const initChat = () => {
-  if (userStore.isLoggedIn) {
-    chatStore.initialize()
-  }
-}
-
+// 初始化：恢复登录状态和主题
 onMounted(() => {
-  initChat()
-})
-
-watch(() => userStore.isLoggedIn, (loggedIn) => {
-  if (loggedIn) {
-    chatStore.initialize()
-  } else {
-    chatStore.closeConnection()
+  themeStore.initTheme()
+  if (authStore.isLoggedIn) {
+    authStore.fetchUserInfo()
   }
 })
-
-watch(() => route.path, (path) => {
-  if (path === '/chat') {
-    chatStore.setChatRoomActive(true)
-  } else {
-    chatStore.setChatRoomActive(false)
-  }
-}, { immediate: true })
 </script>
 
-<style>
-.app-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  cursor: none;
-  background-color: #0a0a0f;
-  color: #e0e0e8;
-}
-
-@media (max-width: 768px) {
-  .app-wrapper {
-    cursor: auto;
-  }
-}
-
-.main-content {
-  flex: 1;
-  padding-top: var(--header-height);
-  min-height: calc(100vh - var(--header-height));
-  background-color: #0a0a0f;
-}
-</style>
+<template>
+  <component :is="layoutComponent" v-if="layoutComponent">
+    <router-view />
+  </component>
+  <router-view v-else />
+</template>

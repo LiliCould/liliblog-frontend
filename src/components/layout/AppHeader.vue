@@ -1,481 +1,190 @@
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
+import { useAppStore } from '@/stores/app'
+import { Menu, Sun, Moon, LogOut, User, Settings, PenLine, Shield } from 'lucide-vue-next'
+
+/**
+ * 顶部导航栏组件
+ * 包含 Logo、导航链接、主题切换、用户菜单
+ */
+const router = useRouter()
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
+const appStore = useAppStore()
+
+const navLinks = computed(() => [
+  { name: '首页', path: '/' },
+  { name: '分类', path: '/category/all' },
+  { name: '标签', path: '/tag/all' },
+  { name: '关于', path: '/about' },
+])
+
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/')
+}
+
+// 用户菜单显示状态
+const showUserMenu = ref(false)
+let menuHideTimer: ReturnType<typeof setTimeout> | null = null
+
+/**
+ * 显示用户菜单
+ * 清除隐藏定时器，防止菜单闪烁
+ */
+const handleMouseEnter = () => {
+  if (menuHideTimer) {
+    clearTimeout(menuHideTimer)
+    menuHideTimer = null
+  }
+  showUserMenu.value = true
+}
+
+/**
+ * 延迟隐藏用户菜单
+ * 设置1.5秒延迟，给用户足够时间移动鼠标到菜单区域
+ */
+const handleMouseLeave = () => {
+  menuHideTimer = setTimeout(() => {
+    showUserMenu.value = false
+  }, 1500)
+}
+
+/**
+ * 立即隐藏用户菜单
+ * 用于点击菜单项后关闭菜单
+ */
+const hideMenu = () => {
+  showUserMenu.value = false
+}
+</script>
+
 <template>
-  <header class="app-header" :class="{ scrolled: isScrolled }">
-    <div class="header-inner page-container">
-      <router-link to="/" class="logo">
-        <img class="logo-icon" :src="logoSvg" alt="LiliBlog" />
-      </router-link>
-
-      <nav class="desktop-nav">
-        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link" active-class="active">
-          <span class="link-text">{{ item.label }}</span>
-          <span class="link-underline"></span>
-          <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
+  <header
+    class="sticky top-0 z-50 border-b-2 border-black bg-[var(--neutral-50)] dark:border-[var(--neutral-800)] dark:bg-[var(--background)]"
+  >
+    <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+      <!-- 左侧：汉堡菜单 + Logo -->
+      <div class="flex items-center gap-4">
+        <button
+          class="md:hidden"
+          @click="appStore.toggleSidebar"
+        >
+          <Menu class="h-5 w-5" />
+        </button>
+        <router-link
+          to="/"
+          class="text-xl font-black tracking-tight"
+          :style="{ color: 'var(--accent-toxic)' }"
+        >
+          LiliBlog
         </router-link>
+      </div>
 
-        <div class="search-trigger clickable" @click="goSearch">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-        </div>
+      <!-- 中间：导航链接 -->
+      <nav class="hidden items-center gap-6 md:flex">
+        <router-link
+          v-for="link in navLinks"
+          :key="link.path"
+          :to="link.path"
+          class="text-sm font-semibold"
+        >
+          {{ link.name }}
+        </router-link>
       </nav>
 
-      <div class="header-right">
-        <template v-if="userStore.isLoggedIn">
-          <el-dropdown trigger="click" @command="handleCommand">
-            <div class="user-avatar-wrapper clickable">
-              <el-avatar :size="34" :src="userStore.avatar || undefined" class="user-avatar">
-                {{ userStore.nickname?.charAt(0) || 'U' }}
-              </el-avatar>
-              <span class="username-text">{{ userStore.nickname || userStore.username }}</span>
-              <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu class="custom-dropdown">
-                <el-dropdown-item command="profile">
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  个人信息
-                </el-dropdown-item>
-                <el-dropdown-item command="myArticles">
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                  我的文章
-                </el-dropdown-item>
-                <el-dropdown-item command="write" divided>
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                  写文章
-                </el-dropdown-item>
-                <el-dropdown-item command="logout" divided>
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                  退出登录
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-
-        <template v-else>
-          <router-link to="/login" class="btn-auth btn-login clickable">登录</router-link>
-          <router-link to="/register" class="btn-auth btn-register clickable">注册</router-link>
-        </template>
-
-        <button class="mobile-menu-btn clickable" @click="appStore.toggleMobileNav()" aria-label="菜单">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+      <!-- 右侧：主题切换 + 用户菜单 -->
+      <div class="flex items-center gap-3">
+        <!-- 主题切换按钮 -->
+        <button
+          class="p-1"
+          @click="themeStore.toggleTheme"
+        >
+          <Sun v-if="themeStore.isDark" class="h-5 w-5" />
+          <Moon v-else class="h-5 w-5" />
         </button>
+
+        <!-- 未登录：登录按钮 -->
+        <router-link
+          v-if="!authStore.isLoggedIn"
+          to="/login"
+          class="border-2 border-black px-3 py-1 text-sm font-bold dark:border-white"
+        >
+          登录
+        </router-link>
+
+        <!-- 已登录：用户菜单 -->
+        <div
+          v-else
+          class="relative"
+          @mouseenter="handleMouseEnter"
+          @mouseleave="handleMouseLeave"
+        >
+          <button class="flex items-center gap-2">
+            <img
+              :src="authStore.userInfo?.avatar || '/default-avatar.png'"
+              alt="avatar"
+              class="h-8 w-8 rounded-none border-2 border-black object-cover dark:border-white"
+            />
+            <span class="hidden text-sm font-semibold sm:inline">
+              {{ authStore.userInfo?.nickname }}
+            </span>
+          </button>
+
+          <!-- 下拉菜单 -->
+          <div
+            v-show="showUserMenu"
+            class="absolute right-0 top-full mt-2 w-48 border-2 border-black bg-[var(--neutral-50)] dark:border-[var(--neutral-800)] dark:bg-[var(--surface)]"
+            @mouseenter="handleMouseEnter"
+            @mouseleave="handleMouseLeave"
+          >
+            <router-link
+              to="/user/me"
+              class="flex items-center gap-2 px-4 py-2 text-sm"
+              @click="hideMenu"
+            >
+              <User class="h-4 w-4" />
+              我的首页
+            </router-link>
+            <router-link
+              v-if="authStore.isAdmin"
+              to="/write"
+              class="flex items-center gap-2 px-4 py-2 text-sm"
+              @click="hideMenu"
+            >
+              <PenLine class="h-4 w-4" />
+              写文章
+            </router-link>
+            <router-link
+              v-if="authStore.isAdmin"
+              to="/admin"
+              class="flex items-center gap-2 px-4 py-2 text-sm"
+              @click="hideMenu"
+            >
+              <Shield class="h-4 w-4" />
+              后台管理
+            </router-link>
+            <router-link
+              to="/settings"
+              class="flex items-center gap-2 px-4 py-2 text-sm"
+              @click="hideMenu"
+            >
+              <Settings class="h-4 w-4" />
+              设置
+            </router-link>
+            <button
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm"
+              @click="hideMenu; handleLogout()"
+            >
+              <LogOut class="h-4 w-4" />
+              退出登录
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 </template>
-
-<script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
-import { useChatStore } from '@/stores/chat'
-import logoSvg from '@/assets/logo.svg'
-
-const router = useRouter()
-const userStore = useUserStore()
-const appStore = useAppStore()
-const chatStore = useChatStore()
-
-const isScrolled = ref(false)
-
-const navItems = computed(() => [
-  {
-    path: '/',
-    label: '首页',
-    badge: undefined
-  },
-  {
-    path: '/about',
-    label: '关于',
-    badge: undefined
-  },
-  {
-    path: '/chat',
-    label: '聊天室',
-    badge:
-      chatStore.unreadCount > 0 && !chatStore.isChatRoomActive
-        ? chatStore.unreadCount > 99
-          ? '99+'
-          : chatStore.unreadCount
-        : undefined
-  }
-])
-
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 100
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
-
-function goSearch() {
-  router.push('/search')
-}
-
-function handleCommand(command: string) {
-  switch (command) {
-    case 'profile':
-      router.push('/profile')
-      break
-    case 'myArticles':
-      router.push('/manage/articles')
-      break
-    case 'write':
-      router.push('/manage/editor')
-      break
-    case 'logout':
-      userStore.logout()
-      break
-  }
-}
-</script>
-
-<style scoped>
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-  z-index: var(--z-header);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  contain: layout style;
-}
-
-.app-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 240, 255, var(--scanline-opacity)) 2px,
-      rgba(0, 240, 255, var(--scanline-opacity)) 4px);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.app-header.scrolled {
-  background: rgba(10, 10, 15, 0.95);
-  border-bottom-color: rgba(0, 240, 255, 0.25);
-  box-shadow: 0 2px 20px rgba(0, 240, 255, 0.08), 0 1px 0 rgba(0, 240, 255, 0.15);
-}
-
-.header-inner {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 2;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: transform var(--transition-fast);
-}
-
-.logo:hover {
-  transform: scale(1.02);
-}
-
-.logo-icon {
-  width: 120px;
-  height: auto;
-  object-fit: contain;
-  will-change: filter;
-  transition: filter 0.4s ease;
-}
-
-.logo:hover .logo-icon {
-  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.3));
-}
-
-.desktop-nav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nav-link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  color: var(--color-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-}
-
-.nav-link:hover {
-  color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.08);
-}
-
-.nav-link:hover .link-underline,
-.nav-link.active .link-underline {
-  transform: translateX(-50%) scaleX(1);
-}
-
-.nav-link.active {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-.link-underline {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 60%;
-  height: 2px;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
-}
-
-.link-text {
-  position: relative;
-  z-index: 1;
-}
-
-.nav-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  animation: pulse-badge 2s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-@keyframes pulse-badge {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.08);
-  }
-}
-
-.search-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  margin-left: 8px;
-  border-radius: var(--radius-md);
-  color: var(--color-body);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.search-trigger svg {
-  width: 18px;
-  height: 18px;
-}
-
-.search-trigger:hover {
-  color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.08);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-avatar-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
-  border: 1px solid transparent;
-}
-
-.user-avatar-wrapper:hover {
-  background: rgba(0, 240, 255, 0.06);
-  border-color: rgba(0, 240, 255, 0.2);
-}
-
-.user-avatar {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  background: var(--color-primary);
-  color: white;
-  transition: transform var(--transition-fast);
-}
-
-.user-avatar-wrapper:hover .user-avatar {
-  transform: rotate(-3deg) scale(1.04);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.username-text {
-  font-size: var(--font-size-sm);
-  color: var(--color-title);
-  font-weight: var(--font-weight-medium);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--color-muted);
-  transition: transform var(--transition-fast);
-}
-
-.btn-auth {
-  padding: 8px 20px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-login {
-  color: var(--color-primary);
-  border: 1.5px solid rgba(0, 240, 255, 0.4);
-}
-
-.btn-login:hover {
-  color: #fff;
-  border-color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.1);
-  transform: translateY(-1px);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.btn-register {
-  color: #fff;
-  background: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25);
-}
-
-.btn-register:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35), var(--neon-glow-md);
-}
-
-.mobile-menu-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: var(--color-title);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-}
-
-.mobile-menu-btn:hover {
-  background: rgba(0, 240, 255, 0.08);
-  color: var(--color-primary);
-}
-
-.mobile-menu-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-.dropdown-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .desktop-nav {
-    display: none;
-  }
-
-  .username-text,
-  .arrow-icon {
-    display: none;
-  }
-
-  .btn-auth {
-    display: none;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .user-avatar-wrapper {
-    padding: 6px;
-  }
-}
-</style>

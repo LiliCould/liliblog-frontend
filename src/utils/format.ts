@@ -1,49 +1,45 @@
-import dayjs from 'dayjs'
+/**
+ * 格式化工具函数
+ * 提供日期、数字等常用格式化方法
+ */
 
-export function formatDate(dateStr: string, pattern = 'YYYY-MM-DD'): string {
-    if (!dateStr) return ''
-    return dayjs(dateStr).format(pattern)
+/**
+ * 格式化日期时间
+ * @param date 日期字符串或 Date 对象
+ * @returns 格式化后的日期字符串，如 "2026-05-09 14:51:06"
+ */
+export const formatDateTime = (date: string | Date): string => {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hour = String(d.getHours()).padStart(2, '0')
+  const minute = String(d.getMinutes()).padStart(2, '0')
+  const second = String(d.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`
 }
 
-export function formatDateTime(dateStr: string): string {
-    return formatDate(dateStr, 'YYYY-MM-DD HH:mm')
+/**
+ * 格式化日期
+ * @param date 日期字符串或 Date 对象
+ * @returns 格式化后的日期字符串，如 "2026-05-09"
+ */
+export const formatDate = (date: string | Date): string => {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
-export function formatRelativeTime(dateStr: string): string {
-    if (!dateStr) return ''
-    const now = dayjs()
-    const target = dayjs(dateStr)
-    const diffMinutes = now.diff(target, 'minute')
-    const diffHours = now.diff(target, 'hour')
-    const diffDays = now.diff(target, 'day')
-
-    if (diffMinutes < 1) return '刚刚'
-    if (diffMinutes < 60) return `${diffMinutes}分钟前`
-    if (diffHours < 24) return `${diffHours}小时前`
-    if (diffDays < 30) return `${diffDays}天前`
-    return formatDate(dateStr)
-}
-
-export function formatMessageTime(dateStr?: string): string {
-    if (!dateStr) return ''
-    const now = dayjs()
-    const target = dayjs(dateStr)
-    const isToday = now.isSame(target, 'day')
-    const isYesterday = now.subtract(1, 'day').isSame(target, 'day')
-
-    if (isToday) {
-        return target.format('HH:mm')
-    } else if (isYesterday) {
-        return `昨天 ${target.format('HH:mm')}`
-    } else if (now.isSame(target, 'year')) {
-        return target.format('MM-DD HH:mm')
-    } else {
-        return target.format('YYYY-MM-DD HH:mm')
-    }
-}
-
-export function formatNumber(num: number): string {
-    if (num >= 10000) return `${(num / 10000).toFixed(1)}w`
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`
-    return String(num)
+/**
+ * 格式化数字，大于 10000 显示为 "x.x万"
+ * @param num 数字
+ * @returns 格式化后的字符串
+ */
+export const formatNumber = (num: number): string => {
+  if (num >= 10000) {
+    return `${(num / 10000).toFixed(1)}万`
+  }
+  return String(num)
 }
