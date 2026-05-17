@@ -27,7 +27,7 @@ const loadData = async (page = 1) => {
 
     // 加载分类信息
     if (slug && slug !== 'all') {
-      const catRes = await getCategoryList({ slug })
+      const catRes = await getCategoryList({ name: slug })
       if (catRes.code === 0 && catRes.data.records.length > 0) {
         category.value = catRes.data.records[0]
       }
@@ -72,43 +72,23 @@ onMounted(() => {
         <FolderOpen class="h-6 w-6" />
         {{ category?.name || '所有分类' }}
       </h1>
-      <p
-        v-if="category?.description"
-        class="mt-1 font-mono text-sm text-[var(--neutral-800)] dark:text-[var(--text-secondary)]"
-      >
+      <p v-if="category?.description"
+        class="mt-1 font-mono text-sm text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
         {{ category.description }}
       </p>
     </div>
 
     <LoadingBlock v-if="loading" />
 
-    <div
-      v-else-if="articles.length > 0"
-      class="space-y-6"
-    >
-      <ArticleCard
-        v-for="article in articles"
-        :key="article.id"
-        :article="article"
-      />
+    <div v-else-if="articles.length > 0" class="space-y-6">
+      <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
 
-      <div
-        v-if="pageResult && pageResult.totalPage > 1"
-        class="pt-4"
-      >
-        <Pagination
-          :current="pageResult.current"
-          :total-page="pageResult.totalPage"
-          :has-previous="pageResult.hasPrevious"
-          :has-next="pageResult.hasNext"
-          @change="handlePageChange"
-        />
+      <div v-if="pageResult && pageResult.totalPage > 1" class="pt-4">
+        <Pagination :current="pageResult.current" :total-page="pageResult.totalPage"
+          :has-previous="pageResult.hasPrevious" :has-next="pageResult.hasNext" @change="handlePageChange" />
       </div>
     </div>
 
-    <EmptyState
-      v-else
-      message="该分类下暂无文章"
-    />
+    <EmptyState v-else message="该分类下暂无文章" />
   </div>
 </template>
