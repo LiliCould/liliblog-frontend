@@ -11,12 +11,29 @@ export const getTagList = (params?: TagListParams): Promise<ApiResponse<PageResu
 }
 
 /**
+ * 获取所有标签（不分页）
+ * @returns 标签列表
+ */
+export const getAllTags = (): Promise<ApiResponse<Tag[]>> => {
+  return request.get('/api/tag/all')
+}
+
+/**
  * 获取标签详情
  * @param id 标签 ID
  * @returns 标签信息
  */
 export const getTagById = (id: number): Promise<ApiResponse<Tag>> => {
   return request.get(`/api/tag/${id}`)
+}
+
+/**
+ * 根据别名获取标签
+ * @param slug 标签别名
+ * @returns 标签信息
+ */
+export const getTagBySlug = (slug: string): Promise<ApiResponse<Tag>> => {
+  return request.get(`/api/tag/slug/${slug}`)
 }
 
 /**

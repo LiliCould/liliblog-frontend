@@ -1,108 +1,81 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getArticleList, getCategoryList, getTagList } from '@/api'
-import { FileText, FolderOpen, Tag, Eye } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { getAllCategories, getAllTags } from '@/api'
 
-/**
- * 后台仪表盘
- * 展示数据统计概览
- */
+import { FileText, Tags, FolderOpen, MessageSquare } from 'lucide-vue-next'
+
+const router = useRouter()
+
 const stats = ref({
-  articleCount: 0,
-  categoryCount: 0,
-  tagCount: 0,
-  totalViews: 0,
+  articles: 0,
+  categories: 0,
+  tags: 0,
+  comments: 0,
 })
 
-const loadStats = async () => {
+const fetchStats = async () => {
   try {
-    const [artRes, catRes, tagRes] = await Promise.all([
-      getArticleList({ size: 1 }),
-      getCategoryList({ size: 1 }),
-      getTagList({ size: 1 }),
+    const [catRes, tagRes] = await Promise.all([
+      getAllCategories(),
+      getAllTags(),
     ])
-
-    if (artRes.code === 0) {
-      stats.value.articleCount = artRes.data.total
-    }
-    if (catRes.code === 0) {
-      stats.value.categoryCount = catRes.data.total
-    }
-    if (tagRes.code === 0) {
-      stats.value.tagCount = tagRes.data.total
-    }
+    stats.value.categories = catRes.data.length
+    stats.value.tags = tagRes.data.length
   } catch (error) {
-    console.error('加载统计数据失败:', error)
+    console.error('获取统计数据失败', error)
   }
 }
 
+const menuItems = [
+  { name: '文章管理', path: '/admin/articles', icon: FileText, color: 'bg-primary/10 text-primary' },
+  { name: '分类管理', path: '/admin/categories', icon: FolderOpen, color: 'bg-accent-toxic/10 text-accent-toxic' },
+  { name: '标签管理', path: '/admin/tags', icon: Tags, color: 'bg-accent-amber/10 text-accent-amber' },
+  { name: '评论管理', path: '/admin/comments', icon: MessageSquare, color: 'bg-accent-rose/10 text-accent-rose' },
+]
+
 onMounted(() => {
-  loadStats()
+  fetchStats()
 })
 </script>
 
 <template>
   <div>
-    <h1 class="mb-6 text-2xl font-black">
-      仪表盘
-    </h1>
+    <h1 class="text-2xl font-bold text-text-title mb-6">仪表盘</h1>
 
     <!-- 统计卡片 -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div
-        class="border-2 border-black p-4 dark:border-[var(--neutral-800)]"
+        v-for="item in menuItems"
+        :key="item.path"
+        class="bg-bg-surface rounded-2xl p-5 card-shadow cursor-pointer transition-none hover:card-shadow-hover"
+        @click="router.push(item.path)"
       >
-        <div class="flex items-center gap-3">
-          <FileText class="h-8 w-8" :style="{ color: 'var(--accent-toxic)' }" />
-          <div>
-            <div class="text-2xl font-black">{{ stats.articleCount }}</div>
-            <div class="font-mono text-xs text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-              文章总数
-            </div>
+        <div class="flex items-center gap-3 mb-3">
+          <div :class="['p-2 rounded-xl', item.color]">
+            <component :is="item.icon" class="w-5 h-5" />
           </div>
         </div>
+        <p class="text-sm text-text-meta">{{ item.name }}</p>
       </div>
+    </div>
 
-      <div
-        class="border-2 border-black p-4 dark:border-[var(--neutral-800)]"
-      >
-        <div class="flex items-center gap-3">
-          <FolderOpen class="h-8 w-8" :style="{ color: 'var(--accent-toxic)' }" />
-          <div>
-            <div class="text-2xl font-black">{{ stats.categoryCount }}</div>
-            <div class="font-mono text-xs text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-              分类总数
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="border-2 border-black p-4 dark:border-[var(--neutral-800)]"
-      >
-        <div class="flex items-center gap-3">
-          <Tag class="h-8 w-8" :style="{ color: 'var(--accent-toxic)' }" />
-          <div>
-            <div class="text-2xl font-black">{{ stats.tagCount }}</div>
-            <div class="font-mono text-xs text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-              标签总数
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="border-2 border-black p-4 dark:border-[var(--neutral-800)]"
-      >
-        <div class="flex items-center gap-3">
-          <Eye class="h-8 w-8" :style="{ color: 'var(--accent-toxic)' }" />
-          <div>
-            <div class="text-2xl font-black">{{ stats.totalViews }}</div>
-            <div class="font-mono text-xs text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-              总阅读量
-            </div>
-          </div>
-        </div>
+    <!-- 快捷入口 -->
+    <div class="bg-bg-surface rounded-2xl p-6 card-shadow">
+      <h2 class="text-lg font-bold text-text-title mb-4">快捷操作</h2>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition-none"
+          @click="router.push('/write')"
+        >
+          写文章
+        </button>
+        <button
+          class="px-4 py-2 bg-bg-canvas border border-border text-text-body rounded-xl text-sm font-medium hover:bg-bg-surface transition-none"
+          @click="router.push('/register')"
+        >
+          注册新用户
+        </button>
       </div>
     </div>
   </div>

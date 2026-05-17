@@ -19,6 +19,25 @@ export const getArticleList = (params?: ArticleListParams): Promise<ApiResponse<
 }
 
 /**
+ * 获取当前用户的文章列表
+ * @param params 查询参数
+ * @returns 分页结果
+ */
+export const getMyArticles = (params?: ArticleListParams): Promise<ApiResponse<PageResult<Article>>> => {
+  return request.get('/api/article/my', { params })
+}
+
+/**
+ * 获取指定用户的文章列表
+ * @param userId 用户 ID
+ * @param params 查询参数
+ * @returns 分页结果
+ */
+export const getArticlesByUser = (userId: number, params?: ArticleListParams): Promise<ApiResponse<PageResult<Article>>> => {
+  return request.get(`/api/article/user/${userId}`, { params })
+}
+
+/**
  * 获取文章详情
  * @param id 文章 ID
  * @returns 文章详情对象

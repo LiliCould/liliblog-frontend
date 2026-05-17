@@ -1,187 +1,204 @@
 @import "tailwindcss";
 
-/* 自定义 CSS 变量 */
-:root {
-  --primary: #4338ca;
-  --primary-foreground: #ffffff;
-  --accent-toxic: #a3e635;
-  --accent-magenta: #e11d48;
-  --neutral-50: #fafaf9;
-  --neutral-100: #f5f5f4;
-  --neutral-200: #e7e5e4;
-  --neutral-800: #292524;
-  --neutral-900: #1c1917;
-  --neutral-950: #0c0a09;
-  --pure-black: #000000;
-  --pure-white: #ffffff;
+@theme {
+  --color-primary: #4f46e5;
+  --color-primary-foreground: #ffffff;
+  --color-accent-toxic: #a3e635;
+  --color-accent-rose: #f43f5e;
+  --color-accent-amber: #f59e0b;
+  --color-bg-canvas: #ffffff;
+  --color-bg-surface: #f8fafc;
+  --color-text-title: #0f172a;
+  --color-text-body: #334155;
+  --color-text-meta: #64748b;
+  --color-border: #e2e8f0;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
-/* 暗色模式变量 */
 .dark {
-  --background: #000000;
-  --surface: #0a0a0a;
-  --text-primary: #ffffff;
-  --text-secondary: #a8a29e;
-  --border: #292524;
+  --color-bg-canvas: #0f172a;
+  --color-bg-surface: #1e293b;
+  --color-text-title: #ffffff;
+  --color-text-body: #cbd5e1;
+  --color-text-meta: #94a3b8;
+  --color-border: #334155;
 }
 
-/* 基础样式 */
-html {
-  scroll-behavior: auto;
+@layer base {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-canvas);
+    color: var(--color-text-body);
+    transition-timing-function: linear;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-title);
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  code, pre {
+    font-family: var(--font-mono);
+  }
+
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-meta);
+  }
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--neutral-50);
-  color: var(--neutral-900);
+@layer components {
+  /* 弥散阴影卡片 */
+  .card-shadow {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
+  .card-shadow-hover {
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.1);
+    transform: translateY(-4px);
+  }
+
+  /* 噪点纹理叠加 */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* 机械感 Hover（保留用于特定场景） */
+  .mechanical-hover {
+    transition: none;
+  }
+
+  .mechanical-hover:hover {
+    background-color: var(--color-accent-toxic);
+    color: #000000;
+    transform: translate(-2px, -2px);
+  }
+
+  /* 故障文字效果 */
+  .glitch-text {
+    position: relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+
+  .glitch-text::before {
+    color: #a3e635;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    animation: glitch-1 2s infinite linear alternate-reverse;
+  }
+
+  .glitch-text::after {
+    color: #f43f5e;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    animation: glitch-2 3s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-1 {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+  }
+
+  @keyframes glitch-2 {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(2px); }
+    40% { transform: translateX(-2px); }
+    60% { transform: translateX(1px); }
+    80% { transform: translateX(-1px); }
+    100% { transform: translateX(0); }
+  }
+
+  /* 打字机光标 */
+  .typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* 胶囊形标签 */
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* 状态筛选下划线 */
+  .status-filter-active {
+    position: relative;
+  }
+
+  .status-filter-active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-accent-toxic);
+  }
 }
 
-.dark body {
-  background-color: var(--background);
-  color: var(--text-primary);
-}
-
-/* 等宽字体 */
-.font-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-}
-
-/* 硬阴影偏移 */
-.hard-shadow {
-  box-shadow: 4px 4px 0px 0px #000000;
-}
-
-.hard-shadow:hover {
-  transform: translate(4px, 4px);
-  box-shadow: 0px 0px 0px 0px #000000;
-}
-
-.dark .hard-shadow {
-  box-shadow: 4px 4px 0px 0px #ffffff;
-}
-
-.dark .hard-shadow:hover {
-  box-shadow: 0px 0px 0px 0px #ffffff;
-}
-
-/* 机械感 Hover */
-.mechanical-hover {
-  transition: none;
-}
-
-.mechanical-hover:hover {
-  transform: translate(2px, 2px);
-  background-color: var(--accent-toxic);
-  color: var(--pure-black);
-}
-
-/* 噪点纹理 */
-.noise-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url('/noise.png');
-  z-index: 9999;
-}
-
-/* 自定义滚动条 */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--neutral-100);
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: var(--neutral-900);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--neutral-800);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-toxic);
-}
-
-/* 链接样式 */
-a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-a:hover {
-  background-color: var(--accent-toxic);
-  color: var(--pure-black);
-}
-
-/* 暗色模式链接 */
-.dark a {
-  color: var(--accent-toxic);
-}
-
-.dark a:hover {
-  background-color: var(--accent-toxic);
-  color: var(--pure-black);
-}
-
-/* 代码块样式 */
-pre {
-  background-color: #0a0a0a;
-  border-radius: 0px;
-  border: 2px solid #000000;
-  padding: 1rem;
-  overflow-x: auto;
-}
-
-.dark pre {
-  border: 2px solid #292524;
-}
-
-code {
-  font-family: 'JetBrains Mono', monospace;
-  background-color: var(--neutral-100);
-  padding: 2px 6px;
-  border-radius: 0px;
-}
-
-.dark code {
-  background-color: #1c1917;
-}
-
-/* 引用块样式 */
-blockquote {
-  border-left-width: 4px;
-  border-left-color: var(--accent-toxic);
-  font-style: normal;
-  padding-left: 1rem;
-  margin: 1rem 0;
-}
-
-/* 图片样式 */
-img {
-  border-radius: 0px;
-}
-
-/* 输入框样式 */
-input,
-textarea,
-select {
-  border-radius: 2px;
-}
-
-/* 按钮基础样式 */
-button {
-  cursor: pointer;
-}
-
-/* 禁用平滑过渡 */
-* {
-  transition-timing-function: linear;
+@layer utilities {
+  .font-mono {
+    font-family: var(--font-mono);
+  }
 }

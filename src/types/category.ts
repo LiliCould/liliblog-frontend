@@ -14,6 +14,8 @@ export interface Category {
   sortOrder: number
   /** 状态 */
   status?: number
+  /** 文章数量 */
+  articleCount?: number
 }
 
 /**

@@ -23,7 +23,9 @@ export interface Comment {
   /** 创建时间 */
   createTime: string
   /** 发布者信息 */
-  creator: UserInfo
+  user: UserInfo
+  /** 回复对象昵称 */
+  replyToNickname?: string
   /** 评论层级,0-一级评论,1-二级评论 */
   level: number
 }

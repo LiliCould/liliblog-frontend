@@ -1,18 +1,18 @@
 <script setup lang="ts">
-/**
- * 页脚组件
- * 显示版权信息和技术栈标识
- */
 </script>
 
 <template>
-  <footer
-    class="border-t-2 border-black py-6 dark:border-[var(--neutral-800)]"
-  >
-    <div class="mx-auto max-w-7xl px-4 text-center">
-      <p class="text-sm font-mono text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-        &copy; {{ new Date().getFullYear() }} LiliCould's Blog | Powered by Vue 3 + Vite
-      </p>
+  <footer class="border-t border-border py-8 mt-auto">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-bold text-text-title">立里博客</span>
+          <span class="text-sm text-text-meta">LiliBlog</span>
+        </div>
+        <p class="text-xs text-text-meta">
+          &copy; {{ new Date().getFullYear() }} 立里博客. All rights reserved.
+        </p>
+      </div>
     </div>
   </footer>
 </template>

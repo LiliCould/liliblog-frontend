@@ -2,73 +2,26 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/api'
-import { isValidUsername, isValidEmail, isValidPassword } from '@/utils/validate'
+import { UserPlus } from 'lucide-vue-next'
 
-/**
- * 注册页面
- * 需要管理员权限才能访问
- */
 const router = useRouter()
 
 const form = ref({
   username: '',
   password: '',
-  confirmPassword: '',
-  email: '',
   nickname: '',
+  email: '',
 })
-
 const loading = ref(false)
-const errorMsg = ref('')
-const successMsg = ref('')
 
-const handleRegister = async () => {
-  errorMsg.value = ''
-  successMsg.value = ''
-
-  // 表单验证
-  if (!isValidUsername(form.value.username)) {
-    errorMsg.value = '用户名只能包含字母、数字、下划线，长度3-20位'
-    return
-  }
-  if (!isValidPassword(form.value.password)) {
-    errorMsg.value = '密码至少6位'
-    return
-  }
-  if (form.value.password !== form.value.confirmPassword) {
-    errorMsg.value = '两次输入的密码不一致'
-    return
-  }
-  if (!isValidEmail(form.value.email)) {
-    errorMsg.value = '请输入有效的邮箱地址'
-    return
-  }
-  if (!form.value.nickname.trim()) {
-    errorMsg.value = '请输入昵称'
-    return
-  }
-
+const handleSubmit = async () => {
+  if (!form.value.username || !form.value.password || !form.value.nickname) return
   loading.value = true
   try {
-    const res = await register({
-      username: form.value.username,
-      password: form.value.password,
-      confirmPassword: form.value.confirmPassword,
-      email: form.value.email,
-      nickname: form.value.nickname,
-    })
-
-    if (res.code === 0) {
-      successMsg.value = '注册成功！'
-      setTimeout(() => {
-        router.push('/login')
-      }, 1500)
-    } else {
-      errorMsg.value = res.msg || '注册失败'
-    }
-  } catch (error: unknown) {
-    const err = error as { response?: { data?: { msg?: string } } }
-    errorMsg.value = err.response?.data?.msg || '注册失败，请稍后重试'
+    await register(form.value)
+    router.push('/login')
+  } catch (error) {
+    console.error('注册失败', error)
   } finally {
     loading.value = false
   }
@@ -76,108 +29,59 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <div
-    class="flex min-h-screen items-center justify-center bg-[var(--neutral-50)] px-4 dark:bg-[var(--background)]"
-  >
-    <div
-      class="w-full max-w-md border-2 border-black bg-white p-8 dark:border-[var(--neutral-800)] dark:bg-[var(--surface)]"
-    >
-      <h1 class="text-2xl font-black tracking-tight">
-        注册新用户
-      </h1>
-      <p class="mt-1 font-mono text-sm text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-        管理员专用功能
-      </p>
+  <div class="min-h-screen flex items-center justify-center bg-bg-canvas px-4">
+    <div class="w-full max-w-md bg-bg-surface rounded-2xl card-shadow p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-black text-text-title tracking-tight">注册新用户</h1>
+        <p class="text-sm text-text-meta mt-2">创建一个新的管理员账号</p>
+      </div>
 
-      <form
-        class="mt-6 space-y-4"
-        @submit.prevent="handleRegister"
-      >
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <div>
-          <label class="mb-1 block text-sm font-bold">用户名</label>
+          <label class="block text-sm font-medium text-text-title mb-1.5">用户名</label>
           <input
             v-model="form.username"
             type="text"
-            class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent-toxic)] dark:border-[var(--neutral-800)]"
-            placeholder="3-20位字母、数字、下划线"
+            class="w-full px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
+            placeholder="请输入用户名"
           />
         </div>
-
         <div>
-          <label class="mb-1 block text-sm font-bold">昵称</label>
+          <label class="block text-sm font-medium text-text-title mb-1.5">昵称</label>
           <input
             v-model="form.nickname"
             type="text"
-            class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent-toxic)] dark:border-[var(--neutral-800)]"
+            class="w-full px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
             placeholder="请输入昵称"
           />
         </div>
-
         <div>
-          <label class="mb-1 block text-sm font-bold">邮箱</label>
+          <label class="block text-sm font-medium text-text-title mb-1.5">邮箱</label>
           <input
             v-model="form.email"
             type="email"
-            class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent-toxic)] dark:border-[var(--neutral-800)]"
-            placeholder="请输入邮箱"
+            class="w-full px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
+            placeholder="请输入邮箱（可选）"
           />
         </div>
-
         <div>
-          <label class="mb-1 block text-sm font-bold">密码</label>
+          <label class="block text-sm font-medium text-text-title mb-1.5">密码</label>
           <input
             v-model="form.password"
             type="password"
-            class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent-toxic)] dark:border-[var(--neutral-800)]"
-            placeholder="至少6位"
+            class="w-full px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
+            placeholder="请输入密码"
           />
         </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-bold">确认密码</label>
-          <input
-            v-model="form.confirmPassword"
-            type="password"
-            class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent-toxic)] dark:border-[var(--neutral-800)]"
-            placeholder="再次输入密码"
-          />
-        </div>
-
-        <!-- 错误提示 -->
-        <p
-          v-if="errorMsg"
-          class="text-sm font-bold"
-          :style="{ color: 'var(--accent-magenta)' }"
-        >
-          {{ errorMsg }}
-        </p>
-
-        <!-- 成功提示 -->
-        <p
-          v-if="successMsg"
-          class="text-sm font-bold"
-          :style="{ color: 'var(--accent-toxic)' }"
-        >
-          {{ successMsg }}
-        </p>
-
         <button
           type="submit"
-          class="w-full border-2 border-black py-2 text-sm font-bold transition-none hover:bg-[var(--accent-toxic)] hover:text-black dark:border-white"
+          class="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition-none disabled:opacity-50 flex items-center justify-center gap-2"
           :disabled="loading"
         >
+          <UserPlus class="w-4 h-4" />
           {{ loading ? '注册中...' : '注册' }}
         </button>
       </form>
-
-      <div class="mt-4 text-center">
-        <router-link
-          to="/"
-          class="text-xs font-mono"
-        >
-          [返回首页]
-        </router-link>
-      </div>
     </div>
   </div>
 </template>

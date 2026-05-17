@@ -10,6 +10,8 @@ export interface UserInfo {
   nickname: string
   /** 头像 URL */
   avatar: string
+  /** 邮箱 */
+  email?: string
   /** 角色，0-管理员 1-普通用户 */
   role: number
   /** 状态，0-禁用 1-启用 */
@@ -60,6 +62,8 @@ export interface UpdateUserData {
   nickname?: string
   /** 头像 URL */
   avatar?: string
+  /** 邮箱 */
+  email?: string
 }
 
 /**
@@ -71,7 +75,7 @@ export interface RegisterData {
   /** 密码 */
   password: string
   /** 确认密码 */
-  confirmPassword: string
+  confirmPassword?: string
   /** 邮箱 */
   email: string
   /** 昵称 */

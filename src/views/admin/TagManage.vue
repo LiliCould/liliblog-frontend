@@ -2,9 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { getTagList, createTag, updateTag, deleteTag } from '@/api'
 import type { Tag, PageResult } from '@/types'
-import Pagination from '@/components/common/Pagination.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingBlock from '@/components/common/LoadingBlock.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
+import LoadingBlock from '@/components/ui/LoadingBlock.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import { Pencil, Trash2, Plus } from 'lucide-vue-next'
 
 /**
@@ -15,10 +16,12 @@ const pageResult = ref<PageResult<Tag> | null>(null)
 const loading = ref(false)
 const showModal = ref(false)
 const isEdit = ref(false)
+const showDeleteDialog = ref(false)
+const deleteTarget = ref<number | null>(null)
 
 const form = ref<Partial<Tag>>({
   name: '',
-  color: '#4338ca',
+  color: '#4f46e5',
 })
 
 const loadTags = async (page = 1) => {
@@ -42,7 +45,7 @@ const handlePageChange = (page: number) => {
 
 const openCreateModal = () => {
   isEdit.value = false
-  form.value = { name: '', color: '#4338ca' }
+  form.value = { name: '', color: '#4f46e5' }
   showModal.value = true
 }
 
@@ -72,16 +75,23 @@ const handleSave = async () => {
   }
 }
 
-const handleDelete = async (id: number) => {
-  if (!confirm('确定要删除这个标签吗？')) return
+const confirmDelete = (id: number) => {
+  deleteTarget.value = id
+  showDeleteDialog.value = true
+}
 
+const handleDelete = async () => {
+  if (!deleteTarget.value) return
   try {
-    const res = await deleteTag(id)
+    const res = await deleteTag(deleteTarget.value)
     if (res.code === 0) {
       loadTags()
     }
   } catch (error) {
     console.error('删除标签失败:', error)
+  } finally {
+    showDeleteDialog.value = false
+    deleteTarget.value = null
   }
 }
 
@@ -93,9 +103,9 @@ onMounted(() => {
 <template>
   <div>
     <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-black">标签管理</h1>
+      <h1 class="text-2xl font-bold text-text-title">标签管理</h1>
       <button
-        class="flex items-center gap-2 border-2 border-black px-3 py-1 text-sm font-bold dark:border-white"
+        class="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition-none"
         @click="openCreateModal"
       >
         <Plus class="h-4 w-4" />
@@ -106,25 +116,25 @@ onMounted(() => {
     <LoadingBlock v-if="loading" />
 
     <div v-else-if="tags.length > 0">
-      <div class="overflow-x-auto border-2 border-black dark:border-[var(--neutral-800)]">
+      <div class="bg-bg-surface rounded-2xl overflow-hidden card-shadow">
         <table class="w-full text-sm">
-          <thead class="border-b-2 border-black bg-[var(--neutral-100)] dark:border-[var(--neutral-800)] dark:bg-[var(--neutral-900)]">
+          <thead class="border-b border-border bg-bg-canvas">
             <tr>
-              <th class="px-4 py-3 text-left font-bold">名称</th>
-              <th class="px-4 py-3 text-left font-bold">颜色</th>
-              <th class="px-4 py-3 text-left font-bold">操作</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">名称</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">颜色</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">操作</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="tag in tags"
               :key="tag.id"
-              class="border-b border-[var(--neutral-200)] dark:border-[var(--neutral-800)]"
+              class="border-b border-border last:border-b-0"
             >
               <td class="px-4 py-3">
                 <span
-                  class="border px-2 py-0.5 text-xs font-bold"
-                  :style="{ borderColor: tag.color, color: tag.color }"
+                  class="pill-badge text-xs"
+                  :style="{ backgroundColor: tag.color + '20', color: tag.color, border: `1px solid ${tag.color}40` }"
                 >
                   {{ tag.name }}
                 </span>
@@ -132,24 +142,23 @@ onMounted(() => {
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
                   <div
-                    class="h-4 w-4 border border-black dark:border-white"
+                    class="w-5 h-5 rounded-full border border-border"
                     :style="{ backgroundColor: tag.color }"
                   />
-                  <span class="font-mono text-xs">{{ tag.color }}</span>
+                  <span class="font-mono text-xs text-text-meta">{{ tag.color }}</span>
                 </div>
               </td>
               <td class="px-4 py-3">
                 <div class="flex gap-2">
                   <button
-                    class="p-1"
+                    class="p-1.5 rounded-lg text-text-meta hover:text-primary hover:bg-primary/10 transition-none"
                     @click="openEditModal(tag)"
                   >
                     <Pencil class="h-4 w-4" />
                   </button>
                   <button
-                    class="p-1"
-                    :style="{ color: 'var(--accent-magenta)' }"
-                    @click="handleDelete(tag.id)"
+                    class="p-1.5 rounded-lg text-text-meta hover:text-accent-rose hover:bg-accent-rose/10 transition-none"
+                    @click="confirmDelete(tag.id)"
                   >
                     <Trash2 class="h-4 w-4" />
                   </button>
@@ -160,65 +169,60 @@ onMounted(() => {
         </table>
       </div>
 
-      <div
+      <Pagination
         v-if="pageResult && pageResult.totalPage > 1"
-        class="mt-4"
-      >
-        <Pagination
-          :current="pageResult.current"
-          :total-page="pageResult.totalPage"
-          :has-previous="pageResult.hasPrevious"
-          :has-next="pageResult.hasNext"
-          @change="handlePageChange"
-        />
-      </div>
+        :current-page="pageResult.current"
+        :total-pages="pageResult.totalPage"
+        @change="handlePageChange"
+      />
     </div>
 
-    <EmptyState v-else message="暂无标签" />
+    <EmptyState v-else title="暂无标签" description="还没有创建任何标签" />
 
     <!-- 编辑/创建弹窗 -->
     <div
       v-if="showModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      class="fixed inset-0 z-[200] flex items-center justify-center p-4"
     >
-      <div class="w-full max-w-md border-2 border-black bg-white p-6 dark:border-[var(--neutral-800)] dark:bg-[var(--surface)]">
-        <h2 class="text-xl font-black">
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showModal = false" />
+      <div class="relative bg-bg-surface border border-border rounded-2xl p-6 w-full max-w-md">
+        <h2 class="text-lg font-bold text-text-title mb-4">
           {{ isEdit ? '编辑标签' : '添加标签' }}
         </h2>
-        <div class="mt-4 space-y-4">
+        <div class="space-y-4">
           <div>
-            <label class="mb-1 block text-sm font-bold">名称</label>
+            <label class="block text-sm font-medium text-text-title mb-1.5">名称</label>
             <input
               v-model="form.name"
               type="text"
-              class="w-full border-2 border-black bg-transparent px-3 py-2 text-sm outline-none dark:border-[var(--neutral-800)]"
+              class="w-full px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
             />
           </div>
           <div>
-            <label class="mb-1 block text-sm font-bold">颜色</label>
-            <div class="flex items-center gap-2">
+            <label class="block text-sm font-medium text-text-title mb-1.5">颜色</label>
+            <div class="flex items-center gap-3">
               <input
                 v-model="form.color"
                 type="color"
-                class="h-10 w-10 border-2 border-black dark:border-[var(--neutral-800)]"
+                class="w-10 h-10 rounded-lg border border-border bg-transparent cursor-pointer"
               />
               <input
                 v-model="form.color"
                 type="text"
-                class="flex-1 border-2 border-black bg-transparent px-3 py-2 text-sm font-mono outline-none dark:border-[var(--neutral-800)]"
+                class="flex-1 px-4 py-2.5 bg-bg-canvas border border-border rounded-xl text-sm text-text-body font-mono focus:outline-none focus:border-primary"
               />
             </div>
           </div>
         </div>
-        <div class="mt-6 flex justify-end gap-3">
+        <div class="flex justify-end gap-3 mt-6">
           <button
-            class="border-2 border-black px-4 py-2 text-sm font-bold dark:border-white"
+            class="px-4 py-2 rounded-lg text-sm text-text-body hover:bg-bg-canvas transition-none"
             @click="showModal = false"
           >
             取消
           </button>
           <button
-            class="border-2 border-black bg-[var(--accent-toxic)] px-4 py-2 text-sm font-bold text-black dark:border-white"
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 transition-none"
             @click="handleSave"
           >
             保存
@@ -226,5 +230,14 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <ConfirmDialog
+      v-model:open="showDeleteDialog"
+      title="删除标签"
+      description="确定要删除这个标签吗？此操作不可撤销。"
+      confirm-text="删除"
+      danger
+      @confirm="handleDelete"
+    />
   </div>
 </template>

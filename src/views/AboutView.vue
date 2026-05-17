@@ -1,69 +1,44 @@
 <script setup lang="ts">
-/**
- * 关于页面
- * 展示博客介绍、技术栈、联系方式等信息
- */
+import { ref, onMounted } from 'vue'
+import { getArticleById } from '@/api'
+import type { ArticleDetail } from '@/types'
+import LoadingBlock from '@/components/ui/LoadingBlock.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
+
+const article = ref<ArticleDetail | null>(null)
+const loading = ref(false)
+const error = ref(false)
+
+const fetchAbout = async () => {
+  loading.value = true
+  error.value = false
+  try {
+    const res = await getArticleById(1)
+    article.value = res.data
+  } catch (err) {
+    console.error('获取关于页面失败', err)
+    error.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchAbout()
+})
 </script>
 
 <template>
-  <div class="space-y-8">
-    <!-- 标题 -->
-    <div class="border-b-2 border-black pb-4 dark:border-[var(--neutral-800)]">
-      <h1 class="text-3xl font-black tracking-tight">
-        关于 LiliBlog
-      </h1>
-    </div>
-
-    <!-- 博客介绍 -->
-    <section>
-      <h2 class="text-xl font-bold">博客介绍</h2>
-      <p class="mt-3 leading-relaxed text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-        LiliBlog 是一个基于 Vue 3 + Vite 构建的个人博客系统，采用 Neo-Brutalism（新粗野主义）设计风格。
-        博客致力于分享技术文章、生活随笔和学习心得，打造一个纯粹的内容创作与阅读空间。
-      </p>
-    </section>
-
-    <!-- 技术栈 -->
-    <section>
-      <h2 class="text-xl font-bold">技术栈</h2>
-      <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3">
-        <div
-          v-for="tech in [
-            { name: 'Vue 3', desc: '前端框架' },
-            { name: 'Vite', desc: '构建工具' },
-            { name: 'TypeScript', desc: '类型系统' },
-            { name: 'Tailwind CSS', desc: 'CSS 框架' },
-            { name: 'Pinia', desc: '状态管理' },
-            { name: 'Vue Router', desc: '路由管理' },
-          ]"
-          :key="tech.name"
-          class="border-2 border-black p-3 dark:border-[var(--neutral-800)]"
-        >
-          <div class="font-bold">{{ tech.name }}</div>
-          <div class="mt-1 font-mono text-xs text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-            {{ tech.desc }}
-          </div>
-        </div>
+  <div>
+    <LoadingBlock v-if="loading" />
+    <ErrorState v-else-if="error" title="加载失败" description="无法获取关于页面内容" />
+    <article v-else-if="article" class="bg-bg-surface rounded-2xl overflow-hidden card-shadow">
+      <div class="p-6 md:p-10">
+        <h1 class="text-2xl md:text-3xl font-black text-text-title mb-6 leading-tight">
+          {{ article.title }}
+        </h1>
+        <div class="prose prose-slate dark:prose-invert max-w-none" v-html="article.contentHtml" />
       </div>
-    </section>
-
-    <!-- 联系方式 -->
-    <section>
-      <h2 class="text-xl font-bold">联系方式</h2>
-      <div class="mt-3 space-y-2 font-mono text-sm">
-        <p>
-          <span class="font-bold">邮箱：</span>
-          <a href="mailto:example@qq.com">example@qq.com</a>
-        </p>
-        <p>
-          <span class="font-bold">GitHub：</span>
-          <a href="https://github.com" target="_blank" rel="noopener">github.com</a>
-        </p>
-        <p>
-          <span class="font-bold">Gitee：</span>
-          <a href="https://gitee.com" target="_blank" rel="noopener">gitee.com</a>
-        </p>
-      </div>
-    </section>
+    </article>
   </div>
 </template>

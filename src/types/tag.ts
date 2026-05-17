@@ -8,6 +8,10 @@ export interface Tag {
   name: string
   /** 标签颜色 */
   color: string
+  /** 标签别名 */
+  slug?: string
+  /** 文章数量 */
+  articleCount?: number
 }
 
 /**

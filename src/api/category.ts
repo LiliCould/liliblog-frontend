@@ -11,12 +11,29 @@ export const getCategoryList = (params?: CategoryListParams): Promise<ApiRespons
 }
 
 /**
+ * 获取所有分类（不分页）
+ * @returns 分类列表
+ */
+export const getAllCategories = (): Promise<ApiResponse<Category[]>> => {
+  return request.get('/api/category/all')
+}
+
+/**
  * 获取分类详情
  * @param id 分类 ID
  * @returns 分类展示对象
  */
 export const getCategoryById = (id: number): Promise<ApiResponse<Category>> => {
   return request.get(`/api/category/${id}`)
+}
+
+/**
+ * 根据别名获取分类
+ * @param slug 分类别名
+ * @returns 分类展示对象
+ */
+export const getCategoryBySlug = (slug: string): Promise<ApiResponse<Category>> => {
+  return request.get(`/api/category/slug/${slug}`)
 }
 
 /**

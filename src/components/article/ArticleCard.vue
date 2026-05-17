@@ -1,124 +1,88 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { Eye, Heart, Clock } from 'lucide-vue-next'
 import type { Article } from '@/types'
-import { Eye, Heart, MessageCircle } from 'lucide-vue-next'
+import { formatDate } from '@/utils/format'
 
-/**
- * 文章卡片组件
- * 用于在文章列表中展示文章摘要信息
- */
 interface Props {
-  /** 文章数据对象，包含标题、摘要、封面等信息 */
   article: Article
-  /** 是否显示状态标识 */
-  showStatus?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  showStatus: false,
-})
+defineProps<Props>()
 
-// 文章状态文本映射
-const statusText = computed(() => {
-  const map: Record<number, string> = {
-    0: '审核中',
-    1: '已发布',
-    2: '草稿',
-  }
-  return map[props.article.status] || '未知'
-})
-
-// 文章状态颜色映射
-const statusColor = computed(() => {
-  const map: Record<number, string> = {
-    0: '#e11d48',
-    1: '#a3e635',
-    2: '#f59e0b',
-  }
-  return map[props.article.status] || '#666'
-})
+const router = useRouter()
 </script>
 
 <template>
   <article
-    class="group border-2 border-black bg-[var(--neutral-50)] dark:border-[var(--neutral-800)] dark:bg-[var(--surface)]"
+    class="bg-bg-surface rounded-2xl overflow-hidden card-shadow cursor-pointer transition-none hover:card-shadow-hover"
+    @click="router.push(`/article/${article.id}`)"
   >
     <!-- 封面图 -->
-    <router-link :to="`/article/${article.id}`">
+    <div class="relative aspect-video overflow-hidden">
       <img
-        v-if="article.coverImage"
-        :src="article.coverImage"
+        :src="article.coverImage || '/hero.png'"
         :alt="article.title"
-        class="h-48 w-full object-cover"
+        class="w-full h-full object-cover"
+        loading="lazy"
       />
-    </router-link>
+      <!-- 状态角标 -->
+      <span
+        v-if="article.status === 0"
+        class="absolute top-3 right-3 pill-badge bg-accent-amber text-white"
+      >
+        审核中
+      </span>
+      <span
+        v-else-if="article.status === 2"
+        class="absolute top-3 right-3 pill-badge bg-text-meta text-white"
+      >
+        草稿
+      </span>
+    </div>
 
-    <div class="p-4">
+    <!-- 内容区 -->
+    <div class="p-5">
       <!-- 标题 -->
-      <router-link :to="`/article/${article.id}`">
-        <h3 class="text-lg font-bold leading-tight">
-          {{ article.title }}
-        </h3>
-      </router-link>
+      <h2 class="text-lg font-bold text-text-title mb-2 line-clamp-2 leading-snug">
+        {{ article.title }}
+      </h2>
 
       <!-- 摘要 -->
-      <p
-        class="mt-2 line-clamp-2 text-sm text-[var(--neutral-800)] dark:text-[var(--text-secondary)]"
-      >
+      <p class="text-sm text-text-meta mb-4 line-clamp-2 leading-relaxed">
         {{ article.summary }}
       </p>
 
-      <!-- 元信息 -->
-      <div class="mt-3 flex flex-wrap items-center gap-3 text-xs font-mono">
-        <!-- 分类 -->
-        <router-link
-          v-if="article.category"
-          :to="`/category/${article.category.slug}`"
-          class="border px-2 py-0.5"
-        >
-          {{ article.category.name }}
-        </router-link>
-
-        <!-- 标签 -->
-        <div class="flex gap-1">
-          <span
-            v-for="tag in article.tags.slice(0, 3)"
-            :key="tag.id"
-            class="border px-1.5 py-0.5"
-            :style="{ borderColor: tag.color, color: tag.color }"
-          >
-            {{ tag.name }}
-          </span>
-        </div>
-
-        <!-- 状态标识 -->
-        <span
-          v-if="showStatus"
-          class="border px-2 py-0.5 font-bold"
-          :style="{ borderColor: statusColor, color: statusColor }"
-        >
-          {{ statusText }}
+      <!-- 元数据行 -->
+      <div class="flex items-center gap-4 text-xs text-text-meta">
+        <span class="flex items-center gap-1">
+          <Clock class="w-3.5 h-3.5" />
+          {{ formatDate(article.createTime) }}
+        </span>
+        <span class="flex items-center gap-1">
+          <Eye class="w-3.5 h-3.5" />
+          {{ article.viewCount }}
+        </span>
+        <span class="flex items-center gap-1 text-accent-rose">
+          <Heart class="w-3.5 h-3.5" />
+          {{ article.likeCount }}
         </span>
       </div>
 
-      <!-- 底部信息 -->
-      <div class="mt-3 flex items-center justify-between border-t border-[var(--neutral-200)] pt-3 text-xs font-mono dark:border-[var(--neutral-800)]">
-        <div class="flex items-center gap-3">
-          <span class="flex items-center gap-1">
-            <Eye class="h-3 w-3" />
-            {{ article.viewCount }}
-          </span>
-          <span class="flex items-center gap-1">
-            <Heart class="h-3 w-3" />
-            {{ article.likeCount }}
-          </span>
-          <span class="flex items-center gap-1">
-            <MessageCircle class="h-3 w-3" />
-            {{ article.commentCount }}
-          </span>
-        </div>
-        <span class="text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-          {{ article.createTime?.split('T')[0] }}
+      <!-- 分类和标签 -->
+      <div class="flex items-center gap-2 mt-3 flex-wrap">
+        <span
+          v-if="article.category"
+          class="pill-badge bg-primary/10 text-primary"
+        >
+          {{ article.category.name }}
+        </span>
+        <span
+          v-for="tag in article.tags"
+          :key="tag.id"
+          class="pill-badge bg-bg-canvas text-text-meta"
+        >
+          {{ tag.name }}
         </span>
       </div>
     </div>

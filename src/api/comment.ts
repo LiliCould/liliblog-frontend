@@ -17,12 +17,21 @@ export const getComments = (params: CommentListParams): Promise<ApiResponse<Page
 }
 
 /**
+ * 获取文章的一级评论列表
+ * @param articleId 文章 ID
+ * @returns 分页结果，包含一级评论列表
+ */
+export const getCommentsByArticle = (articleId: number): Promise<ApiResponse<PageResult<Comment>>> => {
+  return request.get('/api/comment', { params: { id: articleId } })
+}
+
+/**
  * 获取二级评论列表
- * @param params 查询参数，id 为根评论 ID
+ * @param rootCommentId 根评论 ID
  * @returns 分页结果，包含二级评论列表
  */
-export const getChildComments = (params: CommentListParams): Promise<ApiResponse<PageResult<Comment>>> => {
-  return request.get('/api/comment/child', { params })
+export const getChildComments = (rootCommentId: number): Promise<ApiResponse<PageResult<Comment>>> => {
+  return request.get('/api/comment/child', { params: { id: rootCommentId } })
 }
 
 /**

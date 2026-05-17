@@ -1,85 +1,80 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { getArticleList } from '@/api'
-import type { Article, PageResult } from '@/types'
-import ArticleCard from '@/components/article/ArticleCard.vue'
-import Pagination from '@/components/common/Pagination.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingBlock from '@/components/common/LoadingBlock.vue'
+import type { Article } from '@/types'
+import ArticleList from '@/components/article/ArticleList.vue'
+import GlitchText from '@/components/ui/GlitchText.vue'
+import TypewriterText from '@/components/ui/TypewriterText.vue'
 
-/**
- * 首页视图
- * 展示文章列表分页
- */
+const route = useRoute()
+
 const articles = ref<Article[]>([])
-const pageResult = ref<PageResult<Article> | null>(null)
 const loading = ref(false)
 const currentPage = ref(1)
+const totalPages = ref(0)
 
-const loadArticles = async (page = 1) => {
+const fetchArticles = async () => {
   loading.value = true
   try {
+    const search = route.query.search as string | undefined
     const res = await getArticleList({
-      status: 1,
-      current: page,
+      current: currentPage.value,
       size: 10,
+      title: search,
     })
-    if (res.code === 0) {
-      articles.value = res.data.records
-      pageResult.value = res.data
-      currentPage.value = page
-    }
+    articles.value = res.data.records
+    totalPages.value = res.data.totalPage
   } catch (error) {
-    console.error('加载文章列表失败:', error)
+    console.error('获取文章列表失败', error)
   } finally {
     loading.value = false
   }
 }
 
-const handlePageChange = (page: number) => {
-  loadArticles(page)
-}
+watch(() => route.query.search, () => {
+  currentPage.value = 1
+  fetchArticles()
+})
 
 onMounted(() => {
-  loadArticles()
+  fetchArticles()
 })
 </script>
 
 <template>
   <div>
-    <!-- 加载状态 -->
-    <LoadingBlock v-if="loading" />
-
-    <!-- 文章列表 -->
-    <div
-      v-else-if="articles.length > 0"
-      class="space-y-6"
-    >
-      <ArticleCard
-        v-for="article in articles"
-        :key="article.id"
-        :article="article"
-      />
-
-      <!-- 分页器 -->
-      <div
-        v-if="pageResult && pageResult.totalPage > 1"
-        class="pt-4"
-      >
-        <Pagination
-          :current="pageResult.current"
-          :total-page="pageResult.totalPage"
-          :has-previous="pageResult.hasPrevious"
-          :has-next="pageResult.hasNext"
-          @change="handlePageChange"
-        />
+    <!-- Hero 区域 -->
+    <section class="relative mb-10 rounded-2xl overflow-hidden">
+      <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent-rose/60" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
       </div>
+      <div class="relative px-6 py-16 md:py-24 text-center">
+        <h1 class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
+          <GlitchText text="立里博客" />
+        </h1>
+        <p class="text-base md:text-lg text-white/80 font-mono">
+          <TypewriterText text="探索技术、记录生活、分享思考" :speed="80" />
+        </p>
+      </div>
+    </section>
+
+    <!-- 搜索提示 -->
+    <div v-if="route.query.search" class="mb-6">
+      <p class="text-sm text-text-meta">
+        搜索关键词：
+        <span class="text-text-title font-medium">{{ route.query.search }}</span>
+      </p>
     </div>
 
-    <!-- 空状态 -->
-    <EmptyState
-      v-else
-      message="暂无文章"
+    <!-- 文章列表 -->
+    <ArticleList
+      :articles="articles"
+      :loading="loading"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @page-change="currentPage = $event; fetchArticles()"
     />
   </div>
 </template>

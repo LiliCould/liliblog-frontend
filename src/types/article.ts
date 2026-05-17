@@ -60,6 +60,8 @@ export interface ArticleDetail extends Article {
   content: string
   /** HTML 内容(展示用) */
   contentHtml: string
+  /** 是否已点赞 */
+  liked?: boolean
 }
 
 /**
@@ -72,6 +74,10 @@ export interface ArticleListParams {
   createBy?: number
   /** 文章分类 ID */
   categoryId?: number
+  /** 文章分类别名 */
+  categorySlug?: string
+  /** 文章标签别名 */
+  tagSlug?: string
   /** 文章状态，0-审核中 1-发布 2-草稿 */
   status?: number
   /** 文章发布时间范围(开始) */
@@ -91,7 +97,7 @@ export interface SaveArticleData {
   /** 文章标题 */
   title: string
   /** 文章别名(用于 URL) */
-  slug: string
+  slug?: string
   /** 文章摘要 */
   summary: string
   /** 封面图片 URL */
@@ -101,7 +107,7 @@ export interface SaveArticleData {
   /** markdown 内容 */
   content: string
   /** 分类 ID */
-  categoryId: number
+  categoryId?: number
   /** 标签 ID 列表 */
-  tags?: number[]
+  tagIds?: number[]
 }

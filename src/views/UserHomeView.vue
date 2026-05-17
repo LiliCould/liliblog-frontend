@@ -1,155 +1,116 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getUserById, getArticleList } from '@/api'
 import { useAuthStore } from '@/stores/auth'
-import type { UserInfo, Article, PageResult } from '@/types'
-import ArticleCard from '@/components/article/ArticleCard.vue'
-import Pagination from '@/components/common/Pagination.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingBlock from '@/components/common/LoadingBlock.vue'
-import { FileText, Heart } from 'lucide-vue-next'
+import { getMyArticles, getArticlesByUser, getUserById } from '@/api'
+import type { Article, UserInfo } from '@/types'
+import ArticleList from '@/components/article/ArticleList.vue'
 
-/**
- * 用户主页
- * 展示用户信息及其发布的文章
- */
 const route = useRoute()
 const authStore = useAuthStore()
 
-const user = ref<UserInfo | null>(null)
+const isMyHome = computed(() => route.path === '/user/me')
+const userId = computed(() => isMyHome.value ? authStore.userInfo?.id : Number(route.params.id))
+
 const articles = ref<Article[]>([])
-const pageResult = ref<PageResult<Article> | null>(null)
+const userInfo = ref<UserInfo | null>(null)
 const loading = ref(false)
+const currentPage = ref(1)
+const totalPages = ref(0)
+const statusFilter = ref<number | null>(null)
 
-// 判断是否为当前登录用户的主页
-const isMe = computed(() => {
-  return route.path === '/user/me' || (route.params.id && String(route.params.id) === String(authStore.userInfo?.id))
-})
+const statusOptions = [
+  { label: '全部', value: null },
+  { label: '已发布', value: 1 },
+  { label: '审核中', value: 0 },
+  { label: '草稿', value: 2 },
+]
 
-// 获取用户 ID
-const userId = computed(() => {
-  if (route.path === '/user/me') {
-    return authStore.userInfo?.id
-  }
-  return parseInt(route.params.id as string) || 0
-})
-
-const loadData = async (page = 1) => {
+const fetchData = async () => {
   if (!userId.value) return
-
   loading.value = true
   try {
-    // 加载用户信息
-    const userRes = await getUserById(userId.value)
-    if (userRes.code === 0) {
-      user.value = userRes.data
-    }
-
-    // 加载用户文章
-    const artRes = await getArticleList({
-      createBy: userId.value,
-      status: 1,
-      current: page,
-      size: 10,
-    })
-    if (artRes.code === 0) {
-      articles.value = artRes.data.records
-      pageResult.value = artRes.data
+    if (isMyHome.value) {
+      const res = await getMyArticles({
+        current: currentPage.value,
+        size: 10,
+        status: statusFilter.value ?? undefined,
+      })
+      articles.value = res.data.records
+      totalPages.value = res.data.totalPage
+    } else {
+      const [articlesRes, userRes] = await Promise.all([
+        getArticlesByUser(userId.value, { current: currentPage.value, size: 10 }),
+        getUserById(userId.value),
+      ])
+      articles.value = articlesRes.data.records
+      totalPages.value = articlesRes.data.totalPage
+      userInfo.value = userRes.data
     }
   } catch (error) {
-    console.error('加载用户主页失败:', error)
+    console.error('获取数据失败', error)
   } finally {
     loading.value = false
   }
 }
 
-const handlePageChange = (page: number) => {
-  loadData(page)
+const setStatusFilter = (status: number | null) => {
+  statusFilter.value = status
+  currentPage.value = 1
+  fetchData()
 }
 
 onMounted(() => {
-  loadData()
+  fetchData()
 })
 </script>
 
 <template>
   <div>
-    <!-- 用户信息卡片 -->
-    <div
-      v-if="user"
-      class="mb-6 border-2 border-black p-6 dark:border-[var(--neutral-800)]"
-    >
-      <div class="flex items-center gap-4">
+    <!-- 用户信息横幅 -->
+    <div class="relative mb-8 rounded-2xl overflow-hidden bg-bg-surface card-shadow">
+      <div class="h-32 bg-gradient-to-r from-primary to-primary/60" />
+      <div class="px-6 pb-6 -mt-12">
         <img
-          :src="user.avatar || '/default-avatar.png'"
-          :alt="user.nickname"
-          class="h-16 w-16 rounded-full border-2 border-black object-cover dark:border-white"
+          :src="(isMyHome ? authStore.userInfo?.avatar : userInfo?.avatar) || '/favicon.svg'"
+          :alt="(isMyHome ? authStore.userInfo?.nickname : userInfo?.nickname) || '用户'"
+          class="w-24 h-24 rounded-full object-cover border-4 border-bg-canvas"
         />
-        <div>
-          <h1 class="text-xl font-black">
-            {{ user.nickname }}
-            <span
-              v-if="user.role === 0"
-              class="ml-2 border px-2 py-0.5 text-xs"
-              :style="{ borderColor: 'var(--accent-toxic)', color: 'var(--accent-toxic)' }"
-            >
-              管理员
-            </span>
+        <div class="mt-3">
+          <h1 class="text-xl font-bold text-text-title">
+            {{ (isMyHome ? authStore.userInfo?.nickname : userInfo?.nickname) || '用户' }}
           </h1>
-          <p class="mt-1 font-mono text-sm text-[var(--neutral-800)] dark:text-[var(--text-secondary)]">
-            @{{ user.username }}
+          <p class="text-sm text-text-meta mt-1">
+            {{ (isMyHome ? authStore.userInfo?.email : userInfo?.email) || '' }}
           </p>
-          <div class="mt-2 flex gap-4 font-mono text-xs">
-            <span class="flex items-center gap-1">
-              <FileText class="h-3 w-3" />
-              {{ articles.length }} 篇文章
-            </span>
-            <span class="flex items-center gap-1">
-              <Heart class="h-3 w-3" />
-              0 获赞
-            </span>
-          </div>
         </div>
       </div>
     </div>
 
-    <!-- 文章列表 -->
-    <div class="mb-4 border-b-2 border-black pb-2 dark:border-[var(--neutral-800)]">
-      <h2 class="text-lg font-bold">
-        {{ isMe ? '我的文章' : 'TA 的文章' }}
-      </h2>
-    </div>
-
-    <LoadingBlock v-if="loading" />
-
-    <div
-      v-else-if="articles.length > 0"
-      class="space-y-6"
-    >
-      <ArticleCard
-        v-for="article in articles"
-        :key="article.id"
-        :article="article"
-      />
-
-      <div
-        v-if="pageResult && pageResult.totalPage > 1"
-        class="pt-4"
+    <!-- 状态筛选（仅我的文章） -->
+    <div v-if="isMyHome" class="flex items-center gap-2 mb-6">
+      <button
+        v-for="option in statusOptions"
+        :key="String(option.value)"
+        :class="[
+          'px-4 py-2 rounded-full text-sm font-medium transition-none',
+          statusFilter === option.value
+            ? 'status-filter-active text-text-title'
+            : 'text-text-meta hover:text-text-body',
+        ]"
+        @click="setStatusFilter(option.value)"
       >
-        <Pagination
-          :current="pageResult.current"
-          :total-page="pageResult.totalPage"
-          :has-previous="pageResult.hasPrevious"
-          :has-next="pageResult.hasNext"
-          @change="handlePageChange"
-        />
-      </div>
+        {{ option.label }}
+      </button>
     </div>
 
-    <EmptyState
-      v-else
-      :message="isMe ? '您还没有发布文章' : '该用户暂无文章'"
+    <!-- 文章列表 -->
+    <ArticleList
+      :articles="articles"
+      :loading="loading"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @page-change="currentPage = $event; fetchData()"
     />
   </div>
 </template>

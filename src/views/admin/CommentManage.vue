@@ -2,9 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { getComments, deleteComment } from '@/api'
 import type { Comment, PageResult } from '@/types'
-import Pagination from '@/components/common/Pagination.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingBlock from '@/components/common/LoadingBlock.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
+import LoadingBlock from '@/components/ui/LoadingBlock.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import { Trash2 } from 'lucide-vue-next'
 
 /**
@@ -13,12 +14,12 @@ import { Trash2 } from 'lucide-vue-next'
 const comments = ref<Comment[]>([])
 const pageResult = ref<PageResult<Comment> | null>(null)
 const loading = ref(false)
+const showDeleteDialog = ref(false)
+const deleteTarget = ref<number | null>(null)
 
 const loadComments = async (page = 1) => {
   loading.value = true
   try {
-    // 获取所有评论，使用一个特殊 ID 或参数
-    // 这里简化处理，实际可能需要后端提供获取所有评论的接口
     const res = await getComments({ id: 0, current: page, size: 10 })
     if (res.code === 0) {
       comments.value = res.data.records
@@ -35,16 +36,23 @@ const handlePageChange = (page: number) => {
   loadComments(page)
 }
 
-const handleDelete = async (id: number) => {
-  if (!confirm('确定要删除这条评论吗？')) return
+const confirmDelete = (id: number) => {
+  deleteTarget.value = id
+  showDeleteDialog.value = true
+}
 
+const handleDelete = async () => {
+  if (!deleteTarget.value) return
   try {
-    const res = await deleteComment(id)
+    const res = await deleteComment(deleteTarget.value)
     if (res.code === 0) {
       loadComments()
     }
   } catch (error) {
     console.error('删除评论失败:', error)
+  } finally {
+    showDeleteDialog.value = false
+    deleteTarget.value = null
   }
 }
 
@@ -55,37 +63,36 @@ onMounted(() => {
 
 <template>
   <div>
-    <h1 class="mb-6 text-2xl font-black">评论管理</h1>
+    <h1 class="text-2xl font-bold text-text-title mb-6">评论管理</h1>
 
     <LoadingBlock v-if="loading" />
 
     <div v-else-if="comments.length > 0">
-      <div class="overflow-x-auto border-2 border-black dark:border-[var(--neutral-800)]">
+      <div class="bg-bg-surface rounded-2xl overflow-hidden card-shadow">
         <table class="w-full text-sm">
-          <thead class="border-b-2 border-black bg-[var(--neutral-100)] dark:border-[var(--neutral-800)] dark:bg-[var(--neutral-900)]">
+          <thead class="border-b border-border bg-bg-canvas">
             <tr>
-              <th class="px-4 py-3 text-left font-bold">评论内容</th>
-              <th class="px-4 py-3 text-left font-bold">评论者</th>
-              <th class="px-4 py-3 text-left font-bold">文章ID</th>
-              <th class="px-4 py-3 text-left font-bold">时间</th>
-              <th class="px-4 py-3 text-left font-bold">操作</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">评论内容</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">评论者</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">文章ID</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">时间</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-title">操作</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="comment in comments"
               :key="comment.id"
-              class="border-b border-[var(--neutral-200)] dark:border-[var(--neutral-800)]"
+              class="border-b border-border last:border-b-0"
             >
-              <td class="px-4 py-3 max-w-xs truncate">{{ comment.content }}</td>
-              <td class="px-4 py-3">{{ comment.creator?.nickname || '-' }}</td>
-              <td class="px-4 py-3 font-mono">{{ comment.articleId }}</td>
-              <td class="px-4 py-3 font-mono text-xs">{{ comment.createTime?.split('T')[0] }}</td>
+              <td class="px-4 py-3 text-text-body max-w-xs truncate">{{ comment.content }}</td>
+              <td class="px-4 py-3 text-text-body">{{ comment.user?.nickname || '-' }}</td>
+              <td class="px-4 py-3 text-text-meta font-mono text-xs">{{ comment.articleId }}</td>
+              <td class="px-4 py-3 text-text-meta text-xs font-mono">{{ comment.createTime?.split('T')[0] }}</td>
               <td class="px-4 py-3">
                 <button
-                  class="p-1"
-                  :style="{ color: 'var(--accent-magenta)' }"
-                  @click="handleDelete(comment.id)"
+                  class="p-1.5 rounded-lg text-text-meta hover:text-accent-rose hover:bg-accent-rose/10 transition-none"
+                  @click="confirmDelete(comment.id)"
                 >
                   <Trash2 class="h-4 w-4" />
                 </button>
@@ -95,20 +102,23 @@ onMounted(() => {
         </table>
       </div>
 
-      <div
+      <Pagination
         v-if="pageResult && pageResult.totalPage > 1"
-        class="mt-4"
-      >
-        <Pagination
-          :current="pageResult.current"
-          :total-page="pageResult.totalPage"
-          :has-previous="pageResult.hasPrevious"
-          :has-next="pageResult.hasNext"
-          @change="handlePageChange"
-        />
-      </div>
+        :current-page="pageResult.current"
+        :total-pages="pageResult.totalPage"
+        @change="handlePageChange"
+      />
     </div>
 
-    <EmptyState v-else message="暂无评论" />
+    <EmptyState v-else title="暂无评论" description="还没有任何评论" />
+
+    <ConfirmDialog
+      v-model:open="showDeleteDialog"
+      title="删除评论"
+      description="确定要删除这条评论吗？此操作不可撤销。"
+      confirm-text="删除"
+      danger
+      @confirm="handleDelete"
+    />
   </div>
 </template>

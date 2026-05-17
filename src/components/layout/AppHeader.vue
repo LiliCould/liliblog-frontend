@@ -1,190 +1,82 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { useThemeStore } from '@/stores/theme'
-import { useAppStore } from '@/stores/app'
-import { Menu, Sun, Moon, LogOut, User, Settings, PenLine, Shield } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Menu, Search } from 'lucide-vue-next'
+import MobileDrawer from './MobileDrawer.vue'
 
-/**
- * 顶部导航栏组件
- * 包含 Logo、导航链接、主题切换、用户菜单
- */
-const router = useRouter()
 const authStore = useAuthStore()
-const themeStore = useThemeStore()
-const appStore = useAppStore()
+const router = useRouter()
 
-const navLinks = computed(() => [
-  { name: '首页', path: '/' },
-  { name: '分类', path: '/category/all' },
-  { name: '标签', path: '/tag/all' },
-  { name: '关于', path: '/about' },
-])
+const mobileMenuOpen = ref(false)
+const searchQuery = ref('')
 
-const handleLogout = async () => {
-  await authStore.logout()
-  router.push('/')
-}
-
-// 用户菜单显示状态
-const showUserMenu = ref(false)
-let menuHideTimer: ReturnType<typeof setTimeout> | null = null
-
-/**
- * 显示用户菜单
- * 清除隐藏定时器，防止菜单闪烁
- */
-const handleMouseEnter = () => {
-  if (menuHideTimer) {
-    clearTimeout(menuHideTimer)
-    menuHideTimer = null
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push(`/?search=${encodeURIComponent(searchQuery.value.trim())}`)
+    searchQuery.value = ''
   }
-  showUserMenu.value = true
-}
-
-/**
- * 延迟隐藏用户菜单
- * 设置1.5秒延迟，给用户足够时间移动鼠标到菜单区域
- */
-const handleMouseLeave = () => {
-  menuHideTimer = setTimeout(() => {
-    showUserMenu.value = false
-  }, 1500)
-}
-
-/**
- * 立即隐藏用户菜单
- * 用于点击菜单项后关闭菜单
- */
-const hideMenu = () => {
-  showUserMenu.value = false
 }
 </script>
 
 <template>
-  <header
-    class="sticky top-0 z-50 border-b-2 border-black bg-[var(--neutral-50)] dark:border-[var(--neutral-800)] dark:bg-[var(--background)]"
-  >
-    <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-      <!-- 左侧：汉堡菜单 + Logo -->
-      <div class="flex items-center gap-4">
-        <button
-          class="md:hidden"
-          @click="appStore.toggleSidebar"
-        >
-          <Menu class="h-5 w-5" />
-        </button>
-        <router-link
-          to="/"
-          class="text-xl font-black tracking-tight"
-          :style="{ color: 'var(--accent-toxic)' }"
-        >
-          LiliBlog
-        </router-link>
-      </div>
-
-      <!-- 中间：导航链接 -->
-      <nav class="hidden items-center gap-6 md:flex">
-        <router-link
-          v-for="link in navLinks"
-          :key="link.path"
-          :to="link.path"
-          class="text-sm font-semibold"
-        >
-          {{ link.name }}
-        </router-link>
-      </nav>
-
-      <!-- 右侧：主题切换 + 用户菜单 -->
-      <div class="flex items-center gap-3">
-        <!-- 主题切换按钮 -->
-        <button
-          class="p-1"
-          @click="themeStore.toggleTheme"
-        >
-          <Sun v-if="themeStore.isDark" class="h-5 w-5" />
-          <Moon v-else class="h-5 w-5" />
-        </button>
-
-        <!-- 未登录：登录按钮 -->
-        <router-link
-          v-if="!authStore.isLoggedIn"
-          to="/login"
-          class="border-2 border-black px-3 py-1 text-sm font-bold dark:border-white"
-        >
-          登录
+  <header class="sticky top-0 z-50 bg-bg-canvas/80 backdrop-blur-md border-b border-border">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <router-link to="/" class="flex items-center gap-2">
+          <span class="text-xl font-black text-text-title tracking-tight">立里博客</span>
         </router-link>
 
-        <!-- 已登录：用户菜单 -->
-        <div
-          v-else
-          class="relative"
-          @mouseenter="handleMouseEnter"
-          @mouseleave="handleMouseLeave"
-        >
-          <button class="flex items-center gap-2">
-            <img
-              :src="authStore.userInfo?.avatar || '/default-avatar.png'"
-              alt="avatar"
-              class="h-8 w-8 rounded-none border-2 border-black object-cover dark:border-white"
+        <!-- 搜索框（桌面端） -->
+        <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
+          <div class="relative w-full">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜索文章..."
+              class="w-full pl-10 pr-4 py-2 bg-bg-surface border border-border rounded-full text-sm text-text-body placeholder:text-text-meta focus:outline-none focus:border-primary"
+              @keyup.enter="handleSearch"
             />
-            <span class="hidden text-sm font-semibold sm:inline">
-              {{ authStore.userInfo?.nickname }}
-            </span>
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-meta" />
+          </div>
+        </div>
+
+        <!-- 右侧操作区 -->
+        <div class="flex items-center gap-3">
+          <!-- 移动端汉堡菜单按钮 -->
+          <button
+            class="md:hidden p-2 rounded-lg text-text-body hover:bg-bg-surface"
+            @click="mobileMenuOpen = true"
+          >
+            <Menu class="w-6 h-6" />
           </button>
 
-          <!-- 下拉菜单 -->
-          <div
-            v-show="showUserMenu"
-            class="absolute right-0 top-full mt-2 w-48 border-2 border-black bg-[var(--neutral-50)] dark:border-[var(--neutral-800)] dark:bg-[var(--surface)]"
-            @mouseenter="handleMouseEnter"
-            @mouseleave="handleMouseLeave"
+          <!-- 桌面端用户头像 -->
+          <router-link
+            v-if="authStore.isLoggedIn && authStore.userInfo"
+            to="/user/me"
+            class="hidden md:flex items-center gap-2"
           >
-            <router-link
-              to="/user/me"
-              class="flex items-center gap-2 px-4 py-2 text-sm"
-              @click="hideMenu"
-            >
-              <User class="h-4 w-4" />
-              我的首页
-            </router-link>
-            <router-link
-              v-if="authStore.isAdmin"
-              to="/write"
-              class="flex items-center gap-2 px-4 py-2 text-sm"
-              @click="hideMenu"
-            >
-              <PenLine class="h-4 w-4" />
-              写文章
-            </router-link>
-            <router-link
-              v-if="authStore.isAdmin"
-              to="/admin"
-              class="flex items-center gap-2 px-4 py-2 text-sm"
-              @click="hideMenu"
-            >
-              <Shield class="h-4 w-4" />
-              后台管理
-            </router-link>
-            <router-link
-              to="/settings"
-              class="flex items-center gap-2 px-4 py-2 text-sm"
-              @click="hideMenu"
-            >
-              <Settings class="h-4 w-4" />
-              设置
-            </router-link>
-            <button
-              class="flex w-full items-center gap-2 px-4 py-2 text-sm"
-              @click="hideMenu; handleLogout()"
-            >
-              <LogOut class="h-4 w-4" />
-              退出登录
-            </button>
-          </div>
+            <img
+              :src="authStore.userInfo.avatar || '/favicon.svg'"
+              :alt="authStore.userInfo.nickname"
+              class="w-8 h-8 rounded-full object-cover border border-border"
+            />
+          </router-link>
+
+          <router-link
+            v-else
+            to="/login"
+            class="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:opacity-90 transition-none"
+          >
+            登录
+          </router-link>
         </div>
       </div>
     </div>
+
+    <!-- 移动端抽屉 -->
+    <MobileDrawer v-model:open="mobileMenuOpen" />
   </header>
 </template>
