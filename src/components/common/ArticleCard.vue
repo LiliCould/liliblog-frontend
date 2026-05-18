@@ -1,17 +1,20 @@
 <template>
   <article
     class="group relative cursor-pointer rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:border-[#00f0ff] hover:shadow-[0_0_20px_rgba(0,240,255,0.15)]"
-    @click="goDetail"
-    ref="cardRef"
-  >
-    <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[rgba(0,240,255,0.03)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[1]"></div>
-    <div class="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-[rgba(0,240,255,0.08)] to-transparent pointer-events-none z-[1] group-hover:animate-[flow-light_0.8s_ease-out]"></div>
+    @click="goDetail" ref="cardRef">
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-transparent to-[rgba(0,240,255,0.03)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[1]">
+    </div>
+    <div
+      class="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-[rgba(0,240,255,0.08)] to-transparent pointer-events-none z-[1] group-hover:animate-[flow-light_0.8s_ease-out]">
+    </div>
 
     <div class="flex gap-6 p-6 relative z-[2] max-md:flex-col-reverse max-md:gap-4 max-md:p-4">
       <div class="flex-1 min-w-0 flex flex-col">
 
 
-        <h2 class="text-lg font-bold text-white leading-snug mb-2 line-clamp-2 transition-colors duration-500 group-hover:text-[#00f0ff] group-hover:[text-shadow:0_0_12px_rgba(0,240,255,0.3)]">
+        <h2
+          class="text-lg font-bold text-white leading-snug mb-2 line-clamp-2 transition-colors duration-500 group-hover:text-[#00f0ff] group-hover:[text-shadow:0_0_12px_rgba(0,240,255,0.3)]">
           {{ article.title }}
         </h2>
 
@@ -20,40 +23,55 @@
         </p>
 
         <div class="flex flex-wrap gap-4 mb-4 pt-2 border-t border-[rgba(0,240,255,0.15)]">
-          <span v-if="article.category" class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
-            <FolderOpen class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-            {{ article.category.name }}
+          <span
+            class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <FolderOpen
+              class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            {{ article.category?.name || '未分类' }}
           </span>
-          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
-            <Clock class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+          <span
+            class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Clock
+              class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             <time :datetime="article.updateTime">{{ formatRelativeTime(article.updateTime) }}</time>
           </span>
-          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
-            <Eye class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+          <span
+            class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Eye
+              class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             {{ formatNumber(article.viewCount) }}
           </span>
-          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
-            <MessageSquare class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+          <span
+            class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <MessageSquare
+              class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             {{ article.commentCount }}
           </span>
-          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
-            <Heart class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+          <span
+            class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Heart
+              class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             {{ article.likeCount }}
           </span>
         </div>
 
         <div v-if="displayTags.length > 0" class="flex flex-wrap gap-2 items-center">
           <TagBadge v-for="tag in displayTags" :key="tag.id" :tag="tag" />
-          <span v-if="hiddenTagsCount > 0" class="inline-flex items-center justify-center min-w-[28px] h-[26px] px-2.5 text-[11px] font-semibold text-[#6b7280] bg-[rgba(0,240,255,0.05)] border border-[rgba(0,240,255,0.15)] rounded-full transition-all duration-500 hover:text-[#00f0ff] hover:border-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)]">
+          <span v-if="hiddenTagsCount > 0"
+            class="inline-flex items-center justify-center min-w-[28px] h-[26px] px-2.5 text-[11px] font-semibold text-[#6b7280] bg-[rgba(0,240,255,0.05)] border border-[rgba(0,240,255,0.15)] rounded-full transition-all duration-500 hover:text-[#00f0ff] hover:border-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)]">
             +{{ hiddenTagsCount }}
           </span>
         </div>
       </div>
 
-      <div v-if="article.coverImage" class="shrink-0 w-[200px] h-[140px] rounded-xl overflow-hidden max-md:w-full max-md:h-[180px]">
+      <div v-if="article.coverImage"
+        class="shrink-0 w-[200px] h-[140px] rounded-xl overflow-hidden max-md:w-full max-md:h-[180px]">
         <div class="relative w-full h-full rounded-xl overflow-hidden">
-          <img :src="article.coverImage" :alt="article.title" loading="lazy" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[rgba(0,240,255,0.08)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <img :src="article.coverImage" :alt="article.title" loading="lazy"
+            class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-[rgba(0,240,255,0.08)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
         </div>
       </div>
     </div>
@@ -95,7 +113,7 @@ onMounted(() => {
     entries.forEach(entry => {
       if (entry.isIntersecting && entry.target === cardRef.value) {
         (entry.target as HTMLElement).style.opacity = '1'
-        ;(entry.target as HTMLElement).style.transform = 'translateY(0)'
+          ; (entry.target as HTMLElement).style.transform = 'translateY(0)'
         observer.unobserve(entry.target)
       }
     })

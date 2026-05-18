@@ -206,8 +206,7 @@ onUnmounted(() => {
 .glitch-main {
   position: relative;
   z-index: 10;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 40px rgba(0, 240, 255, 0.15);
+  color: transparent;
 }
 
 .glitch-before,
@@ -218,11 +217,10 @@ onUnmounted(() => {
   width: 100%;
   height: 130%;
   overflow: hidden;
-  filter: contrast(200%);
+  will-change: transform;
 }
 
 .glitch-before {
-  left: 0;
   color: #ff2d78;
   text-shadow: 1px 0 0 #ff2d78;
   z-index: 20;
@@ -230,7 +228,6 @@ onUnmounted(() => {
 }
 
 .glitch-after {
-  left: -1px;
   color: #00f0ff;
   text-shadow: -1px 0 0 #00f0ff;
   z-index: 30;
@@ -245,276 +242,255 @@ onUnmounted(() => {
   height: 1px;
   background: #000;
   z-index: 50;
-  animation: glitch-line 3s ease-out infinite;
+  will-change: transform, opacity;
+  animation: glitch-line 3s steps(1) infinite;
 }
 
 @keyframes glitch-anim-1 {
   0% {
-    top: 0;
-    left: 0;
+    transform: translate(0, 0);
   }
 
   10% {
-    top: -1.5px;
-    left: -3.5px;
+    transform: translate(-3.5px, -1.5px);
   }
 
   20% {
-    top: 1.5px;
-    left: -0.5px;
+    transform: translate(-0.5px, 1.5px);
   }
 
   30% {
-    top: 0;
-    left: 2px;
+    transform: translate(2px, 0);
   }
 
   40% {
-    top: -1px;
-    left: -2.5px;
+    transform: translate(-2.5px, -1px);
   }
 
   50% {
-    top: 0;
-    left: 0.5px;
+    transform: translate(0.5px, 0);
   }
 
   60% {
-    top: 4px;
-    left: -4px;
+    transform: translate(-4px, 4px);
   }
 
   70% {
-    top: -2.5px;
-    left: 0.3px;
+    transform: translate(0.3px, -2.5px);
   }
 
   80% {
-    top: -1px;
-    left: -3px;
+    transform: translate(-3px, -1px);
   }
 
   90% {
-    top: 0;
-    left: 3px;
+    transform: translate(3px, 0);
   }
 
   100% {
-    top: 0;
-    left: -3px;
+    transform: translate(-3px, 0);
   }
 }
 
 @keyframes glitch-anim-2 {
   0% {
-    top: 0;
-    left: -1px;
+    transform: translate(-1px, 0);
   }
 
   10% {
-    top: 1.5px;
-    left: 3px;
+    transform: translate(3px, 1.5px);
   }
 
   20% {
-    top: -1.5px;
-    left: -0.5px;
+    transform: translate(-0.5px, -1.5px);
   }
 
   30% {
-    top: 0.5px;
-    left: 3px;
+    transform: translate(3px, 0.5px);
   }
 
   40% {
-    top: -2px;
-    left: -2px;
+    transform: translate(-2px, -2px);
   }
 
   50% {
-    top: 0.3px;
-    left: 1px;
+    transform: translate(1px, 0.3px);
   }
 
   60% {
-    top: -3px;
-    left: 3.5px;
+    transform: translate(3.5px, -3px);
   }
 
   70% {
-    top: 2px;
-    left: -2px;
+    transform: translate(-2px, 2px);
   }
 
   80% {
-    top: -0.5px;
-    left: 2.5px;
+    transform: translate(2.5px, -0.5px);
   }
 
   90% {
-    top: 2.5px;
-    left: -2.5px;
+    transform: translate(-2.5px, 2.5px);
   }
 
   100% {
-    top: -0.5px;
-    left: 2px;
+    transform: translate(2px, -0.5px);
   }
 }
 
 @keyframes glitch-line {
   0% {
-    top: -2px;
+    transform: translateY(-2px);
     opacity: 0;
   }
 
   2% {
-    top: 15px;
+    transform: translateY(15px);
     opacity: 1;
   }
 
   4% {
-    top: 42px;
+    transform: translateY(42px);
     opacity: 0;
   }
 
   6% {
-    top: 5px;
+    transform: translateY(5px);
     opacity: 1;
   }
 
   8% {
-    top: 35px;
+    transform: translateY(35px);
     opacity: 0;
   }
 
   12% {
-    top: 8px;
+    transform: translateY(8px);
     opacity: 1;
   }
 
   14% {
-    top: 45px;
+    transform: translateY(45px);
     opacity: 0;
   }
 
   18% {
-    top: 2px;
+    transform: translateY(2px);
     opacity: 1;
   }
 
   20% {
-    top: 38px;
+    transform: translateY(38px);
     opacity: 0;
   }
 
   25% {
-    top: 28px;
+    transform: translateY(28px);
     opacity: 1;
   }
 
   27% {
-    top: 10px;
+    transform: translateY(10px);
     opacity: 0;
   }
 
   30% {
-    top: 40px;
+    transform: translateY(40px);
     opacity: 1;
   }
 
   32% {
-    top: 3px;
+    transform: translateY(3px);
     opacity: 0;
   }
 
   38% {
-    top: 33px;
+    transform: translateY(33px);
     opacity: 1;
   }
 
   40% {
-    top: 7px;
+    transform: translateY(7px);
     opacity: 0;
   }
 
   45% {
-    top: 25px;
+    transform: translateY(25px);
     opacity: 1;
   }
 
   47% {
-    top: 44px;
+    transform: translateY(44px);
     opacity: 0;
   }
 
   52% {
-    top: 1px;
+    transform: translateY(1px);
     opacity: 1;
   }
 
   54% {
-    top: 36px;
+    transform: translateY(36px);
     opacity: 0;
   }
 
   60% {
-    top: 12px;
+    transform: translateY(12px);
     opacity: 1;
   }
 
   62% {
-    top: 42px;
+    transform: translateY(42px);
     opacity: 0;
   }
 
   68% {
-    top: 6px;
+    transform: translateY(6px);
     opacity: 1;
   }
 
   70% {
-    top: 30px;
+    transform: translateY(30px);
     opacity: 0;
   }
 
   75% {
-    top: 20px;
+    transform: translateY(20px);
     opacity: 1;
   }
 
   77% {
-    top: 46px;
+    transform: translateY(46px);
     opacity: 0;
   }
 
   82% {
-    top: 3px;
+    transform: translateY(3px);
     opacity: 1;
   }
 
   84% {
-    top: 35px;
+    transform: translateY(35px);
     opacity: 0;
   }
 
   90% {
-    top: 14px;
+    transform: translateY(14px);
     opacity: 1;
   }
 
   92% {
-    top: 40px;
+    transform: translateY(40px);
     opacity: 0;
   }
 
   99% {
-    top: 8px;
+    transform: translateY(8px);
     opacity: 0;
   }
 
   100% {
-    top: -2px;
+    transform: translateY(-2px);
     opacity: 0;
   }
 }
