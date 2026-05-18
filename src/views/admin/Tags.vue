@@ -136,12 +136,14 @@ import type { Tag } from '@/types/tag'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { formatDate } from '@/utils/format'
+import { useToast } from '@/composables/useToast'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)
 const modalVisible = ref(false)
 const editingId = ref<number | null>(null)
+const toast = useToast()
 
 const form = reactive({
   name: '',
@@ -178,8 +180,10 @@ function closeModal() {
 async function handleSubmit() {
   if (editingId.value) {
     await updateTag(editingId.value, { ...form })
+    toast.success('标签已更新')
   } else {
     await createTag({ ...form })
+    toast.success('标签已创建')
   }
   closeModal()
   fetchTags()
@@ -187,6 +191,7 @@ async function handleSubmit() {
 
 async function handleDelete(tag: Tag) {
   await deleteTag(tag.id)
+  toast.success('标签已删除')
   fetchTags()
 }
 

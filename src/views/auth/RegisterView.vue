@@ -104,12 +104,14 @@ import { ref, reactive, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, Mail, KeyRound, PenLine, Lock } from 'lucide-vue-next'
 import { register, getCaptcha } from '@/api/auth'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const loading = ref(false)
 const captchaLoading = ref(false)
 const countdown = ref(0)
 let countdownTimer: number | null = null
+const toast = useToast()
 
 const form = reactive({
   username: '',
@@ -153,6 +155,7 @@ async function handleRegister() {
       confirmPassword: form.confirmPassword,
       nickname: form.nickname,
     })
+    toast.success('注册成功，请登录')
     router.push('/login')
   } catch {
     // handled by interceptor

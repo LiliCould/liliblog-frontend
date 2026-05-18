@@ -28,6 +28,7 @@
       <AppFooter />
       <MobileNav />
     </template>
+    <ToastContainer />
   </div>
 </template>
 
@@ -38,6 +39,7 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import MobileNav from '@/components/layout/MobileNav.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
+import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const route = useRoute()
 

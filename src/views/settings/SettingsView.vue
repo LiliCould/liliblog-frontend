@@ -93,9 +93,11 @@ import { updateUser } from '@/api/user'
 import { uploadFile } from '@/api/file'
 import request from '@/utils/request'
 import type { ApiResponse } from '@/types/api'
+import { useToast } from '@/composables/useToast'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const userStore = useUserStore()
+const toast = useToast()
 
 const nickname = ref(userStore.nickname)
 const avatarPreview = ref('')
@@ -130,6 +132,7 @@ async function saveProfile() {
     } else if (avatarFile.value) {
       await updateUser({ avatar: avatarUrl })
     }
+    toast.success('个人资料已保存')
   } finally {
     savingProfile.value = false
   }
@@ -148,6 +151,7 @@ async function changePassword() {
     oldPassword.value = ''
     newPassword.value = ''
     confirmPassword.value = ''
+    toast.success('密码修改成功，请重新登录')
   } finally {
     savingPassword.value = false
   }

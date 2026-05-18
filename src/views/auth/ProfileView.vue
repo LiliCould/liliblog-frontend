@@ -103,11 +103,13 @@ import { useUserStore } from '@/stores/user'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { getCurrentUser, updateUser } from '@/api/user'
 import { uploadFile } from '@/api/file'
+import { useToast } from '@/composables/useToast'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import type { User as UserType } from '@/types/user'
 
 const router = useRouter()
 const userStore = useUserStore()
+const toast = useToast()
 const profile = ref<UserType | null>(null)
 const editingNickname = ref(false)
 const editNickname = ref('')
@@ -139,6 +141,7 @@ async function handleAvatarUpload(e: Event) {
       if (profile.value) profile.value.avatar = avatarUrl
       userStore.updateAvatar(avatarUrl)
       await updateUser({ avatar: avatarUrl })
+      toast.success('头像已更新')
     }
   } catch {
     // handled by interceptor
@@ -162,6 +165,7 @@ async function saveNickname() {
     await updateUser({ nickname: editNickname.value })
     userStore.updateNickname(editNickname.value)
     if (profile.value) profile.value.nickname = editNickname.value
+    toast.success('昵称已更新')
   } catch {
     // handled by interceptor
   } finally {
@@ -178,6 +182,7 @@ async function handleChangePassword() {
       oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword,
     } as any)
+    toast.success('密码修改成功，请重新登录')
     userStore.logout()
     router.push('/login')
   } catch {

@@ -107,6 +107,7 @@ import { useArticleStore } from '@/stores/article'
 import { useUserStore } from '@/stores/user'
 import { deleteArticle } from '@/api/article'
 import { formatRelativeTime } from '@/utils/format'
+import { useToast } from '@/composables/useToast'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -115,6 +116,7 @@ import type { Article } from '@/types/article'
 const router = useRouter()
 const articleStore = useArticleStore()
 const userStore = useUserStore()
+const toast = useToast()
 const activeTab = ref<string>('all')
 const currentPage = ref(1)
 const pageSize = 10
@@ -159,6 +161,7 @@ async function confirmDelete(article: Article) {
   if (!confirm(`确定要删除文章「${article.title}」吗？此操作不可恢复。`)) return
   try {
     await deleteArticle(article.id)
+    toast.success('文章已删除')
     loadArticles()
   } catch {
     // handled by interceptor

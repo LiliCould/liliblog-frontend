@@ -212,6 +212,7 @@ import { uploadFile } from '@/api/file'
 import { getCategories } from '@/api/category'
 import { getTags } from '@/api/tag'
 import { useAutoSave } from '@/composables/useAutoSave'
+import { useToast } from '@/composables/useToast'
 import MarkdownEditor from '@/components/article/MarkdownEditor.vue'
 import type { Category } from '@/types/category'
 import type { Tag as TagType } from '@/types/tag'
@@ -260,6 +261,7 @@ function getDraftData() {
 }
 
 const { state: saveState, save: autoSave, notifyChange, checkAndRestore, restore, markClean, clearDraft } = useAutoSave(draftKey.value, getDraftData)
+const toast = useToast()
 
 function onContentChange() {
   notifyChange()
@@ -326,6 +328,7 @@ async function handleCoverUpload(e: Event) {
     const res = await uploadFile(file, 'cover') as any
     form.coverImage = res.message?.trim() || res.data
     onContentChange()
+    toast.success('封面上传成功')
   } catch {
     // handled by interceptor
   }
@@ -349,8 +352,10 @@ async function handleSubmit(status: number) {
     if (isEdit.value) {
       const id = Number(route.params.id)
       await updateArticle(id, data)
+      toast.success(status === 1 ? '文章已发布' : '草稿已保存')
     } else {
       await createArticle(data)
+      toast.success(status === 1 ? '文章发布成功' : '草稿保存成功')
     }
     await clearDraft()
     router.push('/manage/articles')

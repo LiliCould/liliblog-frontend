@@ -149,12 +149,14 @@ import { getCategories, createCategory, updateCategory, updateCategoryStatus, de
 import type { Category } from '@/types/category'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
+import { useToast } from '@/composables/useToast'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
 const categories = ref<Category[]>([])
 const loading = ref(false)
 const modalVisible = ref(false)
 const editingId = ref<number | null>(null)
+const toast = useToast()
 
 const form = reactive({
   name: '',
@@ -200,8 +202,10 @@ function closeModal() {
 async function handleSubmit() {
   if (editingId.value) {
     await updateCategory(editingId.value, { ...form })
+    toast.success('分类已更新')
   } else {
     await createCategory({ ...form })
+    toast.success('分类已创建')
   }
   closeModal()
   fetchCategories()
@@ -209,11 +213,13 @@ async function handleSubmit() {
 
 async function toggleCategoryStatus(cat: Category) {
   await updateCategoryStatus(cat.id)
+  toast.success('分类状态已更新')
   fetchCategories()
 }
 
 async function handleDelete(cat: Category) {
   await deleteCategory(cat.id)
+  toast.success('分类已删除')
   fetchCategories()
 }
 

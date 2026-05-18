@@ -32,5 +32,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./components/common/SearchBar.vue')['default']
     TagBadge: typeof import('./components/common/TagBadge.vue')['default']
+    ToastContainer: typeof import('./components/common/ToastContainer.vue')['default']
   }
 }
