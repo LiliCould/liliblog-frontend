@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-6">
-    <div class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-4">
+    <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] p-5" style="backdrop-filter:blur(12px)">
       <div class="flex gap-3">
         <img
           v-if="userStore.isLoggedIn && userStore.avatar"
@@ -10,21 +10,29 @@
         />
         <div
           v-else
-          class="w-10 h-10 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 bg-[#1a1a24] flex items-center justify-center text-[#6b7280] text-xs"
+          class="w-10 h-10 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 bg-[rgba(0,240,255,0.06)] flex items-center justify-center text-[#6b7280] text-xs"
         >
           匿
         </div>
         <div class="flex-1 min-w-0">
           <textarea
             v-model="commentContent"
-            :placeholder="userStore.isLoggedIn ? '写下你的评论...' : '请先登录后评论'"
+            :placeholder="replyTarget ? `回复 @${replyTarget.creator?.nickname}...` : userStore.isLoggedIn ? '写下你的评论...' : '请先登录后评论'"
             :disabled="!userStore.isLoggedIn"
-            class="w-full min-h-[80px] p-3 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none resize-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full min-h-[80px] p-3 rounded-lg bg-[rgba(0,0,0,0.3)] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none resize-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
           ></textarea>
-          <div class="flex justify-end mt-2">
+          <div class="flex items-center justify-between mt-2">
+            <button
+              v-if="replyTarget"
+              class="text-xs text-[#6b7280] hover:text-[#00f0ff] transition-colors"
+              @click="cancelReply"
+            >
+              取消回复
+            </button>
+            <span v-else></span>
             <button
               class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.3)] text-[#00f0ff] text-sm font-semibold transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="!userStore.isLoggedIn || !commentContent.trim()"
+              :disabled="!userStore.isLoggedIn || !commentContent.trim() || submitting"
               @click="submitComment"
             >
               <Send class="w-4 h-4" />
@@ -35,17 +43,21 @@
       </div>
     </div>
 
-    <div v-if="comments.length > 0" class="flex flex-col gap-4">
+    <div v-if="loading" class="flex flex-col gap-4">
+      <div v-for="i in 3" :key="i" class="h-24 rounded-xl bg-[rgba(20,20,35,0.5)] border border-[rgba(0,240,255,0.1)] animate-pulse"></div>
+    </div>
+
+    <div v-else-if="comments.length > 0" class="flex flex-col gap-4">
       <CommentItem
         v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
+        :article-id="articleId"
         @reply="handleReply"
-        @load-children="handleLoadChildren"
       />
     </div>
 
-    <EmptyState v-else message="暂无评论" />
+    <EmptyState v-else message="暂无评论，快来抢沙发吧" />
   </div>
 </template>
 
@@ -53,7 +65,7 @@
 import { ref, onMounted } from 'vue'
 import { Send } from 'lucide-vue-next'
 import type { Comment, CommentCreateDTO } from '@/types/comment.d'
-import { getComments, getChildComments, createComment } from '@/api/comment'
+import { getComments, createComment } from '@/api/comment'
 import { useUserStore } from '@/stores/user'
 import CommentItem from './CommentItem.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -65,47 +77,58 @@ const props = defineProps<{
 const userStore = useUserStore()
 const comments = ref<Comment[]>([])
 const commentContent = ref('')
+const loading = ref(true)
+const submitting = ref(false)
+const replyTarget = ref<Comment | null>(null)
 
 async function loadComments() {
+  loading.value = true
   try {
     const res = await getComments({ id: props.articleId, current: 1, size: 50 }) as any
-    comments.value = res.data || []
+    const pageData = res.data
+    if (pageData && pageData.records) {
+      comments.value = pageData.records
+    } else if (Array.isArray(pageData)) {
+      comments.value = pageData
+    } else {
+      comments.value = []
+    }
   } catch {
-    // skip
+    comments.value = []
+  } finally {
+    loading.value = false
   }
 }
 
 async function submitComment() {
-  if (!commentContent.value.trim()) return
+  if (!commentContent.value.trim() || submitting.value) return
+  submitting.value = true
   try {
     const data: CommentCreateDTO = {
       articleId: props.articleId,
       content: commentContent.value.trim(),
-      parentId: 0,
-      rootId: 0,
+      parentId: replyTarget.value?.id || 0,
+      rootId: replyTarget.value?.id || 0,
     }
     await createComment(data)
     commentContent.value = ''
+    replyTarget.value = null
     await loadComments()
   } catch {
-    // skip
+    // handled by interceptor
+  } finally {
+    submitting.value = false
   }
 }
 
 function handleReply(comment: Comment) {
+  replyTarget.value = comment
   commentContent.value = `@${comment.creator?.nickname} `
 }
 
-async function handleLoadChildren(comment: Comment) {
-  try {
-    await getChildComments({ id: comment.id, current: 1, size: 50 })
-    const parent = comments.value.find(c => c.id === comment.id)
-    if (parent) {
-      // children will be handled by CommentItem internally
-    }
-  } catch {
-    // skip
-  }
+function cancelReply() {
+  replyTarget.value = null
+  commentContent.value = ''
 }
 
 onMounted(() => {
