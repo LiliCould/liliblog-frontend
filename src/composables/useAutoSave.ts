@@ -186,6 +186,37 @@ export function useAutoSave(key: string, getData: () => string, _onRestore?: (da
         state.value = { status: 'saved', lastSaved: new Date(), error: null }
     }
 
+    async function clearDraft() {
+        try {
+            localStorage.removeItem(`draft_${key}`)
+            localStorage.removeItem(`draft_${key}_time`)
+            const db = await openDB()
+            const tx = db.transaction(STORE_NAME, 'readwrite')
+            const store = tx.objectStore(STORE_NAME)
+            const versionKey = `${key}_version`
+            const versionReq = store.get(versionKey)
+            await new Promise<void>((resolve) => {
+                versionReq.onsuccess = () => {
+                    const currentVersion = (versionReq.result as DraftRecord)?.data
+                        ? parseInt((versionReq.result as DraftRecord).data)
+                        : 0
+                    for (let v = 1; v <= currentVersion; v++) {
+                        store.delete(`${key}_v${v}`)
+                    }
+                    store.delete(versionKey)
+                    resolve()
+                }
+                versionReq.onerror = () => resolve()
+            })
+        } catch {
+            // skip
+        }
+        isDirty = false
+        changeCount = 0
+        lastSavedData = ''
+        state.value = { status: 'idle', lastSaved: null, error: null }
+    }
+
     function beforeUnloadHandler(e: BeforeUnloadEvent) {
         if (isDirty) {
             e.preventDefault()
@@ -212,5 +243,6 @@ export function useAutoSave(key: string, getData: () => string, _onRestore?: (da
         checkAndRestore,
         restore,
         markClean,
+        clearDraft,
     }
 }

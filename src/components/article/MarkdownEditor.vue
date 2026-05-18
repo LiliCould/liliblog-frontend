@@ -107,6 +107,7 @@ onMounted(() => {
         ],
       },
     ],
+    customWysiwygToolbar: () => {},
     input: (value: string) => {
       emit('update:modelValue', value)
       emit('input')

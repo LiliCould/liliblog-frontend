@@ -259,7 +259,7 @@ function getDraftData() {
   })
 }
 
-const { state: saveState, save: autoSave, notifyChange, checkAndRestore, restore, markClean } = useAutoSave(draftKey.value, getDraftData)
+const { state: saveState, save: autoSave, notifyChange, checkAndRestore, restore, markClean, clearDraft } = useAutoSave(draftKey.value, getDraftData)
 
 function onContentChange() {
   notifyChange()
@@ -352,7 +352,7 @@ async function handleSubmit(status: number) {
     } else {
       await createArticle(data)
     }
-    markClean()
+    await clearDraft()
     router.push('/manage/articles')
   } catch {
     // handled by interceptor
