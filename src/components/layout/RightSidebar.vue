@@ -56,6 +56,8 @@
         </div>
       </div>
     </div>
+
+    <slot></slot>
   </aside>
 </template>
 

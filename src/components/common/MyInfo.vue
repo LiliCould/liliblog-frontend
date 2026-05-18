@@ -1,55 +1,50 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+  <div
+    class="bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] rounded-lg overflow-hidden transition-all duration-250 relative hover:[box-shadow:0_8px_32px_rgba(0,240,255,0.1),0_0_1px_rgba(0,240,255,0.3)] hover:-translate-y-0.5 hover:border-[rgba(0,240,255,0.3)] group"
+    style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+    <div
+      class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-pink transition-[width] duration-400 [box-shadow:0_0_8px_rgba(0,240,255,0.4)] group-hover:w-full">
+    </div>
+
     <div class="relative">
-      <img
-        :src="userInfo.avatar"
-        :alt="userInfo.nickname"
-        class="w-full h-48 object-cover"
-      />
-      <div class="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-md">
+      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" />
+      <div
+        class="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg shadow-orange-500/30">
         {{ userInfo.badge }}
       </div>
     </div>
 
     <div class="p-5">
-      <h3 class="text-xl font-bold text-center text-gray-800 mb-2">
+      <h3 class="text-xl font-bold text-center text-cyber-title mb-2">
         {{ userInfo.nickname }}
       </h3>
-      <p class="text-sm text-center text-gray-600 mb-4 leading-relaxed">
+      <p class="text-sm text-center text-cyber-body mb-4 leading-relaxed opacity-80">
         {{ userInfo.signature }}
       </p>
 
-      <div class="flex justify-center gap-3 mb-5 pb-5 border-b border-gray-100">
-        <a
-          v-for="social in socialLinks"
-          :key="social.name"
-          :href="social.url"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div class="flex justify-center gap-3 mb-5 pb-5 border-b border-[rgba(0,240,255,0.15)]">
+        <a v-for="social in socialLinks" :key="social.name" :href="social.url" target="_blank" rel="noopener noreferrer"
           :class="[
             'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200',
-            'hover:scale-110 hover:shadow-md',
-            social.bgColor,
-            social.hoverColor
-          ]"
-          :title="social.name"
-        >
-          <component :is="social.icon" class="w-5 h-5" :class="social.iconColor" />
+            'border border-[rgba(0,240,255,0.15)] bg-[rgba(0,240,255,0.06)]',
+            'hover:scale-110 hover:[box-shadow:0_0_12px_rgba(0,240,255,0.3)] hover:border-[rgba(0,240,255,0.4)]',
+            social.iconColor
+          ]" :title="social.name">
+          <component :is="social.icon" class="w-5 h-5" />
         </a>
       </div>
 
       <div class="space-y-1">
-        <a
-          v-for="link in infoLinks"
-          :key="link.text"
-          :href="link.url"
-          class="flex items-center justify-between px-3 py-3 rounded-lg text-sm text-gray-700 no-underline transition-all duration-200 hover:bg-gray-50 group"
-        >
+        <a v-for="link in infoLinks" :key="link.text" :href="link.url"
+          class="flex items-center justify-between px-3 py-3 rounded-md text-sm text-cyber-body no-underline transition-all duration-200 relative hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] group/link">
+          <span
+            class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-cyber-primary to-cyber-pink rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(0,240,255,0.4)] group-hover/link:h-3/5"></span>
           <span class="flex items-center gap-2">
             {{ link.text }}
             <span>{{ link.emoji }}</span>
           </span>
-          <ChevronRight class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+          <ChevronRight
+            class="w-4 h-4 text-cyber-muted opacity-0 -translate-x-1 transition-all duration-250 group-hover/link:opacity-100 group-hover/link:translate-x-0" />
         </a>
       </div>
     </div>
@@ -57,61 +52,45 @@
 </template>
 
 <script setup lang="ts">
-import { Github, Send, Tv, Music, Mail, ChevronRight } from 'lucide-vue-next'
+import { Github, Tv, Music, Mail, ChevronRight } from 'lucide-vue-next'
 
 const userInfo = {
-  avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20girl%20with%20blonde%20hair%20blue%20eyes%20red%20beret%20red%20plaid%20shirt%20winking%20cute%20expression%20portrait&image_size=portrait_4_3',
-  nickname: 'Naccl',
-  signature: '云鹤当归天，天不迎我妙木仙；',
-  badge: '博主'
+  avatar: new URL('@/assets/my.png', import.meta.url).href,
+  nickname: 'LiliCould',
+  signature: '',
+  badge: '我的信息'
 }
 
 const socialLinks = [
   {
     name: 'GitHub',
-    url: 'https://github.com/naccl',
+    url: 'https://github.com/liliCould',
     icon: Github,
-    bgColor: 'bg-gray-100',
-    hoverColor: 'hover:bg-gray-200',
-    iconColor: 'text-gray-700'
-  },
-  {
-    name: 'Telegram',
-    url: 'https://t.me/naccl',
-    icon: Send,
-    bgColor: 'bg-blue-50',
-    hoverColor: 'hover:bg-blue-100',
-    iconColor: 'text-blue-500'
+    iconColor: 'text-gray-300 hover:text-white'
   },
   {
     name: 'Bilibili',
-    url: 'https://space.bilibili.com/naccl',
+    url: 'https://space.bilibili.com/360583544',
     icon: Tv,
-    bgColor: 'bg-cyan-50',
-    hoverColor: 'hover:bg-cyan-100',
-    iconColor: 'text-cyan-500'
+    iconColor: 'text-cyan-400 hover:text-cyan-300'
   },
   {
     name: '网易云音乐',
-    url: 'https://music.163.com/#/user/home?id=naccl',
+    url: 'https://music.163.com/#/user/home?id=1410136194',
     icon: Music,
-    bgColor: 'bg-red-50',
-    hoverColor: 'hover:bg-red-100',
-    iconColor: 'text-red-500'
+    iconColor: 'text-red-400 hover:text-red-300'
   },
   {
     name: '邮箱',
-    url: 'mailto:naccl@example.com',
+    url: 'lilicould@qq.com',
     icon: Mail,
-    bgColor: 'bg-gray-100',
-    hoverColor: 'hover:bg-gray-200',
-    iconColor: 'text-gray-700'
+    iconColor: 'text-gray-300 hover:text-white'
   }
 ]
 
 const infoLinks = [
   { text: '最喜欢的动漫', emoji: '📺', url: '/favorite/anime' },
-  { text: '最喜欢我的女孩子们', emoji: '😊', url: '/favorite/girls' },
+  { text: '最喜欢的美食', emoji: '🍦', url: '/favorite/girls' },
   { text: '最喜欢玩的游戏', emoji: '🎮', url: '/favorite/games' }
 ]
 </script>
