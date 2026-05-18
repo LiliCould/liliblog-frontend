@@ -16,10 +16,11 @@
     </div>
 
     <div class="relative z-10 flex flex-col items-center justify-center h-full gap-5 text-center px-4">
-      <h1 class="font-bold text-white tracking-wider flex items-center justify-center" :class="titleSizeClass"
-        style="font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif; text-shadow: 0 0 20px rgba(0,240,255,0.4), 0 0 40px rgba(0,240,255,0.15);">
-        <span>{{ mainDisplayText }}</span>
-        <span class="typewriter-cursor" :class="{ 'cursor-blink': mainTypingDone }">|</span>
+      <h1 class="glitch-title" :class="titleSizeClass" data-text="LiliCould's Blog">
+        <span class="glitch-before" aria-hidden="true">LiliCould's Blog</span>
+        <span class="glitch-main">LiliCould's Blog</span>
+        <span class="glitch-after" aria-hidden="true">LiliCould's Blog</span>
+        <span class="glitch-line"></span>
       </h1>
 
       <p class="tracking-wide flex items-center justify-center min-h-[2em]" :class="subtitleSizeClass"
@@ -78,8 +79,6 @@ import hero3 from '@/assets/heros/hero-3.png'
 import hero4 from '@/assets/heros/hero-4.jpg'
 
 const MAIN_TEXT = "LiliCould's Blog"
-const MAIN_TYPE_SPEED = 120
-const MAIN_START_DELAY = 500
 
 const SUB_TEXT = '技术与生活的分享空间'
 const SUB_TYPE_SPEED = 100
@@ -96,7 +95,6 @@ const paused = ref(false)
 let slideTimer: ReturnType<typeof setInterval> | null = null
 
 const mainDisplayText = ref('')
-const mainTypingDone = ref(false)
 const subDisplayText = ref('')
 const subTypingDone = ref(false)
 const subtitleStarted = ref(false)
@@ -108,8 +106,8 @@ function typeText(
   text: string,
   speed: number,
   delay: number,
-  displayRef: typeof mainDisplayText,
-  doneRef: typeof mainTypingDone,
+  displayRef: typeof subDisplayText,
+  doneRef: typeof subTypingDone,
   onStart?: () => void,
 ): ReturnType<typeof setTimeout>[] {
   const timers: ReturnType<typeof setTimeout>[] = []
@@ -169,8 +167,7 @@ function stopAutoPlay() {
 let typewriterTimers: ReturnType<typeof setTimeout>[] = []
 
 function startTypewriter() {
-  mainDisplayText.value = ''
-  mainTypingDone.value = false
+  mainDisplayText.value = MAIN_TEXT
   subDisplayText.value = ''
   subTypingDone.value = false
   subtitleStarted.value = false
@@ -178,10 +175,7 @@ function startTypewriter() {
   typewriterTimers.forEach(t => clearTimeout(t))
   typewriterTimers = []
 
-  const mainTimers = typeText(MAIN_TEXT, MAIN_TYPE_SPEED, MAIN_START_DELAY, mainDisplayText, mainTypingDone)
-  typewriterTimers.push(...mainTimers)
-
-  const subDelay = MAIN_START_DELAY + MAIN_TEXT.length * MAIN_TYPE_SPEED + 300
+  const subDelay = 800
   const subTimers = typeText(SUB_TEXT, SUB_TYPE_SPEED, subDelay, subDisplayText, subTypingDone, () => {
     subtitleStarted.value = true
   })
@@ -200,6 +194,217 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.glitch-title {
+  position: relative;
+  font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.glitch-main {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 40px rgba(0, 240, 255, 0.15);
+}
+
+.glitch-before,
+.glitch-after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.glitch-before {
+  color: #ff2d78;
+  text-shadow: 1px 0 0 #ff2d78;
+  z-index: 20;
+  animation: glitch-anim-1 0.95s infinite linear alternate-reverse;
+}
+
+.glitch-after {
+  color: #00f0ff;
+  text-shadow: -1px 0 0 #00f0ff;
+  z-index: 30;
+  mix-blend-mode: lighten;
+  animation: glitch-anim-2 1.1s infinite linear alternate-reverse;
+}
+
+.glitch-line {
+  position: absolute;
+  left: -2px;
+  width: calc(100% + 4px);
+  height: 2px;
+  background: rgba(0, 240, 255, 0.6);
+  z-index: 40;
+  animation: glitch-line 5s ease-out infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+@keyframes glitch-anim-1 {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: translate(-2px, -1px);
+  }
+
+  10% {
+    clip-path: inset(10% 0 85% 0);
+    transform: translate(1px, 0);
+  }
+
+  20% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(-1px, 1px);
+  }
+
+  30% {
+    clip-path: inset(20% 0 60% 0);
+    transform: translate(1px, -1px);
+  }
+
+  40% {
+    clip-path: inset(50% 0 30% 0);
+    transform: translate(-2px, 0);
+  }
+
+  50% {
+    clip-path: inset(70% 0 10% 0);
+    transform: translate(0, 1px);
+  }
+
+  60% {
+    clip-path: inset(5% 0 80% 0);
+    transform: translate(2px, -1px);
+  }
+
+  70% {
+    clip-path: inset(60% 0 20% 0);
+    transform: translate(-1px, 1px);
+  }
+
+  80% {
+    clip-path: inset(30% 0 50% 0);
+    transform: translate(1px, 0);
+  }
+
+  90% {
+    clip-path: inset(90% 0 2% 0);
+    transform: translate(-2px, -1px);
+  }
+
+  100% {
+    clip-path: inset(15% 0 70% 0);
+    transform: translate(0, 1px);
+  }
+}
+
+@keyframes glitch-anim-2 {
+  0% {
+    clip-path: inset(65% 0 10% 0);
+    transform: translate(2px, 1px);
+  }
+
+  10% {
+    clip-path: inset(15% 0 70% 0);
+    transform: translate(-1px, 0);
+  }
+
+  20% {
+    clip-path: inset(55% 0 25% 0);
+    transform: translate(0, -1px);
+  }
+
+  30% {
+    clip-path: inset(5% 0 90% 0);
+    transform: translate(2px, 1px);
+  }
+
+  40% {
+    clip-path: inset(75% 0 5% 0);
+    transform: translate(-1px, 0);
+  }
+
+  50% {
+    clip-path: inset(35% 0 40% 0);
+    transform: translate(1px, -1px);
+  }
+
+  60% {
+    clip-path: inset(90% 0 2% 0);
+    transform: translate(-2px, 1px);
+  }
+
+  70% {
+    clip-path: inset(25% 0 55% 0);
+    transform: translate(0, -1px);
+  }
+
+  80% {
+    clip-path: inset(45% 0 35% 0);
+    transform: translate(2px, 0);
+  }
+
+  90% {
+    clip-path: inset(10% 0 80% 0);
+    transform: translate(-1px, 1px);
+  }
+
+  100% {
+    clip-path: inset(60% 0 15% 0);
+    transform: translate(1px, -1px);
+  }
+}
+
+@keyframes glitch-line {
+  0% {
+    top: -2px;
+  }
+
+  9% {
+    top: 40%;
+  }
+
+  14% {
+    top: 8%;
+  }
+
+  18% {
+    top: 45%;
+  }
+
+  22% {
+    top: 3%;
+  }
+
+  32% {
+    top: 35%;
+  }
+
+  34% {
+    top: 12%;
+  }
+
+  40% {
+    top: 28%;
+  }
+
+  43% {
+    top: 7%;
+  }
+
+  99% {
+    top: 32%;
+  }
+
+  100% {
+    top: -2px;
+  }
+}
+
 .typewriter-cursor {
   color: #00f0ff;
   font-weight: 300;
