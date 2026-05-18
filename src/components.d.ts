@@ -24,6 +24,7 @@ declare module 'vue' {
     MarkdownEditor: typeof import('./components/article/MarkdownEditor.vue')['default']
     MarkdownViewer: typeof import('./components/article/MarkdownViewer.vue')['default']
     MobileNav: typeof import('./components/layout/MobileNav.vue')['default']
+    MyInfo: typeof import('./components/common/MyInfo.vue')['default']
     Pagination: typeof import('./components/ui/Pagination.vue')['default']
     RightSidebar: typeof import('./components/layout/RightSidebar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
