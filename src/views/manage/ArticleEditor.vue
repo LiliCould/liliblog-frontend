@@ -79,7 +79,7 @@
             </label>
             <div class="flex flex-wrap gap-2 mb-2">
               <span
-                v-for="tagId in form.tagIds"
+                v-for="tagId in form.tags"
                 :key="tagId"
                 class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[rgba(0,240,255,0.1)] text-[#00f0ff] border border-[rgba(0,240,255,0.25)] cursor-pointer hover:bg-[rgba(255,45,120,0.1)] hover:text-[#ff2d78] hover:border-[#ff2d78] transition-all duration-200"
                 @click="toggleTag(tagId)"
@@ -130,19 +130,19 @@ const form = reactive({
   content: '',
   coverImage: '',
   categoryId: undefined as number | undefined,
-  tagIds: [] as number[],
+  tags: [] as number[],
 })
 
-const availableTags = computed(() => tags.value.filter(t => !form.tagIds.includes(t.id)))
+const availableTags = computed(() => tags.value.filter(t => !form.tags.includes(t.id)))
 
 function getTagName(tagId: number) {
   return tags.value.find(t => t.id === tagId)?.name || ''
 }
 
 function toggleTag(tagId: number) {
-  const idx = form.tagIds.indexOf(tagId)
-  if (idx > -1) form.tagIds.splice(idx, 1)
-  else form.tagIds.push(tagId)
+  const idx = form.tags.indexOf(tagId)
+  if (idx > -1) form.tags.splice(idx, 1)
+  else form.tags.push(tagId)
 }
 
 async function handleCoverUpload(e: Event) {
@@ -168,7 +168,7 @@ async function handleSave(status: number) {
       coverImage: form.coverImage || undefined,
       status,
       categoryId: form.categoryId || 0,
-      tagIds: form.tagIds,
+      tags: form.tags,
     }
     if (isEdit.value) {
       const id = Number(route.params.id)
@@ -194,7 +194,7 @@ async function loadArticleForEdit() {
     form.content = article.content
     form.coverImage = article.coverImage
     form.categoryId = article.category?.id || undefined
-    form.tagIds = article.tags?.map((t: any) => t.id) || []
+    form.tags = article.tags?.map((t: any) => t.id) || []
   } catch {
     router.push('/manage/articles')
   }
@@ -202,11 +202,11 @@ async function loadArticleForEdit() {
 
 onMounted(async () => {
   const [catRes, tagRes] = await Promise.allSettled([
-    getCategories() as any,
-    getTags() as any,
+    getCategories({ size: 100 }) as any,
+    getTags({ size: 100 }) as any,
   ])
-  if (catRes.status === 'fulfilled') categories.value = catRes.value.data || []
-  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data || []
+  if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
+  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
   loadArticleForEdit()
 })
 </script>

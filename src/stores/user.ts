@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function loginByPassword(data: LoginByPwdDTO) {
-        const res = await loginByPwd(data) as unknown as ApiResponse<LoginVO>
+        const res = await loginByPwd({ ...data, loginType: 'pwd' }) as unknown as ApiResponse<LoginVO>
         token.value = res.data.accessToken
         userInfo.value = res.data.userInfo
         setToken(res.data.accessToken)
@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function loginByMail(data: LoginByEmailDTO) {
-        const res = await loginByEmail(data) as unknown as ApiResponse<LoginVO>
+        const res = await loginByEmail({ ...data, loginType: 'email' }) as unknown as ApiResponse<LoginVO>
         token.value = res.data.accessToken
         userInfo.value = res.data.userInfo
         setToken(res.data.accessToken)

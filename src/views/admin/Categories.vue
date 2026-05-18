@@ -148,6 +148,7 @@ import { Plus, Edit, Trash2, ToggleLeft, ToggleRight } from 'lucide-vue-next'
 import { getCategories, createCategory, updateCategory, updateCategoryStatus, deleteCategory } from '@/api/category'
 import type { Category } from '@/types/category'
 import type { ApiResponse } from '@/types/api'
+import type { PageResult } from '@/types/common'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
 const categories = ref<Category[]>([])
@@ -166,8 +167,8 @@ const form = reactive({
 async function fetchCategories() {
   loading.value = true
   try {
-    const res = await getCategories() as unknown as ApiResponse<Category[]>
-    categories.value = res.data || []
+    const res = await getCategories({ size: 100 }) as unknown as ApiResponse<PageResult<Category>>
+    categories.value = res.data?.records || []
   } finally {
     loading.value = false
   }

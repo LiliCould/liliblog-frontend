@@ -153,7 +153,7 @@ async function fetchArticles() {
       size: pageSize,
     }
     if (statusFilter.value !== undefined) params.status = statusFilter.value
-    if (keyword.value) params.keyword = keyword.value
+    if (keyword.value) params.title = keyword.value
     const res = await getArticles(params) as unknown as ApiResponse<PageResult<Article>>
     articles.value = res.data?.records || []
     total.value = res.data?.total || 0
@@ -174,7 +174,7 @@ async function toggleStatus(article: Article) {
     content: '',
     status: newStatus,
     categoryId: article.category?.id || 0,
-    tagIds: article.tags?.map(t => t.id) || [],
+    tags: article.tags?.map(t => t.id) || []
   })
   fetchArticles()
 }

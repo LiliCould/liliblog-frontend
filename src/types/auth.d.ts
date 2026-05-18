@@ -1,19 +1,21 @@
 export interface LoginByPwdDTO {
+    loginType: string
     username: string
     password: string
 }
 
 export interface LoginByEmailDTO {
+    loginType: string
     email: string
-    captcha: string
+    code: string
 }
 
 export interface RegisterDTO {
     username: string
     email: string
     password: string
+    confirmPassword: string
     nickname: string
-    captcha: string
 }
 
 export interface PasswordChangeDTO {

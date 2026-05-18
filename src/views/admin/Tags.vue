@@ -134,6 +134,7 @@ import { Plus, Edit, Trash2, Palette } from 'lucide-vue-next'
 import { getTags, createTag, updateTag, deleteTag } from '@/api/tag'
 import type { Tag } from '@/types/tag'
 import type { ApiResponse } from '@/types/api'
+import type { PageResult } from '@/types/common'
 import { formatDate } from '@/utils/format'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
@@ -150,8 +151,8 @@ const form = reactive({
 async function fetchTags() {
   loading.value = true
   try {
-    const res = await getTags() as unknown as ApiResponse<Tag[]>
-    tags.value = res.data || []
+    const res = await getTags({ size: 100 }) as unknown as ApiResponse<PageResult<Tag>>
+    tags.value = res.data?.records || []
   } finally {
     loading.value = false
   }

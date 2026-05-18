@@ -8,5 +8,7 @@ export interface PageResult<T> {
     total: number
     size: number
     current: number
-    pages: number
+    totalPage: number
+    hasPrevious: boolean
+    hasNext: boolean
 }

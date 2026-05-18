@@ -113,12 +113,12 @@ async function fetchStats() {
   try {
     const [articleRes, categoryRes, tagRes] = await Promise.all([
       getArticles({ current: 1, size: 10 }) as unknown as ApiResponse<PageResult<Article>>,
-      getCategories() as unknown as ApiResponse<Category[]>,
-      getTags() as unknown as ApiResponse<TagType[]>,
+      getCategories({ size: 1 }) as unknown as ApiResponse<PageResult<Category>>,
+      getTags({ size: 1 }) as unknown as ApiResponse<PageResult<TagType>>,
     ])
     stats.articleCount = articleRes.data?.total || 0
-    stats.categoryCount = categoryRes.data?.length || 0
-    stats.tagCount = tagRes.data?.length || 0
+    stats.categoryCount = categoryRes.data?.total || 0
+    stats.tagCount = tagRes.data?.total || 0
     recentArticles.value = articleRes.data?.records || []
   } finally {
     loadingArticles.value = false

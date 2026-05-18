@@ -87,11 +87,7 @@ const hiddenTagsCount = computed(() => {
 })
 
 function goDetail() {
-  if (props.article.slug) {
-    router.push(`/article/s/${props.article.slug}`)
-  } else {
-    router.push(`/article/${props.article.id}`)
-  }
+  router.push(`/article/${props.article.id}`)
 }
 
 onMounted(() => {

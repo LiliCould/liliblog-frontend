@@ -5,6 +5,7 @@ import { getTags as getTagsApi } from '@/api/tag'
 import type { Category } from '@/types/category'
 import type { Tag } from '@/types/tag'
 import type { ApiResponse } from '@/types/api'
+import type { PageResult } from '@/types/common'
 
 export const useAppStore = defineStore('app', () => {
     const categories = ref<Category[]>([])
@@ -13,13 +14,13 @@ export const useAppStore = defineStore('app', () => {
     const isMobileNavOpen = ref(false)
 
     async function fetchCategories() {
-        const res = await getCategoriesApi() as unknown as ApiResponse<Category[]>
-        categories.value = res.data || []
+        const res = await getCategoriesApi({ size: 100 }) as unknown as ApiResponse<PageResult<Category>>
+        categories.value = res.data?.records || []
     }
 
     async function fetchTags() {
-        const res = await getTagsApi() as unknown as ApiResponse<Tag[]>
-        tags.value = res.data || []
+        const res = await getTagsApi({ size: 100 }) as unknown as ApiResponse<PageResult<Tag>>
+        tags.value = res.data?.records || []
     }
 
     async function initAppData() {

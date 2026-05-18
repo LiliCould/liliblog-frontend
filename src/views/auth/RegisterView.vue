@@ -36,7 +36,7 @@
           <div class="relative flex-1">
             <KeyRound class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
             <input
-              v-model="form.captcha"
+              v-model="form.code"
               type="text"
               placeholder="验证码"
               class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
@@ -114,7 +114,7 @@ let countdownTimer: number | null = null
 const form = reactive({
   username: '',
   email: '',
-  captcha: '',
+  code: '',
   nickname: '',
   password: '',
   confirmPassword: '',
@@ -142,7 +142,7 @@ async function handleSendCaptcha() {
 }
 
 async function handleRegister() {
-  if (!form.username.trim() || !form.email.trim() || !form.captcha.trim() || !form.nickname.trim() || !form.password.trim()) return
+  if (!form.username.trim() || !form.email.trim() || !form.code.trim() || !form.nickname.trim() || !form.password.trim()) return
   if (form.password !== form.confirmPassword) return
   loading.value = true
   try {
@@ -150,8 +150,8 @@ async function handleRegister() {
       username: form.username,
       email: form.email,
       password: form.password,
+      confirmPassword: form.confirmPassword,
       nickname: form.nickname,
-      captcha: form.captcha,
     })
     router.push('/login')
   } catch {

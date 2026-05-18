@@ -70,7 +70,7 @@
           <div class="relative flex-1">
             <KeyRound class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
             <input
-              v-model="emailForm.captcha"
+              v-model="emailForm.code"
               type="text"
               placeholder="验证码"
               class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
@@ -119,7 +119,7 @@ const countdown = ref(0)
 let countdownTimer: number | null = null
 
 const pwdForm = reactive({ username: '', password: '' })
-const emailForm = reactive({ email: '', captcha: '' })
+const emailForm = reactive({ email: '', code: '' })
 
 function startCountdown() {
   countdown.value = 60
@@ -146,7 +146,7 @@ async function handlePasswordLogin() {
   if (!pwdForm.username.trim() || !pwdForm.password.trim()) return
   loading.value = true
   try {
-    await userStore.loginByPassword({ username: pwdForm.username, password: pwdForm.password })
+    await userStore.loginByPassword({ username: pwdForm.username, password: pwdForm.password, loginType: 'pwd' })
     const redirect = route.query.redirect as string
     router.push(redirect || '/')
   } catch {
@@ -157,10 +157,10 @@ async function handlePasswordLogin() {
 }
 
 async function handleEmailLogin() {
-  if (!emailForm.email.trim() || !emailForm.captcha.trim()) return
+  if (!emailForm.email.trim() || !emailForm.code.trim()) return
   loading.value = true
   try {
-    await userStore.loginByMail({ email: emailForm.email, captcha: emailForm.captcha })
+    await userStore.loginByMail({ email: emailForm.email, code: emailForm.code, loginType: 'email' })
     const redirect = route.query.redirect as string
     router.push(redirect || '/')
   } catch {

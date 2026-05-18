@@ -44,7 +44,7 @@ export interface ArticleCreateDTO {
     coverImage?: string
     status: number
     categoryId: number
-    tagIds: number[]
+    tags: number[]
 }
 
-export interface ArticleUpdateDTO extends ArticleCreateDTO {}
+export interface ArticleUpdateDTO extends ArticleCreateDTO { }
