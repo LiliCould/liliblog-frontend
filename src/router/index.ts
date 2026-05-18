@@ -3,6 +3,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import routes from './routes'
 import { getToken } from '@/utils/storage'
+import { useUserStore } from '@/stores/user'
 
 NProgress.configure({ showSpinner: false })
 
@@ -15,7 +16,7 @@ const router = createRouter({
     },
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
     NProgress.start()
     const token = getToken()
 
@@ -24,6 +25,14 @@ router.beforeEach((to, _from, next) => {
     if (to.meta.requiresAuth && !token) {
         next({ path: '/login', query: { redirect: to.fullPath } })
         return
+    }
+
+    if (to.meta.requiresAdmin) {
+        const userStore = useUserStore()
+        if (!userStore.isAdmin) {
+            next('/')
+            return
+        }
     }
 
     if ((to.name === 'Login' || to.name === 'Register') && token) {

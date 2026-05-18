@@ -1,303 +1,184 @@
 <template>
-  <div class="editor-page page-container">
-    <div class="page-header">
-      <h1 class="page-title">{{ isEdit ? '编辑文章' : '写文章' }}</h1>
-    </div>
-
-    <div class="editor-layout">
-      <div class="editor-main">
-        <el-form ref="formRef" :model="form" :rules="formRules" label-position="top">
-          <el-form-item label="标题" prop="title">
-            <el-input
-              v-model="form.title"
-              placeholder="请输入文章标题"
-              size="large"
-              maxlength="100"
-              show-word-limit
-            />
-          </el-form-item>
-
-          <el-form-item label="Slug" prop="slug">
-            <el-input v-model="form.slug" placeholder="文章URL标识（选填，如 my-first-post）" />
-          </el-form-item>
-
-          <el-form-item label="摘要" prop="summary">
-            <el-input
-              v-model="form.summary"
-              type="textarea"
-              placeholder="请输入文章摘要"
-              :rows="3"
-              maxlength="300"
-              show-word-limit
-            />
-          </el-form-item>
-
-          <el-form-item label="正文" prop="content">
-            <MarkdownEditor
-              v-model="form.content"
-            />
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <div class="editor-sidebar">
-        <div class="sidebar-card">
-          <h3 class="card-title">发布设置</h3>
-
-          <div class="setting-item">
-            <label class="setting-label">分类</label>
-            <div class="selector-trigger" @click="showCategoryDialog = true">
-              <span v-if="selectedCategoryName" class="selected-value">
-                {{ selectedCategoryName }}
-              </span>
-              <span v-else class="placeholder">选择分类</span>
-              <el-icon><ArrowRight /></el-icon>
-            </div>
-          </div>
-
-          <div class="setting-item">
-            <label class="setting-label">标签</label>
-            <div class="selector-trigger" @click="showTagDialog = true">
-              <div class="tag-selected-list">
-                <template v-if="selectedTagNames.length > 0">
-                  <span v-for="name in selectedTagNames.slice(0, 3)" :key="name" class="tag-selected-item">
-                    {{ name }}
-                  </span>
-                  <span v-if="selectedTagNames.length > 3" class="more-count">
-                    +{{ selectedTagNames.length - 3 }}
-                  </span>
-                </template>
-                <span v-else class="placeholder">选择标签</span>
-              </div>
-              <el-icon><ArrowRight /></el-icon>
-            </div>
-          </div>
-
-          <div class="setting-item">
-            <label class="setting-label">封面图片</label>
-            <div v-if="form.coverImage" class="cover-preview">
-              <img :src="form.coverImage" :alt="form.title" class="cover-image" />
-              <el-button size="small" type="danger" @click="form.coverImage = ''">
-                移除
-              </el-button>
-            </div>
-            <el-upload
-              :auto-upload="true"
-              :show-file-list="false"
-              :http-request="handleCoverUpload"
-              accept="image/*"
-              style="margin-top: 8px;"
-            >
-              <el-button size="small" type="primary">
-                {{ form.coverImage ? '更换封面' : '上传封面' }}
-              </el-button>
-            </el-upload>
-          </div>
-
-          <div class="setting-actions">
-            <el-button @click="handleSave('DRAFT')" :loading="saving">
-              保存草稿
-            </el-button>
-            <el-button type="primary" @click="handleSave('PUBLISHED')" :loading="saving">
-              发布文章
-            </el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 分类选择弹窗 -->
-    <el-dialog
-      v-model="showCategoryDialog"
-      title="选择分类"
-      width="480px"
-      :close-on-click-modal="true"
-      append-to-body
-    >
-      <div class="category-grid">
-        <div
-          v-for="cat in appStore.categories"
-          :key="cat.id"
-          class="category-option"
-          :class="{ active: form.categoryId === cat.id }"
-          @click="form.categoryId = cat.id"
-        >
-          <el-icon><Folder /></el-icon>
-          <span>{{ cat.name }}</span>
-          <el-icon v-if="form.categoryId === cat.id" class="check-icon"><Check /></el-icon>
-        </div>
-        <div
-          v-if="!appStore.categories || appStore.categories.length === 0"
-          class="empty-hint"
-        >
-          暂无分类
-        </div>
-      </div>
-    </el-dialog>
-
-    <!-- 标签选择弹窗 -->
-    <el-dialog
-      v-model="showTagDialog"
-      title="选择标签（可多选）"
-      width="520px"
-      :close-on-click-modal="true"
-      append-to-body
-    >
-      <div class="tag-search">
-        <el-input
-          v-model="tagSearchKey"
-          placeholder="搜索标签..."
-          prefix-icon="Search"
-          clearable
-          size="default"
+  <div class="min-h-screen bg-[#0a0a0f] flex flex-col">
+    <header class="sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-[#111118] border-b border-[rgba(0,240,255,0.15)] shadow-[0_2px_12px_rgba(0,0,0,0.3)]">
+      <div class="flex items-center gap-3">
+        <button class="text-[#6b7280] hover:text-[#00f0ff] transition-colors duration-200" @click="router.back()">
+          <ArrowLeft class="w-5 h-5" />
+        </button>
+        <input
+          v-model="form.title"
+          type="text"
+          placeholder="输入文章标题..."
+          class="bg-transparent text-white text-lg font-semibold placeholder-[#6b7280] outline-none w-60 md:w-96"
         />
       </div>
-      <div class="tag-grid">
-        <div
-          v-for="tag in filteredTags"
-          :key="tag.id"
-          class="tag-option"
-          :class="{ active: form.tagIds.includes(tag.id) }"
-          :style="{ '--tag-color': tag.color }"
-          @click="toggleTag(tag.id)"
+      <div class="flex items-center gap-2">
+        <button
+          class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.2)] text-[#6b7280] hover:text-[#00f0ff] hover:border-[#00f0ff] transition-all duration-300"
+          :disabled="saving"
+          @click="handleSave(0)"
         >
-          <span class="tag-dot" :style="{ backgroundColor: tag.color || undefined }"></span>
-          <span>{{ tag.name }}</span>
-          <el-icon v-if="form.tagIds.includes(tag.id)" class="check-icon"><Check /></el-icon>
-        </div>
-        <div
-          v-if="filteredTags.length === 0"
-          class="empty-hint"
+          <Save class="w-4 h-4" />
+          保存草稿
+        </button>
+        <button
+          class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)] transition-all duration-300"
+          :disabled="saving"
+          @click="handleSave(1)"
         >
-          没有匹配的标签
+          <Send class="w-4 h-4" />
+          发布
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <div class="flex-1 min-w-0 overflow-y-auto p-4">
+        <MarkdownEditor v-model="form.content" />
+      </div>
+
+      <aside class="hidden md:block w-72 flex-shrink-0 border-l border-[rgba(0,240,255,0.15)] bg-[#111118] overflow-y-auto p-4">
+        <div class="flex flex-col gap-5">
+          <div>
+            <label class="flex items-center gap-1.5 text-sm font-medium text-[#e0e0e8] mb-2">
+              <Image class="w-4 h-4 text-[#00f0ff]" />
+              封面图片
+            </label>
+            <div v-if="form.coverImage" class="relative rounded-lg overflow-hidden border border-[rgba(0,240,255,0.1)] mb-2">
+              <img :src="form.coverImage" :alt="form.title" class="w-full h-36 object-cover" />
+              <button
+                class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[rgba(0,0,0,0.6)] text-[#ff2d78] flex items-center justify-center text-xs hover:bg-[rgba(255,45,120,0.2)] transition-colors"
+                @click="form.coverImage = ''"
+              >✕</button>
+            </div>
+            <label class="flex items-center justify-center gap-1.5 h-10 rounded-lg border border-dashed border-[rgba(0,240,255,0.2)] text-[#6b7280] text-sm cursor-pointer hover:border-[#00f0ff] hover:text-[#00f0ff] transition-all duration-300">
+              <Image class="w-4 h-4" />
+              {{ form.coverImage ? '更换封面' : '上传封面' }}
+              <input type="file" accept="image/*" class="hidden" @change="handleCoverUpload" />
+            </label>
+          </div>
+
+          <div>
+            <label class="flex items-center gap-1.5 text-sm font-medium text-[#e0e0e8] mb-2">
+              <FolderOpen class="w-4 h-4 text-[#00f0ff]" />
+              分类
+            </label>
+            <select
+              v-model="form.categoryId"
+              class="w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)] appearance-none cursor-pointer"
+            >
+              <option :value="undefined" disabled class="bg-[#0a0a0f]">选择分类</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id" class="bg-[#0a0a0f]">{{ cat.name }}</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="flex items-center gap-1.5 text-sm font-medium text-[#e0e0e8] mb-2">
+              <Tag class="w-4 h-4 text-[#00f0ff]" />
+              标签
+            </label>
+            <div class="flex flex-wrap gap-2 mb-2">
+              <span
+                v-for="tagId in form.tagIds"
+                :key="tagId"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[rgba(0,240,255,0.1)] text-[#00f0ff] border border-[rgba(0,240,255,0.25)] cursor-pointer hover:bg-[rgba(255,45,120,0.1)] hover:text-[#ff2d78] hover:border-[#ff2d78] transition-all duration-200"
+                @click="toggleTag(tagId)"
+              >
+                {{ getTagName(tagId) }}
+                <span class="text-[10px]">✕</span>
+              </span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="tag in availableTags"
+                :key="tag.id"
+                class="px-2.5 py-1 rounded-full text-xs border border-[rgba(0,240,255,0.1)] text-[#6b7280] hover:border-[rgba(0,240,255,0.3)] hover:text-[#00f0ff] transition-all duration-200"
+                @click="toggleTag(tag.id)"
+              >
+                + {{ tag.name }}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="tag-dialog-footer">
-        <span class="selected-info">已选 {{ form.tagIds.length }} 个标签</span>
-        <el-button size="small" @click="form.tagIds = []">清空</el-button>
-      </div>
-    </el-dialog>
+      </aside>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { ArrowRight, Folder, Check } from '@element-plus/icons-vue'
-import type { FormInstance, UploadRequestOptions } from 'element-plus'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
-import { getArticleById, createArticle, updateArticle } from '@/api/article'
+import { Save, Send, Image, FolderOpen, Tag, ArrowLeft } from 'lucide-vue-next'
+import { createArticle, updateArticle, getArticleById } from '@/api/article'
 import { uploadFile } from '@/api/file'
+import { getCategories } from '@/api/category'
+import { getTags } from '@/api/tag'
 import MarkdownEditor from '@/components/article/MarkdownEditor.vue'
-import { titleRules } from '@/utils/validate'
-import type { ApiResponse } from '@/types/api.d'
-import type { Article } from '@/types/article.d'
+import type { Category } from '@/types/category'
+import type { Tag as TagType } from '@/types/tag'
 
 const router = useRouter()
 const route = useRoute()
-const userStore = useUserStore()
-const appStore = useAppStore()
-const formRef = ref<FormInstance>()
 const saving = ref(false)
-
-const showCategoryDialog = ref(false)
-const showTagDialog = ref(false)
-const tagSearchKey = ref('')
+const categories = ref<Category[]>([])
+const tags = ref<TagType[]>([])
 
 const isEdit = computed(() => !!route.params.id)
 
 const form = reactive({
   title: '',
-  slug: '',
-  summary: '',
   content: '',
   coverImage: '',
   categoryId: undefined as number | undefined,
   tagIds: [] as number[],
 })
 
-const formRules = {
-  title: titleRules,
-  content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+const availableTags = computed(() => tags.value.filter(t => !form.tagIds.includes(t.id)))
+
+function getTagName(tagId: number) {
+  return tags.value.find(t => t.id === tagId)?.name || ''
 }
-
-const selectedCategoryName = computed(() => {
-  if (!form.categoryId) return ''
-  const cat = appStore.categories.find(c => c.id === form.categoryId)
-  return cat?.name || ''
-})
-
-const selectedTagNames = computed(() => {
-  return appStore.tags
-    .filter(t => form.tagIds.includes(t.id))
-    .map(t => t.name)
-})
-
-const filteredTags = computed(() => {
-  if (!tagSearchKey.value.trim()) {
-    return appStore.tags
-  }
-  const key = tagSearchKey.value.toLowerCase().trim()
-  return appStore.tags.filter(t =>
-    t.name.toLowerCase().includes(key)
-  )
-})
 
 function toggleTag(tagId: number) {
-  const index = form.tagIds.indexOf(tagId)
-  if (index > -1) {
-    form.tagIds.splice(index, 1)
-  } else {
-    form.tagIds.push(tagId)
-  }
+  const idx = form.tagIds.indexOf(tagId)
+  if (idx > -1) form.tagIds.splice(idx, 1)
+  else form.tagIds.push(tagId)
 }
 
-async function handleCoverUpload(options: UploadRequestOptions) {
+async function handleCoverUpload(e: Event) {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
   try {
-    const res = await uploadFile(options.file as File, 'cover') as unknown as ApiResponse<string>
+    const res = await uploadFile(file, 'cover') as any
     form.coverImage = res.message?.trim() || res.data
-    ElMessage.success({ message: '封面上传成功', duration: 1500 })
   } catch {
-    ElMessage.error({ message: '封面上传失败', duration: 1500 })
+    // handled by interceptor
   }
+  target.value = ''
 }
 
-async function handleSave(status: string) {
-  if (!formRef.value) return
-
-  try {
-    await formRef.value.validate()
-  } catch {
-    ElMessage.warning({ message: '请完善必填项', duration: 1500 })
-    return
-  }
-
+async function handleSave(status: number) {
+  if (!form.title.trim() || !form.content.trim()) return
   saving.value = true
   try {
     const data = {
       title: form.title,
-      slug: form.slug,
-      summary: form.summary,
       content: form.content,
       coverImage: form.coverImage || undefined,
       status,
       categoryId: form.categoryId || 0,
       tagIds: form.tagIds,
     }
-
     if (isEdit.value) {
       const id = Number(route.params.id)
-      await updateArticle(id, userStore.username, { ...data, id })
-      ElMessage.success({ message: '更新成功', duration: 1500 })
+      await updateArticle(id, data)
     } else {
-      await createArticle(userStore.username, data)
-      ElMessage.success({ message: status === 'PUBLISHED' ? '发布成功' : '草稿已保存', duration: 1500 })
+      await createArticle(data)
     }
     router.push('/manage/articles')
   } catch {
-    // error handled by interceptor
+    // handled by interceptor
   } finally {
     saving.value = false
   }
@@ -307,324 +188,25 @@ async function loadArticleForEdit() {
   if (!isEdit.value) return
   const id = Number(route.params.id)
   try {
-    const res = await getArticleById(id) as unknown as ApiResponse<Article>
+    const res = await getArticleById(id) as any
     const article = res.data
     form.title = article.title
-    form.slug = article.slug
-    form.summary = article.summary
     form.content = article.content
     form.coverImage = article.coverImage
-    form.categoryId = article.categoryId || undefined
-    form.tagIds = article.tags?.map(t => t.id) || []
+    form.categoryId = article.category?.id || undefined
+    form.tagIds = article.tags?.map((t: any) => t.id) || []
   } catch {
-    ElMessage.error({ message: '加载文章失败', duration: 1500 })
     router.push('/manage/articles')
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const [catRes, tagRes] = await Promise.allSettled([
+    getCategories() as any,
+    getTags() as any,
+  ])
+  if (catRes.status === 'fulfilled') categories.value = catRes.value.data || []
+  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data || []
   loadArticleForEdit()
 })
 </script>
-
-<style scoped>
-.editor-page {
-  padding-top: 24px;
-  padding-bottom: 40px;
-}
-
-.page-header {
-  margin-bottom: 20px;
-}
-
-.page-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
-.editor-layout {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-.editor-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.editor-sidebar {
-  width: 300px;
-  flex-shrink: 0;
-}
-
-.sidebar-card {
-  background: var(--color-card);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 20px;
-  position: sticky;
-  top: calc(var(--header-height) + 20px);
-}
-
-.card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-title);
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.setting-item {
-  margin-bottom: 16px;
-}
-
-.setting-label {
-  display: block;
-  font-size: 13px;
-  color: var(--color-body);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.selector-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--color-bg-warm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s;
-  min-height: 36px;
-}
-
-.selector-trigger:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg-deep);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.selected-value {
-  font-size: 14px;
-  color: var(--color-title);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
-}
-
-.placeholder {
-  font-size: 14px;
-  color: var(--color-muted);
-}
-
-.tag-selected-list {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
-}
-
-.tag-selected-item {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border: 1px solid var(--color-primary-light-2);
-}
-
-.more-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  background: var(--color-bg-warm);
-  color: var(--color-muted);
-  border: 1px solid var(--color-border);
-}
-
-.setting-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
-}
-
-.setting-actions .el-button {
-  flex: 1;
-}
-
-.cover-preview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 12px;
-  background: var(--color-bg-warm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.cover-image {
-  width: 120px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  max-height: 360px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.category-option {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 12px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  font-size: 13px;
-  color: var(--color-body);
-}
-
-.category-option:hover {
-  border-color: var(--color-primary-light-2);
-  background: var(--color-primary-light);
-}
-
-.category-option.active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.category-option .check-icon {
-  margin-left: auto;
-  font-size: 14px;
-}
-
-.tag-search {
-  margin-bottom: 14px;
-}
-
-.tag-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.tag-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  font-size: 13px;
-  color: var(--color-body);
-}
-
-.tag-option:hover {
-  border-color: var(--color-primary-light-2);
-  background: var(--color-primary-light);
-}
-
-.tag-option.active {
-  border-color: var(--tag-color, var(--color-primary));
-  background: color-mix(in srgb, var(--tag-color, var(--color-primary)) 12%, var(--color-card-solid));
-  color: var(--tag-color, var(--color-primary));
-  box-shadow: 0 0 8px color-mix(in srgb, var(--tag-color, var(--color-primary)) 25%, transparent);
-}
-
-.tag-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.tag-option .check-icon {
-  margin-left: auto;
-  font-size: 14px;
-}
-
-.tag-dialog-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
-}
-
-.selected-info {
-  font-size: 13px;
-  color: var(--color-muted);
-}
-
-.empty-hint {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 32px 0;
-  color: var(--color-muted);
-  font-size: 14px;
-}
-
-@media (max-width: 1024px) {
-  .editor-layout {
-    flex-direction: column;
-  }
-
-  .editor-sidebar {
-    width: 100%;
-  }
-
-  .sidebar-card {
-    position: static;
-  }
-
-  .cover-image {
-    width: 100px;
-    height: 60px;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-</style>

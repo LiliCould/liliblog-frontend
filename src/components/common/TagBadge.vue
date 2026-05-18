@@ -1,74 +1,50 @@
 <template>
-  <span class="tag-badge" :style="{ backgroundColor: bgColor, color: textColor }">
-    <span class="tag-dot"></span>
+  <span
+    class="relative inline-flex items-center gap-1.5 px-3.5 py-[5px] rounded-full text-xs font-semibold leading-[1.4] whitespace-nowrap cursor-pointer transition-all duration-300 border hover:-translate-y-px hover:shadow-[0_0_10px_rgba(0,240,255,0.15)]"
+    :style="badgeStyle"
+    @click="goTag"
+  >
+    <span class="w-1.5 h-1.5 rounded-full opacity-70 shadow-[0_0_6px_currentColor]" :style="{ background: 'currentColor' }"></span>
     {{ tag.name }}
   </span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Tag } from '@/types/tag.d'
 
 const props = defineProps<{
   tag: Tag
 }>()
 
+const router = useRouter()
+
+const textColor = computed(() => {
+  return props.tag.color || '#00f0ff'
+})
+
 const bgColor = computed(() => {
   if (props.tag.color) {
     return props.tag.color + '15'
   }
-  return 'var(--color-primary-light)'
+  return 'rgba(0, 240, 255, 0.06)'
 })
 
-const textColor = computed(() => {
-  return props.tag.color || 'var(--color-primary)'
+const borderColor = computed(() => {
+  if (props.tag.color) {
+    return props.tag.color + '40'
+  }
+  return 'rgba(0, 240, 255, 0.15)'
 })
+
+const badgeStyle = computed(() => ({
+  color: textColor.value,
+  backgroundColor: bgColor.value,
+  borderColor: borderColor.value,
+}))
+
+function goTag() {
+  router.push(`/tag/${props.tag.name}`)
+}
 </script>
-
-<style scoped>
-.tag-badge {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.4;
-  white-space: nowrap;
-  cursor: default;
-  transition: all var(--transition-fast);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  background: rgba(0, 240, 255, 0.06);
-}
-
-.tag-badge::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, transparent, rgba(0, 240, 255, 0.1));
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.tag-badge:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--neon-glow-sm);
-  border-color: rgba(0, 240, 255, 0.4);
-}
-
-.tag-badge:hover::before {
-  opacity: 1;
-}
-
-.tag-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.7;
-  box-shadow: 0 0 6px currentColor;
-}
-</style>

@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getCategories as getCategoriesApi } from '@/api/category'
-import { getTagList as getTagListApi } from '@/api/tag'
-import type { Category } from '@/types/category.d'
-import type { Tag } from '@/types/tag.d'
-import type { ApiResponse } from '@/types/api.d'
+import { getTags as getTagsApi } from '@/api/tag'
+import type { Category } from '@/types/category'
+import type { Tag } from '@/types/tag'
+import type { ApiResponse } from '@/types/api'
 
 export const useAppStore = defineStore('app', () => {
     const categories = ref<Category[]>([])
@@ -18,7 +18,7 @@ export const useAppStore = defineStore('app', () => {
     }
 
     async function fetchTags() {
-        const res = await getTagListApi() as unknown as ApiResponse<Tag[]>
+        const res = await getTagsApi() as unknown as ApiResponse<Tag[]>
         tags.value = res.data || []
     }
 

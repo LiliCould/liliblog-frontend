@@ -1,15 +1,27 @@
 export interface Comment {
     id: number
     content: string
-    AuthorId: number
+    likeCount: number
+    childCount: number
     articleId: number
     parentId: number
-    status: string
-    likeCount: number
+    rootId: number
     ipAddress: string
-    userAgent: string
     createTime: string
-    updateTime: string
-    authorNickname: string
-    articleTitle: string
+    creator: CreatorBrief
+    level: number
+}
+
+export interface CreatorBrief {
+    id: number
+    username: string
+    nickname: string
+    avatar: string
+}
+
+export interface CommentCreateDTO {
+    articleId: number
+    content: string
+    parentId: number
+    rootId: number
 }

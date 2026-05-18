@@ -1,63 +1,55 @@
 <template>
-  <aside class="app-sidebar">
-    <div v-for="(section, index) in sections" :key="section.id" class="sidebar-section" :class="`section-${section.id}`"
-      :ref="(el: Element | ComponentPublicInstance | null) => { if (el) sectionRefs[index] = el as HTMLElement }">
-      <div class="gradient-bar"></div>
-      <div class="section-header">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path :d="section.iconPath"></path>
-        </svg>
-        <h3 class="section-title">{{ section.title }}</h3>
+  <aside class="hidden lg:flex flex-col gap-6 w-64 flex-shrink-0">
+    <div class="bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(0,240,255,0.1),0_0_1px_rgba(0,240,255,0.3)] hover:-translate-y-0.5 hover:border-[rgba(0,240,255,0.3)] group"
+      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
+    >
+      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-pink transition-[width] duration-400 [box-shadow:0_0_8px_rgba(0,240,255,0.4)] group-hover:w-full"></div>
+      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-[rgba(0,240,255,0.15)]">
+        <FolderOpen class="w-5 h-5 text-cyber-primary [filter:drop-shadow(0_0_3px_rgba(0,240,255,0.3))]" />
+        <h3 class="text-base font-semibold text-cyber-title m-0">分类</h3>
       </div>
 
-      <div v-if="section.id === 'category'" class="category-list">
-        <router-link v-for="cat in appStore.categories" :key="cat.id" :to="`/category/${cat.id}`"
-          class="category-item clickable">
-          <span class="category-indicator"></span>
-          <span class="category-name">{{ cat.name }}</span>
-          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
+      <div class="flex flex-col gap-0.5 max-h-80 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
+        <router-link
+          v-for="cat in appStore.categories"
+          :key="cat.id"
+          :to="`/category/${cat.slug}`"
+          class="flex items-center justify-between px-3.5 py-2.5 rounded-md text-sm font-medium text-cyber-body no-underline transition-all duration-250 relative hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] hover:translate-x-1 group/cat"
+        >
+          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-cyber-primary to-cyber-pink rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(0,240,255,0.4)] group-hover/cat:h-3/5"></span>
+          <span>{{ cat.name }}</span>
+          <ChevronRight class="w-3.5 h-3.5 opacity-0 -translate-x-1 transition-all duration-250 group-hover/cat:opacity-100 group-hover/cat:translate-x-0" />
         </router-link>
-        <div v-if="appStore.categories.length === 0" class="empty-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
+        <div v-if="appStore.categories.length === 0" class="flex flex-col items-center gap-2 py-8 text-cyber-muted text-sm">
+          <AlertCircle class="w-10 h-10 opacity-40" />
           <span>暂无分类</span>
         </div>
       </div>
+    </div>
 
-      <div v-else-if="section.id === 'tag'" class="tag-cloud">
-        <TagBadge v-for="(tag, tagIndex) in appStore.tags" :key="tag.id" :tag="tag"
-          :style="{ animationDelay: `${tagIndex * 0.05}s` }" />
-        <div v-if="appStore.tags.length === 0" class="empty-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <span>暂无标签</span>
-        </div>
+    <div class="bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(0,240,255,0.1),0_0_1px_rgba(0,240,255,0.3)] hover:-translate-y-0.5 hover:border-[rgba(0,240,255,0.3)] group"
+      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
+    >
+      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-pink transition-[width] duration-400 [box-shadow:0_0_8px_rgba(0,240,255,0.4)] group-hover:w-full"></div>
+      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-[rgba(0,240,255,0.15)]">
+        <TagIcon class="w-5 h-5 text-cyber-primary [filter:drop-shadow(0_0_3px_rgba(0,240,255,0.3))]" />
+        <h3 class="text-base font-semibold text-cyber-title m-0">标签</h3>
       </div>
 
-      <div v-else-if="section.id === 'stats'" class="stats-grid">
-        <div class="stat-item clickable">
-          <span class="stat-value"
-            :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[0] = el as HTMLElement }">{{
-              Math.round(animatedCategoriesCount) }}</span>
-          <span class="stat-label">分类</span>
-        </div>
-        <div class="stat-item clickable">
-          <span class="stat-value"
-            :ref="(el: Element | ComponentPublicInstance | null) => { if (el) statRefs[1] = el as HTMLElement }">{{
-              Math.round(animatedTagsCount) }}</span>
-          <span class="stat-label">标签</span>
+      <div class="flex flex-wrap gap-2.5 max-h-80 overflow-y-auto p-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full">
+        <router-link
+          v-for="tag in appStore.tags"
+          :key="tag.id"
+          :to="`/tag/${tag.name}`"
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold no-underline border border-[rgba(0,240,255,0.15)] bg-[rgba(0,240,255,0.06)] transition-all duration-200 hover:-translate-y-px hover:[box-shadow:0_0_8px_rgba(0,240,255,0.15)] hover:border-[rgba(0,240,255,0.4)]"
+          :style="{ color: tag.color || '#00f0ff', backgroundColor: tag.color ? tag.color + '15' : 'rgba(0,240,255,0.06)' }"
+        >
+          <span class="w-1.5 h-1.5 rounded-full opacity-70 [box-shadow:0_0_6px_currentColor]" :style="{ backgroundColor: tag.color || '#00f0ff' }"></span>
+          {{ tag.name }}
+        </router-link>
+        <div v-if="appStore.tags.length === 0" class="flex flex-col items-center gap-2 py-8 text-cyber-muted text-sm w-full">
+          <AlertCircle class="w-10 h-10 opacity-40" />
+          <span>暂无标签</span>
         </div>
       </div>
     </div>
@@ -65,339 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { animate } from 'animejs'
 import { useAppStore } from '@/stores/app'
-import TagBadge from '@/components/common/TagBadge.vue'
+import { FolderOpen, Tag as TagIcon, ChevronRight, AlertCircle } from 'lucide-vue-next'
 
 const appStore = useAppStore()
-
-const sections = [
-  {
-    id: 'category',
-    title: '分类',
-    iconPath: 'M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'
-  },
-  {
-    id: 'tag',
-    title: '标签',
-    iconPath: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z'
-  },
-  {
-    id: 'stats',
-    title: '统计',
-    iconPath: 'M18 20V10M12 20V4M6 20v-6'
-  }
-]
-
-const sectionRefs = ref<HTMLElement[]>([])
-const statRefs = ref<HTMLElement[]>([])
-
-const animatedCategoriesCount = ref(0)
-const animatedTagsCount = ref(0)
-
-onMounted(() => {
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px'
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const section = entry.target as HTMLElement
-
-        if (section.classList.contains('section-stats')) {
-          animateStats()
-        }
-
-        animate(section, {
-          opacity: [0, 1],
-          translateY: [30, 0],
-          duration: 800,
-          ease: 'outCubic'
-        })
-
-        observer.unobserve(section)
-      }
-    })
-  }, observerOptions)
-
-  sectionRefs.value.forEach(section => {
-    if (section) {
-      observer.observe(section)
-    }
-  })
-
-  setTimeout(() => {
-    animateStats()
-  }, 500)
-})
-
-function animateStats() {
-  animate(animatedCategoriesCount, {
-    value: [0, appStore.categories.length],
-    round: 1,
-    duration: 1500,
-    ease: 'outExpo'
-  })
-
-  animate(animatedTagsCount, {
-    value: [0, appStore.tags.length],
-    round: 1,
-    duration: 1500,
-    delay: 200,
-    ease: 'outExpo'
-  })
-}
 </script>
-
-<style scoped>
-.app-sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.sidebar-section {
-  background: rgba(20, 20, 35, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  padding: var(--spacing-lg);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.sidebar-section::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: -100%;
-  width: 60%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-  animation: flow-light 5s linear infinite;
-}
-
-@keyframes flow-light {
-  0% { left: -60%; }
-  100% { left: 100%; }
-}
-
-.gradient-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-.sidebar-section:hover .gradient-bar {
-  width: 100%;
-}
-
-.sidebar-section:hover {
-  box-shadow: 0 8px 32px rgba(0, 240, 255, 0.1), 0 0 1px rgba(0, 240, 255, 0.3);
-  transform: translateY(-2px);
-  border-color: rgba(0, 240, 255, 0.3);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.section-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-primary);
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 3px rgba(0, 240, 255, 0.3));
-}
-
-.section-title {
-  font-family: var(--font-body);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-title);
-  margin: 0;
-}
-
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.category-list::-webkit-scrollbar {
-  width: 5px;
-}
-
-.category-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.category-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.15);
-  border-radius: var(--radius-full);
-}
-
-.category-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 240, 255, 0.3);
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  color: var(--color-body);
-  text-decoration: none;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.category-indicator {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
-  border-radius: var(--radius-full);
-  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 6px rgba(0, 240, 255, 0.4);
-}
-
-.category-item .arrow-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.category-item:hover {
-  color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.06);
-  transform: translateX(4px);
-}
-
-.category-item:hover::before {
-  height: 60%;
-}
-
-.category-item:hover .category-indicator {
-  height: 60%;
-}
-
-.category-item:hover .arrow-icon {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.tag-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding: 4px;
-}
-
-.tag-cloud::-webkit-scrollbar {
-  width: 5px;
-}
-
-.tag-cloud::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.tag-cloud::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.15);
-  border-radius: var(--radius-full);
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-md);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: var(--spacing-md) var(--spacing-sm);
-  background: rgba(0, 240, 255, 0.04);
-  border: 1px solid rgba(0, 240, 255, 0.08);
-  border-radius: var(--radius-md);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stat-item:hover {
-  background: rgba(0, 240, 255, 0.08);
-  border-color: rgba(0, 240, 255, 0.2);
-  transform: scale(1.05);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.stat-value {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-display);
-  color: var(--color-primary);
-  line-height: 1;
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
-}
-
-.stat-label {
-  font-size: var(--font-size-xs);
-  color: var(--color-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: var(--font-weight-medium);
-}
-
-.empty-hint {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xl) 0;
-  color: var(--color-muted);
-  font-size: var(--font-size-sm);
-}
-
-.empty-hint svg {
-  width: 40px;
-  height: 40px;
-  opacity: 0.4;
-}
-
-@media (max-width: 1024px) {
-  .app-sidebar {
-    display: none;
-  }
-}
-</style>

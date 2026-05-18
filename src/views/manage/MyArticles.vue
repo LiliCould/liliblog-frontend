@@ -1,295 +1,169 @@
 <template>
-  <div class="my-articles-page page-container">
-    <div class="page-header">
-      <h1 class="page-title">我的文章</h1>
-      <el-button type="primary" @click="router.push('/manage/editor')">
-        <el-icon>
-          <Plus />
-        </el-icon>
-        写文章
-      </el-button>
-    </div>
+  <AppLayout :show-hero="false">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-white">我的文章</h1>
+        <button
+          class="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)]"
+          @click="router.push('/manage/editor')"
+        >
+          <Plus class="w-4 h-4" />
+          写文章
+        </button>
+      </div>
 
-    <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-      <el-tab-pane label="已发布" name="PUBLISHED" />
-      <el-tab-pane label="草稿" name="DRAFT" />
-    </el-tabs>
+      <div class="flex gap-2 mb-6">
+        <button
+          v-for="tab in statusTabs"
+          :key="tab.value"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+          :class="activeTab === tab.value
+            ? 'bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] shadow-[0_0_8px_rgba(0,240,255,0.1)]'
+            : 'border border-[rgba(0,240,255,0.15)] text-[#6b7280] hover:text-[#e0e0e8] hover:border-[rgba(0,240,255,0.3)]'"
+          @click="handleTabChange(tab.value)"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
 
-    <div class="articles-list">
-      <template v-if="loading">
-        <div v-for="i in 3" :key="i" class="skeleton-card">
-          <el-skeleton :rows="2" animated />
-        </div>
-      </template>
+      <div v-if="articleStore.loading" class="flex flex-col gap-3">
+        <div v-for="i in 3" :key="i" class="h-20 rounded-xl bg-[#111118] animate-pulse"></div>
+      </div>
 
-      <template v-else-if="filteredArticles.length > 0">
-        <div v-for="article in filteredArticles" :key="article.id" class="article-item">
-          <div class="item-content">
-            <h3 class="item-title" @click="viewArticle(article)">{{ article.title }}</h3>
-            <p class="item-summary">{{ article.summary || '暂无摘要' }}</p>
-            <div class="item-meta">
-              <span class="meta-status" :class="article.status.toLowerCase()">
+      <div v-else-if="articleStore.myList.length > 0" class="flex flex-col gap-3">
+        <div
+          v-for="article in articleStore.myList"
+          :key="article.id"
+          class="flex items-center justify-between gap-4 p-4 rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] transition-all duration-300 hover:border-[rgba(0,240,255,0.3)] hover:shadow-[0_0_8px_rgba(0,240,255,0.06)]"
+        >
+          <div class="flex-1 min-w-0">
+            <h3
+              class="text-sm font-semibold text-[#e0e0e8] truncate cursor-pointer transition-colors duration-200 hover:text-[#00f0ff]"
+              @click="router.push(`/article/${article.id}`)"
+            >
+              {{ article.title }}
+            </h3>
+            <div class="flex items-center gap-3 mt-1.5 text-xs text-[#6b7280]">
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                :class="statusClass(article.status)"
+              >
+                <FileText class="w-3 h-3" />
                 {{ statusText(article.status) }}
               </span>
-              <span class="meta-date">{{ formatRelativeTime(article.updateTime || article.createTime) }}</span>
-              <span class="meta-view">{{ article.viewCount }} 阅读</span>
+              <span class="flex items-center gap-1">
+                <Clock class="w-3 h-3" />
+                {{ formatRelativeTime(article.updateTime || article.createTime) }}
+              </span>
+              <span class="flex items-center gap-1">
+                <Eye class="w-3 h-3" />
+                {{ article.viewCount }}
+              </span>
             </div>
           </div>
-          <div class="item-actions">
-            <el-button text type="primary" @click="editArticle(article.id)">
-              <el-icon>
-                <Edit />
-              </el-icon>
-              编辑
-            </el-button>
-            <el-button text type="danger" @click="confirmDelete(article)">
-              <el-icon>
-                <Delete />
-              </el-icon>
-              删除
-            </el-button>
+          <div class="flex items-center gap-1 shrink-0">
+            <button
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-[#6b7280] hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.08)] transition-all duration-200"
+              @click="router.push(`/manage/editor/${article.id}`)"
+            >
+              <Edit class="w-4 h-4" />
+            </button>
+            <button
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-[#6b7280] hover:text-[#ff2d78] hover:bg-[rgba(255,45,120,0.08)] transition-all duration-200"
+              @click="confirmDelete(article)"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
           </div>
         </div>
-      </template>
 
-      <template v-else>
-        <EmptyState :text="activeTab === 'PUBLISHED' ? '还没有发布的文章' : '还没有草稿'">
-          <el-button type="primary" style="margin-top: 16px;" @click="router.push('/manage/editor')">
-            开始写作
-          </el-button>
-        </EmptyState>
-      </template>
+        <Pagination
+          v-if="articleStore.total > pageSize"
+          :current="currentPage"
+          :total="articleStore.total"
+          :page-size="pageSize"
+          @update:current="handlePageChange"
+        />
+      </div>
+
+      <EmptyState v-else :message="activeTab === 'all' ? '还没有文章' : `还没有${statusText(activeTab)}的文章`">
+        <button
+          class="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)]"
+          @click="router.push('/manage/editor')"
+        >
+          <Plus class="w-4 h-4" />
+          开始写作
+        </button>
+      </EmptyState>
     </div>
-  </div>
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import { Plus, Edit, Delete } from '@element-plus/icons-vue'
+import { Plus, Edit, Trash2, Eye, FileText, Clock } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
 import { useUserStore } from '@/stores/user'
 import { deleteArticle } from '@/api/article'
-import EmptyState from '@/components/common/EmptyState.vue'
 import { formatRelativeTime } from '@/utils/format'
-import type { Article } from '@/types/article.d'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import type { Article } from '@/types/article'
 
 const router = useRouter()
 const articleStore = useArticleStore()
 const userStore = useUserStore()
-const activeTab = ref('PUBLISHED')
-const loading = ref(false)
+const activeTab = ref<string>('all')
+const currentPage = ref(1)
+const pageSize = 10
 
-const filteredArticles = computed(() => {
-  return articleStore.myList.filter(a => a.status === activeTab.value)
-})
+const statusTabs = [
+  { label: '全部', value: 'all' },
+  { label: '审核中', value: '0' },
+  { label: '已发布', value: '1' },
+  { label: '草稿', value: '2' },
+]
 
-function statusText(status: string) {
-  const map: Record<string, string> = {
-    DRAFT: '草稿',
-    PUBLISHED: '已发布',
-    HIDDEN: '隐藏',
-  }
-  return map[status] || status
+function statusText(status: any) {
+  const map: Record<string, string> = { '0': '审核中', '1': '已发布', '2': '草稿' }
+  return map[String(status)] || '未知'
+}
+
+function statusClass(status: any) {
+  const s = String(status)
+  if (s === '1') return 'bg-[rgba(0,240,255,0.1)] text-[#00f0ff] border border-[rgba(0,240,255,0.2)]'
+  if (s === '2') return 'bg-[rgba(163,230,53,0.1)] text-[#a3e635] border border-[rgba(163,230,53,0.2)]'
+  return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.2)]'
 }
 
 async function loadArticles() {
-  loading.value = true
-  try {
-    await articleStore.fetchMyArticles()
-  } finally {
-    loading.value = false
-  }
+  const params: Record<string, any> = { createBy: userStore.userId, current: currentPage.value, size: pageSize }
+  if (activeTab.value !== 'all') params.status = Number(activeTab.value)
+  await articleStore.fetchMyArticles(params)
 }
 
-function handleTabChange() {
-  // filteredArticles is computed, no need to reload
+function handleTabChange(tab: string) {
+  activeTab.value = tab
+  currentPage.value = 1
+  loadArticles()
 }
 
-function viewArticle(article: Article) {
-  if (article.slug) {
-    router.push(`/article/s/${article.slug}`)
-  } else {
-    router.push(`/article/${article.id}`)
-  }
-}
-
-function editArticle(id: number) {
-  router.push(`/manage/editor/${id}`)
+function handlePageChange(page: number) {
+  currentPage.value = page
+  loadArticles()
 }
 
 async function confirmDelete(article: Article) {
+  if (!confirm(`确定要删除文章「${article.title}」吗？此操作不可恢复。`)) return
   try {
-    await ElMessageBox.confirm(
-      `确定要删除文章「${article.title}」吗？此操作不可恢复。`,
-      '删除确认',
-      {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning',
-      },
-    )
-    await deleteArticle(article.id, userStore.username)
-    ElMessage.success({ message: '删除成功', duration: 1500 })
-    await loadArticles()
+    await deleteArticle(article.id)
+    loadArticles()
   } catch {
-    // cancelled or error
+    // handled by interceptor
   }
 }
 
 onMounted(loadArticles)
 </script>
-
-<style scoped>
-.my-articles-page {
-  padding-top: 24px;
-  padding-bottom: 40px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.page-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
-.articles-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.skeleton-card {
-  background: var(--color-card);
-  padding: 20px 24px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin-bottom: 8px;
-}
-
-.article-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin-bottom: 8px;
-  transition: all 0.2s;
-}
-
-.article-item:hover {
-  box-shadow: var(--shadow-sm), var(--neon-glow-sm);
-  border-color: var(--color-border-hover);
-}
-
-.item-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.item-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-title);
-  margin-bottom: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color var(--transition-fast);
-}
-
-.item-title:hover {
-  color: var(--color-primary);
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
-}
-
-.item-summary {
-  font-size: 13px;
-  color: var(--color-muted);
-  margin-bottom: 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.item-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: var(--color-muted);
-}
-
-.meta-status {
-  padding: 1px 8px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.meta-status.published {
-  background: rgba(0, 240, 255, 0.1);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary-light-2);
-}
-
-.meta-status.draft {
-  background: rgba(255, 170, 0, 0.1);
-  color: var(--color-warning);
-  border: 1px solid rgba(255, 170, 0, 0.2);
-}
-
-.meta-status.hidden {
-  background: var(--color-bg-warm);
-  color: var(--color-muted);
-  border: 1px solid var(--color-border);
-}
-
-.item-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-:deep(.el-tabs__item) {
-  color: var(--color-body);
-  font-weight: 500;
-}
-
-:deep(.el-tabs__item.is-active) {
-  color: var(--color-primary);
-}
-
-:deep(.el-tabs__active-bar) {
-  background-color: var(--color-primary);
-  box-shadow: var(--neon-glow-sm);
-}
-
-:deep(.el-tabs__item:hover) {
-  color: var(--color-primary);
-}
-
-@media (max-width: 640px) {
-  .article-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .item-actions {
-    align-self: flex-end;
-  }
-}
-</style>

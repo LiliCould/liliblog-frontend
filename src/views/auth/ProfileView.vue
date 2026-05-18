@@ -1,139 +1,122 @@
 <template>
-  <div class="profile-page page-container">
-    <div class="profile-content">
-      <div class="profile-card">
-        <h2 class="section-title">个人信息</h2>
-        <div v-if="profile" class="user-info">
-          <div class="info-avatar">
-            <el-avatar :size="80" :src="profile.avatar || undefined">
-              {{ profile.nickname?.charAt(0) || 'U' }}
-            </el-avatar>
-            <el-upload
-              :auto-upload="true"
-              :show-file-list="false"
-              :http-request="handleAvatarUpload"
-              accept="image/*"
-              class="avatar-upload"
+  <AppLayout :show-hero="false">
+    <div class="max-w-2xl mx-auto flex flex-col gap-6">
+      <div class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+        <h2 class="text-lg font-semibold text-white mb-5 pb-3 border-b border-[rgba(0,240,255,0.15)]">个人信息</h2>
+
+        <div v-if="profile" class="flex gap-6 items-start">
+          <div class="relative shrink-0">
+            <img
+              v-if="profile.avatar"
+              :src="profile.avatar"
+              :alt="profile.nickname"
+              class="w-20 h-20 rounded-full object-cover border-2 border-[#00f0ff] shadow-[0_0_12px_rgba(0,240,255,0.2)]"
+            />
+            <div
+              v-else
+              class="w-20 h-20 rounded-full bg-[#1a1a24] border-2 border-[rgba(0,240,255,0.2)] flex items-center justify-center text-2xl text-[#00f0ff] font-bold"
             >
-              <el-button size="small" type="primary" circle>
-                <el-icon><Camera /></el-icon>
-              </el-button>
-            </el-upload>
-          </div>
-          <div class="info-list">
-            <div class="info-item">
-              <span class="info-label">用户名</span>
-              <span class="info-value">{{ profile.username }}</span>
+              {{ profile.nickname?.charAt(0) || 'U' }}
             </div>
-            <div class="info-item">
-              <span class="info-label">昵称</span>
-              <div class="nickname-edit">
-                <el-input
-                  v-if="editingNickname"
+            <label class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[rgba(0,240,255,0.12)] border border-[rgba(0,240,255,0.3)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_8px_rgba(0,240,255,0.15)]">
+              <Camera class="w-3.5 h-3.5 text-[#00f0ff]" />
+              <input type="file" accept="image/*" class="hidden" @change="handleAvatarUpload" />
+            </label>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 py-3 border-b border-[rgba(0,240,255,0.08)]">
+              <span class="w-16 text-sm text-[#6b7280] shrink-0">用户名</span>
+              <span class="text-sm text-[#e0e0e8]">{{ profile.username }}</span>
+            </div>
+            <div class="flex items-center gap-3 py-3 border-b border-[rgba(0,240,255,0.08)]">
+              <span class="w-16 text-sm text-[#6b7280] shrink-0">昵称</span>
+              <div v-if="editingNickname" class="flex items-center gap-2 flex-1">
+                <input
                   v-model="editNickname"
-                  placeholder="请输入昵称"
-                  size="small"
-                  @keyup.enter="handleSaveNickname"
-                  @blur="handleSaveNickname"
-                  ref="nicknameInputRef"
+                  class="flex-1 h-8 px-3 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm outline-none focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
+                  @keyup.enter="saveNickname"
+                  @blur="saveNickname"
                 />
-                <span v-else class="info-value" @click="startEditNickname">{{ profile.nickname }}</span>
-                <el-button
-                  v-if="!editingNickname"
-                  size="small"
-                  type="primary"
-                  @click="startEditNickname"
-                >
-                  编辑
-                </el-button>
+              </div>
+              <div v-else class="flex items-center gap-2 flex-1">
+                <span class="text-sm text-[#e0e0e8]">{{ profile.nickname }}</span>
+                <button class="text-[#6b7280] hover:text-[#00f0ff] transition-colors duration-200" @click="startEditNickname">
+                  <PenLine class="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
-            <div class="info-item">
-              <span class="info-label">邮箱</span>
-              <span class="info-value">{{ profile.email }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">上次登录</span>
-              <span class="info-value">{{ formatDateTime(profile.lastLoginTime) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">注册时间</span>
-              <span class="info-value">{{ formatDateTime(profile.createTime) }}</span>
-            </div>
+
           </div>
         </div>
-        <div v-else class="loading-wrapper">
-          <el-skeleton :rows="4" animated />
+
+        <div v-else class="flex flex-col gap-3">
+          <div class="h-10 rounded bg-[#1a1a24] animate-pulse"></div>
+          <div class="h-10 rounded bg-[#1a1a24] animate-pulse"></div>
         </div>
       </div>
 
-      <div class="profile-card">
-        <h2 class="section-title">修改密码</h2>
-        <el-form
-          ref="passwordFormRef"
-          :model="passwordForm"
-          :rules="passwordFormRules"
-          label-width="80px"
-          style="max-width: 400px;"
-        >
-          <el-form-item label="旧密码" prop="oldPassword">
-            <el-input
+      <div class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+        <h2 class="text-lg font-semibold text-white mb-5 pb-3 border-b border-[rgba(0,240,255,0.15)]">修改密码</h2>
+
+        <form class="max-w-sm flex flex-col gap-4" @submit.prevent="handleChangePassword">
+          <div class="relative">
+            <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+            <input
               v-model="passwordForm.oldPassword"
               type="password"
-              show-password
-              placeholder="请输入旧密码"
+              placeholder="旧密码"
+              class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
             />
-          </el-form-item>
-          <el-form-item label="新密码" prop="newPassword">
-            <el-input
+          </div>
+          <div class="relative">
+            <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+            <input
               v-model="passwordForm.newPassword"
               type="password"
-              show-password
-              placeholder="请输入新密码"
+              placeholder="新密码"
+              class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
             />
-          </el-form-item>
-          <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input
+          </div>
+          <div class="relative">
+            <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+            <input
               v-model="passwordForm.confirmPassword"
               type="password"
-              show-password
-              placeholder="请再次输入新密码"
+              placeholder="确认新密码"
+              class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
             />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" :loading="changingPassword" @click="handleChangePassword">
-              修改密码
-            </el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+          <button
+            type="submit"
+            :disabled="changingPassword"
+            class="flex items-center justify-center gap-2 h-11 rounded-lg bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] font-semibold text-sm transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_12px_rgba(0,240,255,0.2)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save class="w-4 h-4" />
+            {{ changingPassword ? '修改中...' : '修改密码' }}
+          </button>
+        </form>
       </div>
     </div>
-  </div>
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { Camera } from '@element-plus/icons-vue'
-import type { FormInstance, FormItemRule, UploadRequestOptions } from 'element-plus'
+import { Camera, Save, Lock } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-import type { UserVO } from '@/types/auth.d'
-import { formatDateTime } from '@/utils/format'
-import { passwordRules } from '@/utils/validate'
+import { getCurrentUser, updateUser } from '@/api/user'
 import { uploadFile } from '@/api/file'
-import { updateUserInfo } from '@/api/auth'
-import type { ApiResponse } from '@/types/api.d'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import type { User as UserType } from '@/types/user'
 
 const router = useRouter()
 const userStore = useUserStore()
-const profile = ref<UserVO | null>(null)
-const passwordFormRef = ref<FormInstance>()
-const nicknameInputRef = ref<InstanceType<typeof import('element-plus')['ElInput']>>()
-const changingPassword = ref(false)
-const updatingProfile = ref(false)
+const profile = ref<UserType | null>(null)
 const editingNickname = ref(false)
 const editNickname = ref('')
+const changingPassword = ref(false)
 
 const passwordForm = reactive({
   oldPassword: '',
@@ -141,117 +124,65 @@ const passwordForm = reactive({
   confirmPassword: '',
 })
 
-const confirmPasswordRules: FormItemRule[] = [
-  { required: true, message: '请再次输入新密码', trigger: 'blur' },
-  {
-    validator: (_rule, value, callback) => {
-      if (value !== passwordForm.newPassword) {
-        callback(new Error('两次输入的密码不一致'))
-      } else {
-        callback()
-      }
-    },
-    trigger: 'blur',
-  },
-]
-
-const passwordFormRules = {
-  oldPassword: passwordRules,
-  newPassword: passwordRules,
-  confirmPassword: confirmPasswordRules,
-}
-
 onMounted(async () => {
   try {
-    const data = await userStore.fetchProfile()
-    if (data) {
-      profile.value = data
-    }
+    const res = await getCurrentUser() as any
+    profile.value = res.data || null
   } catch {
     // handled by interceptor
   }
 })
 
-async function handleAvatarUpload(options: UploadRequestOptions) {
+async function handleAvatarUpload(e: Event) {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
   try {
-    const res = await uploadFile(options.file as File, 'avatar') as unknown as ApiResponse<string>
+    const res = await uploadFile(file, 'avatar') as any
     const avatarUrl = res.message?.trim() || res.data
     if (avatarUrl) {
-      // 更新本地用户信息
-      if (profile.value) {
-        profile.value.avatar = avatarUrl
-      }
-      // 同时更新 store 中的用户信息
+      if (profile.value) profile.value.avatar = avatarUrl
       userStore.updateAvatar(avatarUrl)
-      
-      // 调用后端更新接口
-      await updateUserInfo({
-        avatar: avatarUrl
-      })
-      
-      ElMessage.success({ message: '头像上传成功', duration: 1500 })
+      await updateUser({ avatar: avatarUrl })
     }
   } catch {
-    ElMessage.error({ message: '头像上传失败', duration: 1500 })
+    // handled by interceptor
   }
+  target.value = ''
 }
 
 function startEditNickname() {
   if (profile.value) {
     editNickname.value = profile.value.nickname
     editingNickname.value = true
-    nextTick(() => {
-      nicknameInputRef.value?.focus()
-    })
   }
 }
 
-async function handleSaveNickname() {
+async function saveNickname() {
   if (!editNickname.value.trim()) {
-    ElMessage.error({ message: '昵称不能为空', duration: 1500 })
-    return
-  }
-  
-  if (editNickname.value.length < 2 || editNickname.value.length > 20) {
-    ElMessage.error({ message: '昵称长度在 2-20 个字符之间', duration: 1500 })
-    return
-  }
-  
-  updatingProfile.value = true
-  try {
-    await updateUserInfo({
-      nickname: editNickname.value
-    })
-    
-    // 更新本地缓存
-    userStore.updateNickname(editNickname.value)
-    
-    // 重新获取用户信息
-    const data = await userStore.fetchProfile()
-    if (data) {
-      profile.value = data
-    }
-    
     editingNickname.value = false
-    ElMessage.success({ message: '昵称更新成功', duration: 1500 })
+    return
+  }
+  try {
+    await updateUser({ nickname: editNickname.value })
+    userStore.updateNickname(editNickname.value)
+    if (profile.value) profile.value.nickname = editNickname.value
   } catch {
-    ElMessage.error({ message: '昵称更新失败', duration: 1500 })
+    // handled by interceptor
   } finally {
-    updatingProfile.value = false
+    editingNickname.value = false
   }
 }
 
 async function handleChangePassword() {
-  if (!passwordFormRef.value) return
-  await passwordFormRef.value.validate()
-
+  if (!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) return
+  if (passwordForm.newPassword !== passwordForm.confirmPassword) return
   changingPassword.value = true
   try {
-    await userStore.changePassword({
+    await updateUser({
       oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword,
-    })
-    ElMessage.success({ message: '密码修改成功，请重新登录', duration: 1500 })
+    } as any)
     userStore.logout()
     router.push('/login')
   } catch {
@@ -261,141 +192,3 @@ async function handleChangePassword() {
   }
 }
 </script>
-
-<style scoped>
-.profile-page {
-  padding-top: 24px;
-  padding-bottom: 40px;
-}
-
-.profile-content {
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.profile-card {
-  background: var(--color-card);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 28px;
-  margin-bottom: 20px;
-  transition: all var(--transition-base);
-}
-
-.profile-card:hover {
-  border-color: var(--color-border-hover);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.section-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-title);
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.user-info {
-  display: flex;
-  gap: 28px;
-  align-items: flex-start;
-}
-
-.info-list {
-  flex: 1;
-}
-
-.info-item {
-  display: flex;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-border);
-  align-items: center;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-label {
-  width: 80px;
-  font-size: 13px;
-  color: var(--color-muted);
-  flex-shrink: 0;
-}
-
-.info-value {
-  font-size: 14px;
-  color: var(--color-title);
-  flex: 1;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-
-.info-value:hover {
-  color: var(--color-primary);
-}
-
-.nickname-edit {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nickname-edit .el-input {
-  flex: 1;
-  max-width: 200px;
-}
-
-.loading-wrapper {
-  padding: 20px 0;
-}
-
-.info-avatar {
-  flex-shrink: 0;
-  position: relative;
-}
-
-.info-avatar :deep(.el-avatar) {
-  box-shadow: 0 0 0 3px var(--color-primary), var(--neon-glow-sm);
-}
-
-.avatar-upload {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  transform: translate(25%, 25%);
-}
-
-.avatar-upload .el-button {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), var(--neon-glow-sm);
-}
-
-@media (max-width: 640px) {
-  .user-info {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  
-  .info-label {
-    width: 100%;
-  }
-  
-  .nickname-edit {
-    width: 100%;
-  }
-  
-  .nickname-edit .el-input {
-    max-width: none;
-  }
-}
-</style>

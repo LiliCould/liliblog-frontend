@@ -1,11 +1,12 @@
 export interface PageParams {
-    pageSize?: number
-    pageNum?: number
+    current?: number
+    size?: number
 }
 
-export enum ArticleStatus {
-    DRAFT = 'DRAFT',
-    PUBLISHED = 'PUBLISHED',
-    HIDDEN = 'HIDDEN',
-    DELETE = 'DELETE',
+export interface PageResult<T> {
+    records: T[]
+    total: number
+    size: number
+    current: number
+    pages: number
 }

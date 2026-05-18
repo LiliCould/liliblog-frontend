@@ -1,78 +1,59 @@
 <template>
-  <article class="article-card clickable" @click="goDetail" ref="cardRef">
-    <div class="card-inner">
-      <div class="card-content">
-        <div class="card-badges">
-          <span v-if="article.isTop" class="badge badge-top">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-            </svg>
-            置顶
+  <article
+    class="group relative cursor-pointer rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:border-[#00f0ff] hover:shadow-[0_0_20px_rgba(0,240,255,0.15)]"
+    @click="goDetail"
+    ref="cardRef"
+  >
+    <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[rgba(0,240,255,0.03)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[1]"></div>
+    <div class="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-[rgba(0,240,255,0.08)] to-transparent pointer-events-none z-[1] group-hover:animate-[flow-light_0.8s_ease-out]"></div>
+
+    <div class="flex gap-6 p-6 relative z-[2] max-md:flex-col-reverse max-md:gap-4 max-md:p-4">
+      <div class="flex-1 min-w-0 flex flex-col">
+
+
+        <h2 class="text-lg font-bold text-white leading-snug mb-2 line-clamp-2 transition-colors duration-500 group-hover:text-[#00f0ff] group-hover:[text-shadow:0_0_12px_rgba(0,240,255,0.3)]">
+          {{ article.title }}
+        </h2>
+
+        <p v-if="article.summary" class="text-sm text-[#e0e0e8] leading-relaxed mb-4 line-clamp-2 flex-grow">
+          {{ article.summary }}
+        </p>
+
+        <div class="flex flex-wrap gap-4 mb-4 pt-2 border-t border-[rgba(0,240,255,0.15)]">
+          <span v-if="article.category" class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <FolderOpen class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            {{ article.category.name }}
           </span>
-          <span v-if="article.isRecommend" class="badge badge-recommend">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
-              <polygon
-                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-              />
-            </svg>
-            推荐
+          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Clock class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            <time :datetime="article.updateTime">{{ formatRelativeTime(article.updateTime) }}</time>
+          </span>
+          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Eye class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            {{ formatNumber(article.viewCount) }}
+          </span>
+          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <MessageSquare class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            {{ article.commentCount }}
+          </span>
+          <span class="flex items-center gap-1.5 text-xs text-[#6b7280] transition-colors duration-500 group-hover:text-[#00f0ff]">
+            <Heart class="w-3.5 h-3.5 text-[#00f0ff] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            {{ article.likeCount }}
           </span>
         </div>
 
-        <h2 class="card-title">{{ article.title }}</h2>
-
-        <p v-if="article.summary" class="card-summary">{{ article.summary }}</p>
-
-        <div class="card-meta">
-          <div class="meta-item author-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span>{{ article.authorNickname }}</span>
-          </div>
-
-          <div v-if="article.categoryName" class="meta-item category-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path
-                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-              ></path>
-            </svg>
-            <span>{{ article.categoryName }}</span>
-          </div>
-
-          <div class="meta-item time-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <time :datetime="article.publishTime || article.createTime">{{ formatRelativeTime(article.publishTime ||
-              article.createTime) }}</time>
-          </div>
-
-          <div class="meta-item views-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            <span>{{ formatNumber(article.viewCount) }}</span>
-          </div>
-        </div>
-
-        <div v-if="displayTags.length > 0" class="card-tags">
+        <div v-if="displayTags.length > 0" class="flex flex-wrap gap-2 items-center">
           <TagBadge v-for="tag in displayTags" :key="tag.id" :tag="tag" />
-          <span v-if="hiddenTagsCount > 0" class="more-tags-badge">+{{ hiddenTagsCount }}</span>
+          <span v-if="hiddenTagsCount > 0" class="inline-flex items-center justify-center min-w-[28px] h-[26px] px-2.5 text-[11px] font-semibold text-[#6b7280] bg-[rgba(0,240,255,0.05)] border border-[rgba(0,240,255,0.15)] rounded-full transition-all duration-500 hover:text-[#00f0ff] hover:border-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] hover:shadow-[0_0_10px_rgba(0,240,255,0.15)]">
+            +{{ hiddenTagsCount }}
+          </span>
         </div>
       </div>
 
-      <div v-if="article.coverImage" class="card-cover">
-        <div class="cover-wrapper">
-          <img :src="article.coverImage" :alt="article.title" loading="lazy" />
-          <div class="cover-overlay"></div>
+      <div v-if="article.coverImage" class="shrink-0 w-[200px] h-[140px] rounded-xl overflow-hidden max-md:w-full max-md:h-[180px]">
+        <div class="relative w-full h-full rounded-xl overflow-hidden">
+          <img :src="article.coverImage" :alt="article.title" loading="lazy" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[rgba(0,240,255,0.08)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
       </div>
     </div>
@@ -82,7 +63,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { animate } from 'animejs'
+import { Eye, MessageSquare, Heart, Clock, FolderOpen } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
 import { formatRelativeTime, formatNumber } from '@/utils/format'
 import TagBadge from './TagBadge.vue'
@@ -114,299 +95,21 @@ function goDetail() {
 }
 
 onMounted(() => {
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '50px'
-  }
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting && entry.target === cardRef.value) {
-        animate(entry.target, {
-          opacity: [0, 1],
-          translateY: [40, 0],
-          scale: [0.95, 1],
-          duration: 800,
-          ease: 'outCubic'
-        })
-
+        (entry.target as HTMLElement).style.opacity = '1'
+        ;(entry.target as HTMLElement).style.transform = 'translateY(0)'
         observer.unobserve(entry.target)
       }
     })
-  }, observerOptions)
+  }, { threshold: 0.1, rootMargin: '50px' })
 
   if (cardRef.value) {
+    cardRef.value.style.opacity = '0'
+    cardRef.value.style.transform = 'translateY(40px)'
+    cardRef.value.style.transition = 'opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1)'
     observer.observe(cardRef.value)
   }
 })
 </script>
-
-<style scoped>
-.article-card {
-  position: relative;
-  cursor: pointer;
-  border-radius: var(--radius-lg);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  background: var(--color-card);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-  opacity: 0;
-  transform: translateZ(0);
-  contain: layout style paint;
-}
-
-.article-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(0, 240, 255, 0.03) 100%);
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-  z-index: 1;
-  border-radius: var(--radius-lg);
-}
-
-.article-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.08), transparent);
-  pointer-events: none;
-  z-index: 1;
-  border-radius: var(--radius-lg);
-}
-
-.article-card:hover {
-  transform: translateY(-6px) translateZ(0);
-  box-shadow: var(--neon-glow-sm);
-  border-color: var(--color-border-hover);
-}
-
-.article-card:hover::before {
-  opacity: 1;
-}
-
-.article-card:hover::after {
-  animation: flow-light 0.8s ease-out;
-}
-
-@keyframes flow-light {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.card-inner {
-  display: flex;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-xl);
-  position: relative;
-  z-index: 2;
-}
-
-.card-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.card-badges {
-  display: flex;
-  gap: 8px;
-  margin-bottom: var(--spacing-sm);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-}
-
-.badge svg {
-  width: 12px;
-  height: 12px;
-}
-
-.badge-top {
-  background: rgba(0, 240, 255, 0.1);
-  color: var(--color-primary);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-}
-
-.badge-recommend {
-  background: rgba(255, 45, 120, 0.1);
-  color: var(--color-accent);
-  border: 1px solid rgba(255, 45, 120, 0.3);
-}
-
-.card-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-title);
-  line-height: var(--line-height-snug);
-  margin-bottom: var(--spacing-sm);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.article-card:hover .card-title {
-  color: var(--color-primary);
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
-}
-
-.card-summary {
-  font-size: var(--font-size-sm);
-  color: var(--color-body);
-  line-height: var(--line-height-relaxed);
-  margin-bottom: var(--spacing-md);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-grow: 1;
-}
-
-.card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid var(--color-border);
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--font-size-xs);
-  color: var(--color-body);
-  transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.meta-item svg {
-  width: 14px;
-  height: 14px;
-  color: var(--color-primary);
-  opacity: 0.6;
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.article-card:hover .meta-item {
-  color: var(--color-primary);
-}
-
-.article-card:hover .meta-item svg {
-  opacity: 1;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.more-tags-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 26px;
-  padding: 0 10px;
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-body);
-  background: rgba(0, 240, 255, 0.05);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.more-tags-badge:hover {
-  color: var(--color-primary);
-  border-color: var(--color-border-hover);
-  background: rgba(0, 240, 255, 0.1);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.card-cover {
-  flex-shrink: 0;
-  width: 200px;
-  height: 140px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.cover-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.cover-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.cover-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 240, 255, 0.08), transparent);
-  opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.article-card:hover .cover-wrapper img {
-  transform: scale(1.03) translateZ(0);
-}
-
-.article-card:hover .cover-overlay {
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .card-inner {
-    flex-direction: column-reverse;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-  }
-
-  .card-cover {
-    width: 100%;
-    height: 180px;
-  }
-
-  .card-meta {
-    gap: var(--spacing-sm);
-  }
-
-  .meta-item {
-    font-size: 10px;
-  }
-}
-</style>

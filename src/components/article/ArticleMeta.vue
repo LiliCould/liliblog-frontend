@@ -1,40 +1,34 @@
 <template>
-  <div class="article-meta">
-    <span class="meta-item" v-if="article.authorNickname">
-      <el-icon>
-        <User />
-      </el-icon>
-      {{ article.authorNickname }}
+  <div class="flex flex-wrap gap-4">
+    <span v-if="article.category" class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <FolderOpen class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ article.category.name }}
     </span>
-    <span class="meta-item" v-if="article.categoryName">
-      <el-icon>
-        <Folder />
-      </el-icon>
-      {{ article.categoryName }}
+    <span v-if="article.tags && article.tags.length > 0" class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <Tag class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ article.tags.map(t => t.name).join(', ') }}
     </span>
-    <span class="meta-item">
-      <el-icon>
-        <Calendar />
-      </el-icon>
-      {{ formatDateTime(article.publishTime || article.createTime) }}
+    <span class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <Eye class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ formatNumber(article.viewCount) }}
     </span>
-    <span class="meta-item">
-      <el-icon>
-        <View />
-      </el-icon>
-      {{ formatNumber(article.viewCount) }} 阅读
+    <span class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <MessageSquare class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ article.commentCount }}
     </span>
-    <span class="meta-item">
-      <el-icon>
-        <ChatDotRound />
-      </el-icon>
-      {{ article.commentCount }} 评论
+    <span class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <Heart class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ article.likeCount }}
+    </span>
+    <span class="flex items-center gap-1 text-[13px] text-[#6b7280] transition-colors duration-300 hover:text-[#00f0ff]">
+      <Clock class="w-3.5 h-3.5 text-[#00f0ff] opacity-70 transition-opacity duration-300 hover:opacity-100" />
+      {{ formatDateTime(article.updateTime) }}
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { User, Folder, Calendar, View, ChatDotRound } from '@element-plus/icons-vue'
+import { Eye, MessageSquare, Heart, Clock, FolderOpen, Tag } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
 import { formatDateTime, formatNumber } from '@/utils/format'
 
@@ -42,34 +36,3 @@ defineProps<{
   article: Article
 }>()
 </script>
-
-<style scoped>
-.article-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: var(--color-body);
-  transition: color 0.3s ease;
-}
-
-.meta-item :deep(.el-icon) {
-  color: var(--color-primary);
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.meta-item:hover {
-  color: var(--color-primary);
-}
-
-.meta-item:hover :deep(.el-icon) {
-  opacity: 1;
-}
-</style>

@@ -1,24 +1,25 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as loginApi, logout as logoutApi, getProfile as getProfileApi, changePassword as changePasswordApi } from '@/api/auth'
+import { loginByPwd, loginByEmail, logout as logoutApi } from '@/api/auth'
 import { getToken, setToken, clearAuth, getUserInfo, setUserInfo } from '@/utils/storage'
-import type { LoginDTO, LoginVO, UserVO, PasswordChangeDTO } from '@/types/auth.d'
-import type { ApiResponse } from '@/types/api.d'
+import type { LoginByPwdDTO, LoginByEmailDTO, LoginVO, UserInfo } from '@/types/auth'
+import type { ApiResponse } from '@/types/api'
 import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
     const token = ref<string | null>(null)
-    const userInfo = ref<LoginVO | null>(null)
-    const profile = ref<UserVO | null>(null)
+    const userInfo = ref<UserInfo | null>(null)
 
     const isLoggedIn = computed(() => !!token.value)
     const username = computed(() => userInfo.value?.username || '')
     const avatar = computed(() => userInfo.value?.avatar || '')
     const nickname = computed(() => userInfo.value?.nickname || '')
+    const isAdmin = computed(() => userInfo.value?.role === 0)
+    const userId = computed(() => userInfo.value?.id || 0)
 
     function init() {
         const savedToken = getToken()
-        const savedUserInfo = getUserInfo<LoginVO>()
+        const savedUserInfo = getUserInfo<UserInfo>()
         if (savedToken) {
             token.value = savedToken
         }
@@ -27,12 +28,21 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    async function login(data: LoginDTO) {
-        const res = await loginApi(data) as unknown as ApiResponse<LoginVO>
-        token.value = res.data.token
-        userInfo.value = res.data
-        setToken(res.data.token)
-        setUserInfo(res.data)
+    async function loginByPassword(data: LoginByPwdDTO) {
+        const res = await loginByPwd(data) as unknown as ApiResponse<LoginVO>
+        token.value = res.data.accessToken
+        userInfo.value = res.data.userInfo
+        setToken(res.data.accessToken)
+        setUserInfo(res.data.userInfo)
+        return res.data
+    }
+
+    async function loginByMail(data: LoginByEmailDTO) {
+        const res = await loginByEmail(data) as unknown as ApiResponse<LoginVO>
+        token.value = res.data.accessToken
+        userInfo.value = res.data.userInfo
+        setToken(res.data.accessToken)
+        setUserInfo(res.data.userInfo)
         return res.data
     }
 
@@ -42,30 +52,15 @@ export const useUserStore = defineStore('user', () => {
         } finally {
             token.value = null
             userInfo.value = null
-            profile.value = null
             clearAuth()
             router.push('/')
         }
-    }
-
-    async function fetchProfile() {
-        const res = await getProfileApi() as unknown as ApiResponse<UserVO>
-        profile.value = res.data
-        return res.data
-    }
-
-    async function changePassword(data: PasswordChangeDTO) {
-        if (!username.value) return
-        await changePasswordApi(username.value, data)
     }
 
     function updateAvatar(avatarUrl: string) {
         if (userInfo.value) {
             userInfo.value.avatar = avatarUrl
             setUserInfo(userInfo.value)
-        }
-        if (profile.value) {
-            profile.value.avatar = avatarUrl
         }
     }
 
@@ -74,24 +69,21 @@ export const useUserStore = defineStore('user', () => {
             userInfo.value.nickname = newNickname
             setUserInfo(userInfo.value)
         }
-        if (profile.value) {
-            profile.value.nickname = newNickname
-        }
     }
 
     return {
         token,
         userInfo,
-        profile,
         isLoggedIn,
         username,
         avatar,
         nickname,
+        isAdmin,
+        userId,
         init,
-        login,
+        loginByPassword,
+        loginByMail,
         logout,
-        fetchProfile,
-        changePassword,
         updateAvatar,
         updateNickname,
     }

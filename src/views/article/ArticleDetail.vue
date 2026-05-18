@@ -1,248 +1,140 @@
 <template>
-  <div class="article-detail-page page-container">
-    <template v-if="loading">
-      <div class="detail-skeleton">
-        <el-skeleton :rows="8" animated />
-      </div>
-    </template>
+  <AppLayout :show-hero="false">
+    <div v-if="loading" class="flex flex-col gap-4">
+      <div class="h-10 w-3/5 rounded bg-[#111118] animate-pulse"></div>
+      <div class="h-6 w-2/5 rounded bg-[#111118] animate-pulse"></div>
+      <div class="h-80 rounded-xl bg-[#111118] animate-pulse"></div>
+    </div>
 
-    <template v-else-if="article">
-      <div class="detail-layout">
-        <article class="article-content">
-          <header class="article-header">
-            <h1 class="article-title">{{ article.title }}</h1>
-            <ArticleMeta :article="article" />
-            <div v-if="article.tags && article.tags.length > 0" class="article-tags">
-              <TagBadge v-for="tag in article.tags" :key="tag.id" :tag="tag" />
-            </div>
-          </header>
+    <div v-else-if="article" class="flex gap-6 items-start">
+      <article class="flex-1 min-w-0 rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+        <header class="mb-8">
+          <h1 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-4" style="text-shadow:0 0 20px rgba(0,240,255,0.15)">
+            {{ article.title }}
+          </h1>
 
-          <div v-if="article.coverImage" class="article-cover">
-            <img :src="article.coverImage" :alt="article.title" />
+          <div class="flex flex-wrap items-center gap-4 text-sm text-[#6b7280]">
+            <span class="flex items-center gap-1.5">
+              <Clock class="w-4 h-4 text-[#00f0ff]" />
+              {{ formatDateTime(article.updateTime || article.createTime) }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <Eye class="w-4 h-4 text-[#00f0ff]" />
+              {{ article.viewCount }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <FolderOpen class="w-4 h-4 text-[#00f0ff]" />
+              {{ article.category?.name || '未分类' }}
+            </span>
           </div>
 
-          <MarkdownViewer :content="article.content" />
-        </article>
+          <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap gap-2 mt-3">
+            <span
+              v-for="tag in article.tags"
+              :key="tag.id"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[rgba(0,240,255,0.08)] text-[#00f0ff] border border-[rgba(0,240,255,0.2)]"
+            >
+              <Tag class="w-3 h-3" />
+              {{ tag.name }}
+            </span>
+          </div>
+        </header>
 
-        <aside class="detail-sidebar">
-          <ArticleToc :markdown-content="article.content || ''" />
-        </aside>
-      </div>
-    </template>
+        <div v-if="article.coverImage" class="mb-8 rounded-lg overflow-hidden border border-[rgba(0,240,255,0.1)]">
+          <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[400px] object-cover" />
+        </div>
 
-    <template v-else>
-      <EmptyState text="文章不存在" />
-    </template>
-  </div>
+        <MarkdownViewer :content-html="article.contentHtml || ''" />
+
+        <div class="flex items-center gap-4 mt-10 pt-6 border-t border-[rgba(0,240,255,0.15)]">
+          <button
+            class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
+            :class="isLiked
+              ? 'bg-[rgba(255,45,120,0.15)] border border-[#ff2d78] text-[#ff2d78] shadow-[0_0_10px_rgba(255,45,120,0.15)]'
+              : 'bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.2)] text-[#6b7280] hover:text-[#ff2d78] hover:border-[#ff2d78] hover:shadow-[0_0_10px_rgba(255,45,120,0.15)]'"
+            @click="toggleLike"
+          >
+            <Heart class="w-4 h-4" :class="{ 'fill-current': isLiked }" />
+            {{ isLiked ? '已点赞' : '点赞' }}
+            <span class="text-xs opacity-70">({{ article.likeCount }})</span>
+          </button>
+        </div>
+
+        <div class="mt-10">
+          <h3 class="text-lg font-semibold text-white mb-4 pb-2 border-b-2 border-[#00f0ff] inline-block shadow-[0_2px_8px_rgba(0,240,255,0.2)]">
+            评论区
+          </h3>
+          <CommentSection :article-id="article.id" />
+        </div>
+      </article>
+
+      <aside class="hidden lg:block w-64 flex-shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <ArticleToc :html-content="article.contentHtml || ''" />
+      </aside>
+    </div>
+
+    <EmptyState v-else message="文章不存在" />
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { Heart, Eye, Clock, FolderOpen, Tag } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
-import ArticleMeta from '@/components/article/ArticleMeta.vue'
-import ArticleToc from '@/components/article/ArticleToc.vue'
+import { getArticleLikeStatus, likeArticle, unlikeArticle } from '@/api/article'
+import { formatDateTime } from '@/utils/format'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
-import TagBadge from '@/components/common/TagBadge.vue'
+import ArticleToc from '@/components/article/ArticleToc.vue'
+import CommentSection from '@/components/comment/CommentSection.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
-import type { Article } from '@/types/article.d'
+import type { ArticleDetail } from '@/types/article'
 
 const route = useRoute()
 const articleStore = useArticleStore()
-const article = ref<Article | null>(null)
+const article = ref<ArticleDetail | null>(null)
 const loading = ref(true)
-
-const currentUrl = computed(() => {
-  const id = route.params.id as string
-  const slug = route.params.slug as string
-  if (slug) {
-    return `https://lilicould.cn/article/s/${slug}`
-  } else if (id) {
-    return `https://lilicould.cn/article/${id}`
-  }
-  return 'https://lilicould.cn'
-})
-
-function updateMetaTags() {
-  if (!article.value) return
-
-  const { title, summary, coverImage, authorNickname } = article.value
-  const url = currentUrl.value
-  const image = coverImage || 'https://lilicould.cn/favicon.svg'
-  const description = summary || '立里博客的文章'
-
-  // 更新页面标题
-  document.title = `${title} - 立里博客`
-
-  // 更新 meta 标签
-  updateMetaTag('description', description)
-  updateMetaTag('keywords', `${title},${authorNickname},立里博客`)
-
-  // 更新 Open Graph 标签
-  updateOgTag('og:title', title)
-  updateOgTag('og:description', description)
-  updateOgTag('og:url', url)
-  updateOgTag('og:image', image)
-  updateOgTag('og:site_name', '立里博客')
-  updateOgTag('og:type', 'article')
-  updateOgTag('article:author', authorNickname)
-
-  // 更新 Twitter 标签
-  updateMetaTag('twitter:card', 'summary_large_image')
-  updateMetaTag('twitter:title', title)
-  updateMetaTag('twitter:description', description)
-  updateMetaTag('twitter:image', image)
-  updateMetaTag('twitter:site', '@lilicould')
-
-  // 更新规范链接
-  updateCanonicalTag(url)
-}
-
-function updateMetaTag(name: string, content: string) {
-  let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement
-  if (!tag) {
-    tag = document.createElement('meta')
-    tag.name = name
-    document.head.appendChild(tag)
-  }
-  tag.content = content
-}
-
-function updateOgTag(property: string, content: string) {
-  let tag = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
-  if (!tag) {
-    tag = document.createElement('meta')
-    tag.setAttribute('property', property)
-    document.head.appendChild(tag)
-  }
-  tag.content = content
-}
-
-function updateCanonicalTag(url: string) {
-  let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
-  if (!link) {
-    link = document.createElement('link')
-    link.rel = 'canonical'
-    document.head.appendChild(link)
-  }
-  link.href = url
-}
+const isLiked = ref(false)
 
 async function loadArticle() {
   loading.value = true
   try {
-    const id = route.params.id as string
-    const slug = route.params.slug as string
-
-    if (id) {
-      article.value = (await articleStore.fetchArticleDetail(Number(id))) || null
-    } else if (slug) {
-      article.value = (await articleStore.fetchArticleBySlug(slug)) || null
+    const id = Number(route.params.id)
+    article.value = (await articleStore.fetchArticleDetail(id)) || null
+    if (article.value) {
+      try {
+        const res = await getArticleLikeStatus(id) as any
+        isLiked.value = res.data === true
+      } catch {
+        isLiked.value = false
+      }
     }
   } catch {
     article.value = null
   } finally {
     loading.value = false
-    updateMetaTags()
+  }
+}
+
+async function toggleLike() {
+  if (!article.value) return
+  const id = article.value.id
+  try {
+    if (isLiked.value) {
+      await unlikeArticle(id)
+      isLiked.value = false
+      if (article.value) article.value.likeCount--
+    } else {
+      await likeArticle(id)
+      isLiked.value = true
+      if (article.value) article.value.likeCount++
+    }
+  } catch {
+    // handled by interceptor
   }
 }
 
 onMounted(loadArticle)
-
-watch(() => [route.params.id, route.params.slug], loadArticle)
-watch(article, updateMetaTags, { deep: true })
+watch(() => route.params.id, loadArticle)
 </script>
-
-<style scoped>
-.article-detail-page {
-  padding-top: 24px;
-  padding-bottom: 40px;
-}
-
-.detail-skeleton {
-  max-width: 800px;
-  margin: 0 auto;
-  background: var(--color-card);
-  backdrop-filter: var(--blur-md);
-  border-radius: var(--radius-lg);
-  padding: 40px;
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-card);
-}
-
-.detail-layout {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  min-height: 100vh;
-}
-
-.article-content {
-  flex: 1;
-  min-width: 0;
-  background: var(--color-card);
-  backdrop-filter: var(--blur-md);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 36px;
-  box-shadow: var(--shadow-card);
-}
-
-.article-header {
-  margin-bottom: 28px;
-}
-
-.article-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--color-title);
-  line-height: 1.4;
-  margin-bottom: 16px;
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
-}
-
-.article-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.article-cover {
-  margin-bottom: 24px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.article-cover img {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-}
-
-.detail-sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  position: sticky;
-  top: calc(var(--header-height) + 20px);
-  align-self: flex-start;
-  max-height: calc(100vh - var(--header-height) - 40px);
-  overflow-y: auto;
-}
-
-@media (max-width: 1024px) {
-  .detail-sidebar {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .article-content {
-    padding: 20px;
-  }
-
-  .article-title {
-    font-size: 20px;
-  }
-}
-</style>

@@ -1,96 +1,99 @@
 <template>
-  <div class="register-page">
-    <div class="register-card">
-      <div class="register-header">
-        <h1 class="register-title">LiliBlog</h1>
-        <p class="register-subtitle">创建你的账号</p>
+  <div class="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-4 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,240,255,0.015) 2px,rgba(0,240,255,0.015) 4px)"></div>
+    <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);background-size:40px 40px"></div>
+
+    <div class="w-full max-w-md relative z-10 rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-8 shadow-[0_2px_20px_rgba(0,0,0,0.3)]">
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#00f0ff] via-[#ff2d78] to-[#a3e635] rounded-t-xl shadow-[0_0_8px_rgba(0,240,255,0.3)]"></div>
+
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-[#00f0ff] mb-1 tracking-wider" style="text-shadow:0 0 12px rgba(0,240,255,0.4)">LiliBlog</h1>
+        <p class="text-sm text-[#6b7280]">创建你的账号</p>
       </div>
 
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        size="large"
-        @submit.prevent="handleRegister"
-      >
-        <el-form-item prop="username">
-          <el-input
+      <form class="flex flex-col gap-4" @submit.prevent="handleRegister">
+        <div class="relative">
+          <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+          <input
             v-model="form.username"
+            type="text"
             placeholder="用户名"
-            :prefix-icon="User"
+            class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item prop="email">
-          <el-input
+        <div class="relative">
+          <Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+          <input
             v-model="form.email"
+            type="email"
             placeholder="邮箱"
-            :prefix-icon="Message"
+            class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item prop="nickname">
-          <el-input
+        <div class="relative flex gap-2">
+          <div class="relative flex-1">
+            <KeyRound class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+            <input
+              v-model="form.captcha"
+              type="text"
+              placeholder="验证码"
+              class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
+            />
+          </div>
+          <button
+            type="button"
+            :disabled="countdown > 0 || captchaLoading"
+            class="shrink-0 h-11 px-4 rounded-lg bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.2)] text-[#00f0ff] text-sm font-medium transition-all duration-300 hover:bg-[rgba(0,240,255,0.15)] disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="handleSendCaptcha"
+          >
+            {{ countdown > 0 ? `${countdown}s` : '发送验证码' }}
+          </button>
+        </div>
+
+        <div class="relative">
+          <PenLine class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+          <input
             v-model="form.nickname"
+            type="text"
             placeholder="昵称"
-            :prefix-icon="UserFilled"
+            class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item prop="password">
-          <el-input
+        <div class="relative">
+          <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+          <input
             v-model="form.password"
             type="password"
             placeholder="密码"
-            :prefix-icon="Lock"
-            show-password
+            class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item prop="confirmPassword">
-          <el-input
+        <div class="relative">
+          <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+          <input
             v-model="form.confirmPassword"
             type="password"
             placeholder="确认密码"
-            :prefix-icon="Lock"
-            show-password
+            class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm placeholder-[#6b7280] outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.1)]"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item prop="captcha">
-          <el-input
-            v-model="form.captcha"
-            placeholder="验证码"
-            :prefix-icon="Postcard"
-            @keyup.enter="handleRegister"
-          >
-            <template #append>
-              <el-button
-                :loading="captchaLoading"
-                :disabled="countdown > 0"
-                @click="handleGetCaptcha"
-              >
-                {{ countdown > 0 ? `${countdown}s后重新获取` : '获取验证码' }}
-              </el-button>
-            </template>
-          </el-input>
-        </el-form-item>
+        <button
+          type="submit"
+          :disabled="loading"
+          class="w-full h-11 rounded-lg bg-[rgba(0,240,255,0.12)] border border-[#00f0ff] text-[#00f0ff] font-semibold text-sm transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_12px_rgba(0,240,255,0.2)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ loading ? '注册中...' : '注册' }}
+        </button>
+      </form>
 
-        <el-form-item>
-          <el-button
-            type="primary"
-            class="register-btn"
-            :loading="loading"
-            @click="handleRegister"
-          >
-            注册
-          </el-button>
-        </el-form-item>
-      </el-form>
-
-      <div class="register-footer">
-        <span>已有账号？</span>
-        <router-link to="/login">立即登录</router-link>
+      <div class="text-center mt-6 text-sm text-[#6b7280]">
+        已有账号？
+        <router-link to="/login" class="text-[#00f0ff] font-medium hover:underline" style="text-shadow:0 0 6px rgba(0,240,255,0.3)">立即登录</router-link>
       </div>
     </div>
   </div>
@@ -99,14 +102,10 @@
 <script setup lang="ts">
 import { ref, reactive, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, Lock, Message, UserFilled, Postcard } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import type { FormInstance, FormItemRule } from 'element-plus'
+import { User, Mail, KeyRound, PenLine, Lock } from 'lucide-vue-next'
 import { register, getCaptcha } from '@/api/auth'
-import { usernameRules, passwordRules, emailRules, nicknameRules } from '@/utils/validate'
 
 const router = useRouter()
-const formRef = ref<FormInstance>()
 const loading = ref(false)
 const captchaLoading = ref(false)
 const countdown = ref(0)
@@ -115,72 +114,36 @@ let countdownTimer: number | null = null
 const form = reactive({
   username: '',
   email: '',
+  captcha: '',
   nickname: '',
   password: '',
   confirmPassword: '',
-  captcha: '',
 })
-
-const confirmPasswordRules: FormItemRule[] = [
-  { required: true, message: '请再次输入密码', trigger: 'blur' },
-  {
-    validator: (_rule, value, callback) => {
-      if (value !== form.password) {
-        callback(new Error('两次输入的密码不一致'))
-      } else {
-        callback()
-      }
-    },
-    trigger: 'blur',
-  },
-]
-
-const captchaRules: FormItemRule[] = [
-  { required: true, message: '请输入验证码', trigger: 'blur' },
-]
-
-const rules = {
-  username: usernameRules,
-  email: emailRules,
-  nickname: nicknameRules,
-  password: passwordRules,
-  confirmPassword: confirmPasswordRules,
-  captcha: captchaRules,
-}
 
 function startCountdown() {
   countdown.value = 60
   countdownTimer = window.setInterval(() => {
-    if (countdown.value > 0) {
-      countdown.value--
-    } else {
-      clearInterval(countdownTimer!)
-    }
+    if (countdown.value > 0) countdown.value--
+    else clearInterval(countdownTimer!)
   }, 1000)
 }
 
-async function handleGetCaptcha() {
-  if (!form.email) {
-    ElMessage.error({ message: '请输入邮箱', duration: 1500 })
-    return
-  }
-  
+async function handleSendCaptcha() {
+  if (!form.email.trim()) return
   captchaLoading.value = true
   try {
     await getCaptcha(form.email)
-    ElMessage.success({ message: '验证码已发送到您的邮箱', duration: 1500 })
     startCountdown()
   } catch {
-    // error handled by interceptor
+    // handled by interceptor
   } finally {
     captchaLoading.value = false
   }
 }
 
 async function handleRegister() {
-  if (!formRef.value) return
-  await formRef.value.validate()
-
+  if (!form.username.trim() || !form.email.trim() || !form.captcha.trim() || !form.nickname.trim() || !form.password.trim()) return
+  if (form.password !== form.confirmPassword) return
   loading.value = true
   try {
     await register({
@@ -190,133 +153,15 @@ async function handleRegister() {
       nickname: form.nickname,
       captcha: form.captcha,
     })
-    ElMessage.success({ message: '注册成功，请登录', duration: 1500 })
     router.push('/login')
   } catch {
-    // error handled by interceptor
+    // handled by interceptor
   } finally {
     loading.value = false
   }
 }
 
 onUnmounted(() => {
-  if (countdownTimer) {
-    clearInterval(countdownTimer)
-  }
+  if (countdownTimer) clearInterval(countdownTimer)
 })
 </script>
-
-<style scoped>
-.register-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-bg);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.register-page::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 240, 255, 0.015) 2px,
-      rgba(0, 240, 255, 0.015) 4px
-    );
-  pointer-events: none;
-}
-
-.register-page::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-}
-
-.register-card {
-  width: 100%;
-  max-width: 400px;
-  background: var(--color-card);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
-  border-radius: var(--radius-lg);
-  padding: 40px 36px;
-  box-shadow: var(--shadow-lg), var(--neon-glow-sm);
-  border: 1px solid var(--color-border);
-  position: relative;
-  z-index: 1;
-}
-
-.register-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-tertiary));
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  box-shadow: var(--neon-glow-sm);
-}
-
-.register-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.register-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
-  letter-spacing: 2px;
-}
-
-.register-subtitle {
-  font-size: 14px;
-  color: var(--color-muted);
-}
-
-.register-btn {
-  width: 100%;
-  border-radius: var(--radius-md);
-  font-size: 15px;
-  height: 44px;
-  box-shadow: var(--neon-glow-sm);
-  letter-spacing: 1px;
-}
-
-.register-btn:hover {
-  box-shadow: var(--neon-glow-md);
-}
-
-.register-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--color-muted);
-}
-
-.register-footer a {
-  color: var(--color-primary);
-  font-weight: 500;
-  margin-left: 4px;
-  transition: all var(--transition-fast);
-}
-
-.register-footer a:hover {
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-</style>

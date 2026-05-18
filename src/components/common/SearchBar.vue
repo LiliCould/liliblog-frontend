@@ -1,20 +1,29 @@
 <template>
-  <div class="search-bar">
-    <el-input
-      v-model="keyword"
-      :placeholder="placeholder"
-      :prefix-icon="Search"
-      size="large"
-      clearable
-      @keyup.enter="handleSearch"
-    />
+  <div class="w-full max-w-[560px] flex items-center gap-2">
+    <div class="flex-1 relative">
+      <Search class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280] transition-colors duration-300" :class="{ 'text-[#00f0ff]': isFocused }" />
+      <input
+        v-model="keyword"
+        type="text"
+        :placeholder="placeholder"
+        class="w-full h-11 pl-11 pr-4 rounded-full bg-[#111118] border border-[rgba(0,240,255,0.15)] text-white placeholder-[#6b7280] text-sm outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_12px_rgba(0,240,255,0.15)]"
+        @keyup.enter="handleSearch"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+      />
+    </div>
+    <button
+      class="h-11 px-5 rounded-full bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.3)] text-[#00f0ff] text-sm font-semibold transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_12px_rgba(0,240,255,0.2)] active:scale-95"
+      @click="handleSearch"
+    >
+      搜索
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { Search } from '@element-plus/icons-vue'
+import { Search } from 'lucide-vue-next'
 
 withDefaults(defineProps<{
   placeholder?: string
@@ -22,55 +31,19 @@ withDefaults(defineProps<{
   placeholder: '搜索文章...',
 })
 
+const emit = defineEmits<{
+  (e: 'search', keyword: string): void
+}>()
+
 const keyword = ref('')
-const router = useRouter()
+const isFocused = ref(false)
 
 function handleSearch() {
   const kw = keyword.value.trim()
   if (kw) {
-    router.push({ path: '/search', query: { keyword: kw } })
+    emit('search', kw)
   }
 }
 
 defineExpose({ keyword })
 </script>
-
-<style scoped>
-.search-bar {
-  width: 100%;
-  max-width: 560px;
-}
-
-.search-bar :deep(.el-input__wrapper) {
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 0 1px var(--color-border);
-  padding: 4px 16px;
-  background: var(--color-card-solid);
-  transition: box-shadow 0.3s ease;
-}
-
-.search-bar :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px var(--color-border-hover);
-}
-
-.search-bar :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px var(--color-primary), var(--neon-glow-sm);
-}
-
-.search-bar :deep(.el-input__inner) {
-  color: var(--color-title);
-}
-
-.search-bar :deep(.el-input__inner::placeholder) {
-  color: var(--color-body);
-}
-
-.search-bar :deep(.el-input__prefix .el-icon) {
-  color: var(--color-body);
-  transition: color 0.3s ease;
-}
-
-.search-bar :deep(.el-input__wrapper.is-focus .el-input__prefix .el-icon) {
-  color: var(--color-primary);
-}
-</style>

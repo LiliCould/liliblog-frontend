@@ -1,14 +1,16 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
-import { ElMessage } from 'element-plus'
-import { getToken, clearAuth } from './storage'
-import type { ApiResponse } from '@/types/api.d'
+import { getToken, setToken, clearAuth } from '@/utils/storage'
+import type { ApiResponse } from '@/types/api'
 import router from '@/router/index'
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 15000,
 })
+
+let isRefreshing = false
+let pendingRequests: Array<(token: string) => void> = []
 
 service.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
@@ -26,29 +28,52 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response: AxiosResponse<ApiResponse<unknown>>) => {
         const res = response.data
-        if (res.code === 0 || res.code === 200) {
+        if (res.code === 0) {
             return res as unknown as AxiosResponse
         }
-        ElMessage.error({ message: res.message || '请求失败', duration: 1500 })
-        return Promise.reject(new Error(res.message || '请求失败'))
+        console.error(res.msg || '请求失败')
+        return Promise.reject(new Error(res.msg || '请求失败'))
     },
-    (error) => {
-        if (error.response) {
-            const status = error.response.status
-            if (status === 401) {
-                clearAuth()
-                ElMessage.error({ message: '登录已过期，请重新登录', duration: 1500 })
-                router.push('/login')
-            } else if (status === 403) {
-                ElMessage.error({ message: '没有权限', duration: 1500 })
-            } else if (status === 500) {
-                ElMessage.error({ message: '服务器错误', duration: 1500 })
+    async (error) => {
+        const originalConfig = error.config
+        if (error.response?.status === 401 && !originalConfig._retry) {
+            if (!isRefreshing) {
+                isRefreshing = true
+                originalConfig._retry = true
+                try {
+                    const { data } = await axios.post<ApiResponse<{ accessToken: string }>>(
+                        `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+                        {},
+                        { headers: { Authorization: `Bearer ${getToken()}` } }
+                    )
+                    if (data.code === 0) {
+                        setToken(data.data.accessToken)
+                        pendingRequests.forEach((cb) => cb(data.data.accessToken))
+                        pendingRequests = []
+                        originalConfig.headers.Authorization = `Bearer ${data.data.accessToken}`
+                        return service(originalConfig)
+                    } else {
+                        clearAuth()
+                        router.push('/login')
+                        return Promise.reject(error)
+                    }
+                } catch {
+                    clearAuth()
+                    router.push('/login')
+                    return Promise.reject(error)
+                } finally {
+                    isRefreshing = false
+                }
             } else {
-                ElMessage.error({ message: error.response.data?.message || '请求失败', duration: 1500 })
+                return new Promise((resolve) => {
+                    pendingRequests.push((token: string) => {
+                        originalConfig.headers.Authorization = `Bearer ${token}`
+                        resolve(service(originalConfig))
+                    })
+                })
             }
-        } else {
-            ElMessage.error({ message: '网络异常，请稍后重试', duration: 1500 })
         }
+        console.error(error.response?.data?.msg || '请求失败')
         return Promise.reject(error)
     },
 )

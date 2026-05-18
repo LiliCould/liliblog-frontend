@@ -1,9 +1,18 @@
 <template>
-  <div v-if="tocItems.length > 0" class="article-toc">
-    <h4 class="toc-title">目录</h4>
-    <nav class="toc-nav">
-      <a v-for="item in tocItems" :key="item.id" :href="'#' + item.id" :class="['toc-link', `toc-level-${item.level}`]"
-        @click.prevent="scrollToHeading(item.id)">
+  <div v-if="tocItems.length > 0" class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-4 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+    <h4 class="text-sm font-semibold text-white mb-3 pb-2 border-b-2 border-[#00f0ff] inline-block shadow-[0_2px_8px_rgba(0,240,255,0.2)]">目录</h4>
+    <nav class="flex flex-col gap-0.5">
+      <a
+        v-for="item in tocItems"
+        :key="item.id"
+        :href="'#' + item.id"
+        class="block py-1 text-[13px] text-[#6b7280] rounded no-underline leading-relaxed overflow-hidden text-ellipsis whitespace-nowrap border-l-2 border-transparent transition-all duration-200 hover:bg-[rgba(0,240,255,0.06)] hover:text-[#00f0ff] hover:border-l-[rgba(0,240,255,0.3)] hover:[text-shadow:0_0_8px_rgba(0,240,255,0.3)]"
+        :class="{
+          'pl-4': item.level === 2,
+          'pl-7 text-xs': item.level === 3,
+        }"
+        @click.prevent="scrollToHeading(item.id)"
+      >
         {{ item.text }}
       </a>
     </nav>
@@ -20,33 +29,22 @@ interface TocItem {
 }
 
 const props = defineProps<{
-  markdownContent: string
+  htmlContent: string
 }>()
 
 const tocItems = computed<TocItem[]>(() => {
-  if (!props.markdownContent) return []
+  if (!props.htmlContent) return []
   const items: TocItem[] = []
-  const lines = props.markdownContent.split('\n')
-  let inCodeBlock = false
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(props.htmlContent, 'text/html')
+  const headings = doc.querySelectorAll('h2, h3')
 
-  lines.forEach((line, index) => {
-    const trimmedLine = line.trim()
-
-    if (trimmedLine.startsWith('```')) {
-      inCodeBlock = !inCodeBlock
-      return
-    }
-
-    if (inCodeBlock) return
-
-    const headingMatch = line.match(/^(#{1,4})\s+(.*)$/)
-    if (headingMatch) {
-      const level = headingMatch[1].length
-      const text = headingMatch[2].trim()
-      const id = text || `heading-${index}`
-      if (text) {
-        items.push({ id, text, level })
-      }
+  headings.forEach((heading) => {
+    const level = parseInt(heading.tagName.charAt(1))
+    const text = heading.textContent?.trim() || ''
+    const id = heading.id || text.toLowerCase().replace(/\s+/g, '-')
+    if (text) {
+      items.push({ id, text, level })
     }
   })
 
@@ -60,67 +58,3 @@ function scrollToHeading(id: string) {
   }
 }
 </script>
-
-<style scoped>
-.article-toc {
-  background: var(--color-card);
-  backdrop-filter: blur(12px);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  padding: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-}
-
-.toc-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-title);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--color-primary);
-  display: inline-block;
-  box-shadow: 0 2px 8px rgba(0, 240, 255, 0.2);
-}
-
-.toc-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.toc-link {
-  display: block;
-  padding: 4px 8px;
-  font-size: 13px;
-  color: var(--color-body);
-  text-decoration: none;
-  border-radius: var(--radius-sm);
-  line-height: 1.5;
-  transition: all 0.2s;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-left: 2px solid transparent;
-}
-
-.toc-link:hover {
-  background: rgba(0, 240, 255, 0.06);
-  color: var(--color-primary);
-  border-left-color: rgba(0, 240, 255, 0.3);
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
-}
-
-.toc-level-2 {
-  padding-left: 16px;
-}
-
-.toc-level-3 {
-  padding-left: 28px;
-  font-size: 12px;
-}
-
-.toc-level-4 {
-  padding-left: 40px;
-  font-size: 12px;
-}
-</style>

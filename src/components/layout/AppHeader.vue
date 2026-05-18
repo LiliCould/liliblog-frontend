@@ -1,94 +1,96 @@
 <template>
-  <header class="app-header" :class="{ scrolled: isScrolled }">
-    <div class="header-inner page-container">
-      <router-link to="/" class="logo">
-        <img class="logo-icon" :src="logoSvg" alt="LiliBlog" />
+  <header
+    class="fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300"
+    :class="isScrolled ? 'bg-[rgba(10,10,15,0.95)] shadow-[0_2px_20px_rgba(0,240,255,0.08)]' : 'bg-[rgba(10,10,15,0.85)]'"
+    style="backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 240, 255, 0.15);"
+  >
+    <div class="h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+      <router-link to="/" class="flex items-center gap-2.5 no-underline transition-transform duration-200 hover:scale-[1.02] group">
+        <img :src="logoSvg" alt="LiliBlog" class="w-[120px] h-auto object-contain transition-[filter] duration-400 group-hover:[filter:drop-shadow(0_0_8px_rgba(0,240,255,0.6))_drop-shadow(0_0_16px_rgba(0,240,255,0.3))]" />
       </router-link>
 
-      <nav class="desktop-nav">
-        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link" active-class="active">
-          <span class="link-text">{{ item.label }}</span>
-          <span class="link-underline"></span>
-          <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
+      <nav class="hidden md:flex items-center gap-1.5">
+        <router-link
+          v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-cyber-body no-underline rounded-md transition-all duration-200 hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.08)]"
+          active-class="!text-cyber-primary !font-semibold [text-shadow:0_0_8px_rgba(0,240,255,0.4)]"
+        >
+          <component :is="item.icon" class="w-4 h-4" />
+          <span>{{ item.label }}</span>
+          <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-3/5 h-0.5 bg-cyber-primary rounded-full scale-x-0 transition-transform duration-300 [box-shadow:0_0_6px_rgba(0,240,255,0.5)]" :class="$route.path === item.path ? 'scale-x-100' : ''"></span>
         </router-link>
-
-        <div class="search-trigger clickable" @click="goSearch">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-        </div>
       </nav>
 
-      <div class="header-right">
+      <div class="flex items-center gap-3">
         <template v-if="userStore.isLoggedIn">
-          <el-dropdown trigger="click" @command="handleCommand">
-            <div class="user-avatar-wrapper clickable">
-              <el-avatar :size="34" :src="userStore.avatar || undefined" class="user-avatar">
-                {{ userStore.nickname?.charAt(0) || 'U' }}
-              </el-avatar>
-              <span class="username-text">{{ userStore.nickname || userStore.username }}</span>
-              <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu class="custom-dropdown">
-                <el-dropdown-item command="profile">
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  个人信息
-                </el-dropdown-item>
-                <el-dropdown-item command="myArticles">
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                  我的文章
-                </el-dropdown-item>
-                <el-dropdown-item command="write" divided>
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                  写文章
-                </el-dropdown-item>
-                <el-dropdown-item command="logout" divided>
-                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                  退出登录
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <router-link
+            to="/manage/editor"
+            class="hidden md:flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-cyber-primary rounded-md no-underline transition-all duration-200 hover:-translate-y-0.5 [box-shadow:0_4px_12px_rgba(0,240,255,0.25)] hover:[box-shadow:0_6px_20px_rgba(0,240,255,0.35),0_0_12px_rgba(0,240,255,0.2)]"
+          >
+            <PenSquare class="w-4 h-4" />
+            <span>写文章</span>
+          </router-link>
+
+          <div class="relative" ref="dropdownRef">
+            <button
+              class="flex items-center gap-2 py-1.5 px-3 rounded-lg border border-transparent transition-all duration-200 hover:bg-[rgba(0,240,255,0.06)] hover:border-[rgba(0,240,255,0.2)] cursor-pointer"
+              @click="showDropdown = !showDropdown"
+            >
+              <div class="w-[34px] h-[34px] rounded-full bg-cyber-primary flex items-center justify-center text-white text-sm font-semibold overflow-hidden transition-transform duration-200 hover:rotate-[-3deg] hover:scale-[1.04]">
+                <img v-if="userStore.avatar" :src="userStore.avatar" alt="" class="w-full h-full object-cover" />
+                <span v-else>{{ userStore.nickname?.charAt(0) || 'U' }}</span>
+              </div>
+              <span class="hidden md:block text-sm text-cyber-title font-medium max-w-[100px] truncate">{{ userStore.nickname || userStore.username }}</span>
+              <ChevronDown class="hidden md:block w-3.5 h-3.5 text-cyber-muted transition-transform duration-200" :class="showDropdown ? 'rotate-180' : ''" />
+            </button>
+
+            <Transition
+              enter-active-class="transition duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-2 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 -translate-y-2 scale-95"
+            >
+              <div
+                v-if="showDropdown"
+                class="absolute right-0 top-full mt-2 w-48 bg-cyber-surface border border-[rgba(0,240,255,0.15)] rounded-lg overflow-hidden [box-shadow:0_8px_32px_rgba(0,0,0,0.4),0_0_1px_rgba(0,240,255,0.3)]"
+              >
+                <button class="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-cyber-body hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] transition-colors duration-200 cursor-pointer" @click="handleCommand('profile')">
+                  <User class="w-4 h-4" />
+                  <span>个人信息</span>
+                </button>
+                <button class="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-cyber-body hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] transition-colors duration-200 cursor-pointer" @click="handleCommand('myArticles')">
+                  <FileText class="w-4 h-4" />
+                  <span>我的文章</span>
+                </button>
+                <div class="h-px bg-[rgba(0,240,255,0.1)]"></div>
+                <button class="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-cyber-pink hover:bg-[rgba(255,45,120,0.06)] transition-colors duration-200 cursor-pointer" @click="handleCommand('logout')">
+                  <LogOut class="w-4 h-4" />
+                  <span>退出登录</span>
+                </button>
+              </div>
+            </Transition>
+          </div>
         </template>
 
         <template v-else>
-          <router-link to="/login" class="btn-auth btn-login clickable">登录</router-link>
-          <router-link to="/register" class="btn-auth btn-register clickable">注册</router-link>
+          <router-link to="/login" class="hidden md:inline-flex px-5 py-2 text-sm font-medium text-cyber-primary border-[1.5px] border-[rgba(0,240,255,0.4)] rounded-md no-underline transition-all duration-200 hover:text-white hover:border-cyber-primary hover:bg-[rgba(0,240,255,0.1)] hover:-translate-y-px [box-shadow:0_0_8px_rgba(0,240,255,0.15)]">
+            登录
+          </router-link>
+          <router-link to="/register" class="hidden md:inline-flex px-5 py-2 text-sm font-medium text-white bg-cyber-primary rounded-md no-underline transition-all duration-200 hover:-translate-y-0.5 [box-shadow:0_4px_12px_rgba(0,240,255,0.25)] hover:[box-shadow:0_6px_20px_rgba(0,240,255,0.35),0_0_12px_rgba(0,240,255,0.2)]">
+            注册
+          </router-link>
         </template>
 
-        <button class="mobile-menu-btn clickable" @click="appStore.toggleMobileNav()" aria-label="菜单">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+        <button
+          class="md:hidden flex items-center justify-center w-10 h-10 text-cyber-title rounded-md transition-all duration-200 hover:bg-[rgba(0,240,255,0.08)] hover:text-cyber-primary cursor-pointer"
+          @click="appStore.toggleMobileNav()"
+          aria-label="菜单"
+        >
+          <Menu class="w-5.5 h-5.5" />
         </button>
       </div>
     </div>
@@ -96,60 +98,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
-import { useChatStore } from '@/stores/chat'
+import { Home, Info, PenSquare, User, LogOut, Menu, FileText, ChevronDown } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const appStore = useAppStore()
-const chatStore = useChatStore()
 
 const isScrolled = ref(false)
+const showDropdown = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
 
-const navItems = computed(() => [
-  {
-    path: '/',
-    label: '首页',
-    badge: undefined
-  },
-  {
-    path: '/about',
-    label: '关于',
-    badge: undefined
-  },
-  {
-    path: '/chat',
-    label: '聊天室',
-    badge:
-      chatStore.unreadCount > 0 && !chatStore.isChatRoomActive
-        ? chatStore.unreadCount > 99
-          ? '99+'
-          : chatStore.unreadCount
-        : undefined
-  }
-])
+const navItems = [
+  { path: '/', label: '首页', icon: Home },
+  { path: '/about', label: '关于', icon: Info },
+]
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 100
 }
 
+const handleClickOutside = (e: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
+    showDropdown.value = false
+  }
+}
+
+watch(() => route.path, () => {
+  showDropdown.value = false
+})
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleClickOutside)
 })
 
-function goSearch() {
-  router.push('/search')
-}
-
 function handleCommand(command: string) {
+  showDropdown.value = false
   switch (command) {
     case 'profile':
       router.push('/profile')
@@ -157,325 +152,9 @@ function handleCommand(command: string) {
     case 'myArticles':
       router.push('/manage/articles')
       break
-    case 'write':
-      router.push('/manage/editor')
-      break
     case 'logout':
       userStore.logout()
       break
   }
 }
 </script>
-
-<style scoped>
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-  z-index: var(--z-header);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  contain: layout style;
-}
-
-.app-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 240, 255, var(--scanline-opacity)) 2px,
-      rgba(0, 240, 255, var(--scanline-opacity)) 4px);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.app-header.scrolled {
-  background: rgba(10, 10, 15, 0.95);
-  border-bottom-color: rgba(0, 240, 255, 0.25);
-  box-shadow: 0 2px 20px rgba(0, 240, 255, 0.08), 0 1px 0 rgba(0, 240, 255, 0.15);
-}
-
-.header-inner {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 2;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: transform var(--transition-fast);
-}
-
-.logo:hover {
-  transform: scale(1.02);
-}
-
-.logo-icon {
-  width: 120px;
-  height: auto;
-  object-fit: contain;
-  will-change: filter;
-  transition: filter 0.4s ease;
-}
-
-.logo:hover .logo-icon {
-  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.3));
-}
-
-.desktop-nav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nav-link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  color: var(--color-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-}
-
-.nav-link:hover {
-  color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.08);
-}
-
-.nav-link:hover .link-underline,
-.nav-link.active .link-underline {
-  transform: translateX(-50%) scaleX(1);
-}
-
-.nav-link.active {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-.link-underline {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 60%;
-  height: 2px;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
-}
-
-.link-text {
-  position: relative;
-  z-index: 1;
-}
-
-.nav-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  animation: pulse-badge 2s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-@keyframes pulse-badge {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.08);
-  }
-}
-
-.search-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  margin-left: 8px;
-  border-radius: var(--radius-md);
-  color: var(--color-body);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.search-trigger svg {
-  width: 18px;
-  height: 18px;
-}
-
-.search-trigger:hover {
-  color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.08);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-avatar-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
-  border: 1px solid transparent;
-}
-
-.user-avatar-wrapper:hover {
-  background: rgba(0, 240, 255, 0.06);
-  border-color: rgba(0, 240, 255, 0.2);
-}
-
-.user-avatar {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  background: var(--color-primary);
-  color: white;
-  transition: transform var(--transition-fast);
-}
-
-.user-avatar-wrapper:hover .user-avatar {
-  transform: rotate(-3deg) scale(1.04);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.username-text {
-  font-size: var(--font-size-sm);
-  color: var(--color-title);
-  font-weight: var(--font-weight-medium);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--color-muted);
-  transition: transform var(--transition-fast);
-}
-
-.btn-auth {
-  padding: 8px 20px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-login {
-  color: var(--color-primary);
-  border: 1.5px solid rgba(0, 240, 255, 0.4);
-}
-
-.btn-login:hover {
-  color: #fff;
-  border-color: var(--color-primary);
-  background: rgba(0, 240, 255, 0.1);
-  transform: translateY(-1px);
-  box-shadow: var(--neon-glow-sm);
-}
-
-.btn-register {
-  color: #fff;
-  background: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25);
-}
-
-.btn-register:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35), var(--neon-glow-md);
-}
-
-.mobile-menu-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: var(--color-title);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-}
-
-.mobile-menu-btn:hover {
-  background: rgba(0, 240, 255, 0.08);
-  color: var(--color-primary);
-}
-
-.mobile-menu-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-.dropdown-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .desktop-nav {
-    display: none;
-  }
-
-  .username-text,
-  .arrow-icon {
-    display: none;
-  }
-
-  .btn-auth {
-    display: none;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .user-avatar-wrapper {
-    padding: 6px;
-  }
-}
-</style>

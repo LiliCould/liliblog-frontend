@@ -1,6 +1,11 @@
-export interface LoginDTO {
+export interface LoginByPwdDTO {
     username: string
     password: string
+}
+
+export interface LoginByEmailDTO {
+    email: string
+    captcha: string
 }
 
 export interface RegisterDTO {
@@ -14,21 +19,21 @@ export interface RegisterDTO {
 export interface PasswordChangeDTO {
     oldPassword: string
     newPassword: string
+    confirmPassword: string
 }
 
 export interface LoginVO {
-    token: string
-    username: string
-    nickname: string
-    role: string
-    avatar: string
+    accessToken: string
+    expiresIn: number
+    userInfo: UserInfo
 }
 
-export interface UserVO {
+export interface UserInfo {
+    id: number
     username: string
-    email: string
     nickname: string
     avatar: string
+    role: number
+    status: number
     lastLoginTime: string
-    createTime: string
 }
