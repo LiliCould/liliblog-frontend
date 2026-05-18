@@ -1,44 +1,94 @@
 <!doctype html>
 <html lang="zh-CN">
-
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0a0a0f" />
-  <meta name="description" content="立里博客 - 分享技术、生活和思考的个人博客网站" />
-  <meta name="keywords" content="立里博客,个人博客,技术分享,生活记录,前端开发,后端开发,立里可,LiliCould,Liliblog,Liliblog-front,lilicould.cn" />
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="LiliCould" />
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0f">
 
-  <!-- 性能优化：DNS预解析 -->
-  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-  
-  <!-- 性能优化：预连接关键域名 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <title>立里博客 | LiliBlog - 立里可的技术与生活分享空间</title>
+  <meta name="description" content="立里博客（LiliBlog）是立里可（LiliCould）的个人博客，分享前端开发、后端开发等技术内容，以及生活记录与思考。探索立里的技术世界与生活感悟。">
+  <meta name="keywords" content="立里博客,立里可,LiliBlog,LiliCould,立里,博客,个人博客,技术博客,前端开发,后端开发,Vue,Java,生活记录,lilicould.cn">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="立里可 LiliCould">
+  <meta name="copyright" content="立里可 LiliCould">
 
-  <!-- 性能优化：预加载首屏关键资源 -->
-  <link rel="preload" as="image" href="/images/hero-1.png" fetchpriority="high" />
+  <meta name="google-site-verification" content="">
+  <meta name="baidu-site-verification" content="">
 
-  <!-- Open Graph 标签 -->
-  <meta property="og:title" content="立里博客 - 技术与生活的分享空间" />
-  <meta property="og:description" content="立里博客是一个分享技术、生活和思考的个人博客网站，记录前端开发、后端开发等技术内容以及个人生活感悟。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://lilicould.cn" />
-  <meta property="og:image" content="https://lilicould.cn/favicon.svg" />
-  <meta property="og:site_name" content="立里博客" />
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- 规范标签 -->
-  <link rel="canonical" href="https://lilicould.cn" />
+  <meta property="og:title" content="立里博客 | LiliBlog - 立里可的技术与生活分享空间">
+  <meta property="og:description" content="立里博客（LiliBlog）是立里可（LiliCould）的个人博客，分享前端开发、后端开发等技术内容，以及生活记录与思考。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lilicould.cn">
+  <meta property="og:image" content="https://lilicould.cn/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="立里博客 LiliBlog">
+  <meta property="og:locale" content="zh_CN">
 
-  <title>立里博客 - 技术与生活的分享空间</title>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="立里博客 | LiliBlog - 立里可的技术与生活分享空间">
+  <meta name="twitter:description" content="立里博客（LiliBlog）是立里可（LiliCould）的个人博客，分享前端开发、后端开发等技术内容。">
+  <meta name="twitter:image" content="https://lilicould.cn/og-image.png">
+
+  <link rel="canonical" href="https://lilicould.cn">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="立里博客">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "立里博客",
+    "alternateName": ["LiliBlog", "立里可的博客", "立里"],
+    "url": "https://lilicould.cn",
+    "description": "立里博客（LiliBlog）是立里可（LiliCould）的个人博客，分享技术、生活和思考。",
+    "author": {
+      "@type": "Person",
+      "name": "立里可",
+      "alternateName": "LiliCould"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://lilicould.cn/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "立里可",
+    "alternateName": "LiliCould",
+    "url": "https://lilicould.cn",
+    "sameAs": ["https://github.com/LiliCould"],
+    "jobTitle": "全栈开发工程师",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "立里博客"
+    }
+  }
+  </script>
 </head>
-
 <body>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
 </body>
-
 </html>

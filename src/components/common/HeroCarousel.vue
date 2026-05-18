@@ -197,7 +197,7 @@ onUnmounted(() => {
 .glitch-title {
   position: relative;
   font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   color: transparent;
   letter-spacing: 0.05em;
   user-select: none;
@@ -213,10 +213,10 @@ onUnmounted(() => {
 .glitch-before,
 .glitch-after {
   position: absolute;
-  top: 0;
+  top: -5%;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 130%;
   overflow: hidden;
   filter: contrast(200%);
 }
@@ -240,12 +240,12 @@ onUnmounted(() => {
 
 .glitch-line {
   position: absolute;
-  left: -1px;
-  width: 200px;
+  left: -3px;
+  width: calc(100% + 6px);
   height: 1px;
   background: #000;
   z-index: 50;
-  animation: glitch-line 5s ease-out infinite;
+  animation: glitch-line 3s ease-out infinite;
 }
 
 @keyframes glitch-anim-1 {
@@ -255,53 +255,53 @@ onUnmounted(() => {
   }
 
   10% {
-    top: -0.4px;
-    left: -1.1px;
+    top: -1.5px;
+    left: -3.5px;
   }
 
   20% {
-    top: 0.4px;
-    left: -0.2px;
+    top: 1.5px;
+    left: -0.5px;
   }
 
   30% {
     top: 0;
-    left: 0.5px;
+    left: 2px;
   }
 
   40% {
-    top: -0.3px;
-    left: -0.7px;
+    top: -1px;
+    left: -2.5px;
   }
 
   50% {
     top: 0;
-    left: 0.2px;
+    left: 0.5px;
   }
 
   60% {
-    top: 1.8px;
-    left: -1.2px;
+    top: 4px;
+    left: -4px;
   }
 
   70% {
-    top: -1px;
-    left: 0.1px;
+    top: -2.5px;
+    left: 0.3px;
   }
 
   80% {
-    top: -0.4px;
-    left: -0.9px;
+    top: -1px;
+    left: -3px;
   }
 
   90% {
     top: 0;
-    left: 1.2px;
+    left: 3px;
   }
 
   100% {
     top: 0;
-    left: -1.2px;
+    left: -3px;
   }
 }
 
@@ -312,99 +312,210 @@ onUnmounted(() => {
   }
 
   10% {
-    top: 0.6px;
-    left: 0.8px;
+    top: 1.5px;
+    left: 3px;
   }
 
   20% {
-    top: -0.5px;
-    left: -0.3px;
+    top: -1.5px;
+    left: -0.5px;
   }
 
   30% {
+    top: 0.5px;
+    left: 3px;
+  }
+
+  40% {
+    top: -2px;
+    left: -2px;
+  }
+
+  50% {
     top: 0.3px;
     left: 1px;
   }
 
-  40% {
-    top: -0.8px;
-    left: -0.6px;
-  }
-
-  50% {
-    top: 0.2px;
-    left: 0.4px;
-  }
-
   60% {
-    top: -1.5px;
-    left: 1.1px;
+    top: -3px;
+    left: 3.5px;
   }
 
   70% {
-    top: 0.7px;
-    left: -0.8px;
+    top: 2px;
+    left: -2px;
   }
 
   80% {
-    top: -0.2px;
-    left: 0.9px;
+    top: -0.5px;
+    left: 2.5px;
   }
 
   90% {
-    top: 1px;
-    left: -1px;
+    top: 2.5px;
+    left: -2.5px;
   }
 
   100% {
-    top: -0.3px;
-    left: 0.6px;
+    top: -0.5px;
+    left: 2px;
   }
 }
 
 @keyframes glitch-line {
   0% {
     top: -2px;
+    opacity: 0;
   }
 
-  9% {
-    top: 38px;
+  2% {
+    top: 15px;
+    opacity: 1;
+  }
+
+  4% {
+    top: 42px;
+    opacity: 0;
+  }
+
+  6% {
+    top: 5px;
+    opacity: 1;
+  }
+
+  8% {
+    top: 35px;
+    opacity: 0;
+  }
+
+  12% {
+    top: 8px;
+    opacity: 1;
   }
 
   14% {
-    top: 8px;
+    top: 45px;
+    opacity: 0;
   }
 
   18% {
-    top: 42px;
+    top: 2px;
+    opacity: 1;
   }
 
-  22% {
-    top: 1px;
+  20% {
+    top: 38px;
+    opacity: 0;
+  }
+
+  25% {
+    top: 28px;
+    opacity: 1;
+  }
+
+  27% {
+    top: 10px;
+    opacity: 0;
+  }
+
+  30% {
+    top: 40px;
+    opacity: 1;
   }
 
   32% {
-    top: 32px;
+    top: 3px;
+    opacity: 0;
   }
 
-  34% {
-    top: 12px;
+  38% {
+    top: 33px;
+    opacity: 1;
   }
 
   40% {
-    top: 26px;
+    top: 7px;
+    opacity: 0;
   }
 
-  43% {
-    top: 7px;
+  45% {
+    top: 25px;
+    opacity: 1;
+  }
+
+  47% {
+    top: 44px;
+    opacity: 0;
+  }
+
+  52% {
+    top: 1px;
+    opacity: 1;
+  }
+
+  54% {
+    top: 36px;
+    opacity: 0;
+  }
+
+  60% {
+    top: 12px;
+    opacity: 1;
+  }
+
+  62% {
+    top: 42px;
+    opacity: 0;
+  }
+
+  68% {
+    top: 6px;
+    opacity: 1;
+  }
+
+  70% {
+    top: 30px;
+    opacity: 0;
+  }
+
+  75% {
+    top: 20px;
+    opacity: 1;
+  }
+
+  77% {
+    top: 46px;
+    opacity: 0;
+  }
+
+  82% {
+    top: 3px;
+    opacity: 1;
+  }
+
+  84% {
+    top: 35px;
+    opacity: 0;
+  }
+
+  90% {
+    top: 14px;
+    opacity: 1;
+  }
+
+  92% {
+    top: 40px;
+    opacity: 0;
   }
 
   99% {
-    top: 30px;
+    top: 8px;
+    opacity: 0;
   }
 
   100% {
     top: -2px;
+    opacity: 0;
   }
 }
 
