@@ -21,6 +21,7 @@ declare module 'vue' {
     CommentSection: typeof import('./components/comment/CommentSection.vue')['default']
     CustomCursor: typeof import('./components/common/CustomCursor.vue')['default']
     EmptyState: typeof import('./components/common/EmptyState.vue')['default']
+    HeroCarousel: typeof import('./components/common/HeroCarousel.vue')['default']
     MarkdownEditor: typeof import('./components/article/MarkdownEditor.vue')['default']
     MarkdownViewer: typeof import('./components/article/MarkdownViewer.vue')['default']
     MobileNav: typeof import('./components/layout/MobileNav.vue')['default']
