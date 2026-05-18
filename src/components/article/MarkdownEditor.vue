@@ -19,13 +19,19 @@ const emit = defineEmits<{
 const editorContainer = ref<HTMLElement | null>(null)
 let vditorInstance: Vditor | null = null
 
-function setMode(mode: 'ir' | 'sv') {
-  if (vditorInstance) {
-    (vditorInstance as any).setMode(mode)
+function switchMode() {
+  if (!vditorInstance || !editorContainer.value) return
+  const currentMode = vditorInstance.getCurrentMode()
+  const targetMode = currentMode === 'sv' ? 'ir' : 'sv'
+  const editModeItem = editorContainer.value.querySelector('.vditor-toolbar__item[data-type="edit-mode"]') as HTMLElement | null
+  if (!editModeItem) return
+  const targetBtn = editModeItem.querySelector(`button[data-mode="${targetMode}"]`) as HTMLButtonElement | null
+  if (targetBtn) {
+    targetBtn.click()
   }
 }
 
-defineExpose({ setMode })
+defineExpose({ switchMode })
 
 onMounted(() => {
   if (!editorContainer.value) return
@@ -56,21 +62,8 @@ onMounted(() => {
       'line', 'quote', 'list', 'ordered-list', 'check', '|',
       'code', 'inline-code', 'link', 'upload', 'table', '|',
       'undo', 'redo', '|',
-      'fullscreen', 'preview',
-      {
-        name: 'mode-switch',
-        tip: '切换源码/渲染模式',
-        icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 3L2 8L5.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 3L14 8L10.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-        click: () => {
-          if (!vditorInstance) return
-          const currentMode = (vditorInstance as any).getCurrentMode()
-          if (currentMode === 'sv') {
-            (vditorInstance as any).setMode('ir')
-          } else {
-            (vditorInstance as any).setMode('sv')
-          }
-        },
-      },
+      'fullscreen',
+      'edit-mode',
     ],
     input: (value: string) => {
       emit('update:modelValue', value)
@@ -101,6 +94,11 @@ onMounted(() => {
       if (vditorInstance && props.modelValue) {
         vditorInstance.setValue(props.modelValue)
       }
+      setTimeout(() => {
+        if (vditorInstance) {
+          (vditorInstance as any).focus()
+        }
+      }, 200)
     },
   })
 })
@@ -124,6 +122,7 @@ onUnmounted(() => {
   border: none !important;
   background-color: transparent !important;
 }
+
 .vditor-toolbar {
   position: sticky !important;
   top: 0 !important;
@@ -132,20 +131,34 @@ onUnmounted(() => {
   backdrop-filter: blur(8px) !important;
   border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important;
 }
+
 .vditor-content {
-  background-color: transparent !important;
+  background-color: rgba(17, 17, 24, 0.4) !important;
+  border: 1px solid rgba(0, 240, 255, 0.08) !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  padding: 0.5rem !important;
+  margin: 0.25rem !important;
 }
+
 .vditor-reset {
   background-color: transparent !important;
   color: #e0e0e8 !important;
 }
+
 .vditor-ir pre.vditor-reset {
   background-color: transparent !important;
 }
+
 .vditor-sv {
   background-color: transparent !important;
 }
+
 .vditor-preview {
   background-color: transparent !important;
+}
+
+.vditor-toolbar__item[data-type="edit-mode"] {
+  display: none !important;
 }
 </style>
