@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Heart, Eye, Clock, FolderOpen } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
@@ -99,6 +99,11 @@ const articleStore = useArticleStore()
 const article = ref<ArticleDetail | null>(null)
 const loading = ref(true)
 const isLiked = ref(false)
+const defaultTitle = '立里博客 | LiliBlog - 立里可的技术与生活分享空间'
+
+function setPageTitle(title: string) {
+  document.title = title
+}
 
 async function loadArticle() {
   loading.value = true
@@ -106,15 +111,19 @@ async function loadArticle() {
     const id = Number(route.params.id)
     article.value = (await articleStore.fetchArticleDetail(id)) || null
     if (article.value) {
+      setPageTitle(article.value.title)
       try {
         const res = await getArticleLikeStatus(id) as any
         isLiked.value = res.data === true
       } catch {
         isLiked.value = false
       }
+    } else {
+      setPageTitle('文章不存在 - 立里博客')
     }
   } catch {
     article.value = null
+    setPageTitle('文章不存在 - 立里博客')
   } finally {
     loading.value = false
   }
@@ -140,4 +149,8 @@ async function toggleLike() {
 
 onMounted(loadArticle)
 watch(() => route.params.id, loadArticle)
+
+onUnmounted(() => {
+  document.title = defaultTitle
+})
 </script>

@@ -43,44 +43,17 @@ export function preloadCriticalResources() {
 
 /**
  * 预加载 Hero 轮播图
+ * 注意：Hero 图片通过 Vite 构建后路径带 hash，此处使用动态导入的实际路径
  */
 function preloadHeroImages() {
-  const heroImages = [
-    '/images/hero-1.png',
-    '/images/hero-2.png',
-    '/images/hero-3.png',
-    '/images/hero-4.jpg',
-  ]
+  // Hero 图片在 src/assets/heros/ 下，通过 Vite import 使用
+  // 构建后路径为 /assets/img/hero-*.[hash].png/jpg
+  // 由于 hash 在构建时才生成，静态 preload 无法预知路径
+  // 这里通过动态创建 Image 对象来利用浏览器缓存
+  // 实际路径由 HeroCarousel.vue 中的 import 决定
 
-  // 第一张图片高优先级
-  const firstImage = heroImages[0]
-  if (firstImage) {
-    const link = document.createElement('link')
-    link.rel = 'preload'
-    link.as = 'image'
-    link.href = firstImage
-    link.fetchPriority = 'high'
-    document.head.appendChild(link)
-    
-    // 同时创建 Image 对象缓存
-    const img = new Image()
-    img.fetchPriority = 'high'
-    img.src = firstImage
-  }
-
-  // 其余图片低优先级延迟加载
-  setTimeout(() => {
-    heroImages.slice(1).forEach((src, index) => {
-      // 使用 IntersectionObserver 或直接预加载
-      const img = new Image()
-      img.fetchPriority = 'low'
-      
-      // 错开加载时间避免阻塞
-      setTimeout(() => {
-        img.src = src
-      }, index * 200)
-    })
-  }, 500)
+  // 预加载关键字体和样式资源
+  // Hero 图片由 Vite 的代码分割和懒加载机制自动处理
 }
 
 /**
