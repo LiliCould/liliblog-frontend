@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
+  <div class="h-screen flex flex-col bg-[#0e0e14] overflow-hidden">
     <header class="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-6 z-50"
       style="background:rgba(10,10,15,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,240,255,0.15)">
       <div class="flex items-center gap-3">
@@ -49,17 +49,17 @@
     </header>
 
     <div class="flex flex-1 min-h-0">
-      <div class="flex-1 min-w-0 flex flex-col" style="background:rgba(17,17,24,0.4)">
+      <div class="flex-1 min-w-0 flex flex-col bg-[#0e0e14]">
         <div class="flex-1 min-h-0 p-4">
-          <div class="h-full rounded-xl overflow-hidden border border-[rgba(0,240,255,0.08)]"
-            style="background:rgba(17,17,24,0.6);box-shadow:0 0 30px rgba(0,0,0,0.15)">
+          <div class="h-full rounded-xl overflow-hidden border border-[rgba(0,240,255,0.06)]"
+            style="background:rgba(14,14,20,0.8)">
             <MarkdownEditor v-model="form.content" @input="onContentChange" />
           </div>
         </div>
       </div>
 
-      <aside class="flex-shrink-0 overflow-y-auto transition-all duration-300 border-l border-[rgba(0,240,255,0.1)]"
-        :class="metaOpen ? 'w-80' : 'w-0 border-l-0'" style="background:rgba(17,17,24,0.6)">
+      <aside class="flex-shrink-0 overflow-y-auto transition-all duration-300 border-l border-[rgba(0,240,255,0.08)]"
+        :class="metaOpen ? 'w-80' : 'w-0 border-l-0'" style="background:rgba(14,14,20,0.6)">
         <div v-if="metaOpen" class="w-80 p-4 space-y-4">
           <div>
             <label
@@ -145,17 +145,27 @@
               <Tag class="w-3.5 h-3.5 text-[#00f0ff]" />
               标签
             </label>
-            <div class="flex flex-wrap gap-1.5 mb-2">
+            <div class="flex flex-wrap gap-2 mb-2">
               <span v-for="tagId in form.tags" :key="tagId"
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[rgba(0,240,255,0.1)] text-[#00f0ff] border border-[rgba(0,240,255,0.25)] cursor-pointer hover:bg-[rgba(255,45,120,0.1)] hover:text-[#ff2d78] hover:border-[#ff2d78] transition-all duration-200"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border cursor-pointer transition-all duration-200 hover:-translate-y-px"
+                :style="{
+                  color: getTagColor(tagId) || '#00f0ff',
+                  backgroundColor: (getTagColor(tagId) || '#00f0ff') + '15',
+                  borderColor: (getTagColor(tagId) || '#00f0ff') + '40',
+                }"
                 @click="toggleTag(tagId)">
+                <span class="w-1.5 h-1.5 rounded-full opacity-70" :style="{ backgroundColor: getTagColor(tagId) || '#00f0ff', boxShadow: `0 0 4px ${getTagColor(tagId) || '#00f0ff'}` }"></span>
                 {{ getTagName(tagId) }}
-                <span class="text-[10px]">✕</span>
+                <span class="text-[10px] opacity-60">✕</span>
               </span>
             </div>
-            <div class="flex flex-wrap gap-1">
+            <div class="flex flex-wrap gap-1.5">
               <button v-for="tag in availableTags" :key="tag.id"
-                class="px-2 py-0.5 rounded-full text-xs border border-[rgba(0,240,255,0.1)] text-[#6b7280] hover:border-[rgba(0,240,255,0.3)] hover:text-[#00f0ff] transition-all duration-200"
+                class="px-2.5 py-1 rounded-full text-xs font-medium border transition-all duration-200 hover:-translate-y-px"
+                :style="{
+                  color: (tag.color || '#00f0ff') + 'aa',
+                  borderColor: (tag.color || '#00f0ff') + '30',
+                }"
                 @click="toggleTag(tag.id)">
                 + {{ tag.name }}
               </button>
@@ -166,7 +176,7 @@
 
       <button
         class="flex-shrink-0 w-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[rgba(0,240,255,0.06)]"
-        style="background:rgba(17,17,24,0.4);border-left:1px solid rgba(0,240,255,0.1)" @click="metaOpen = !metaOpen">
+        style="background:rgba(14,14,20,0.4);border-left:1px solid rgba(0,240,255,0.08)" @click="metaOpen = !metaOpen">
         <ChevronLeft v-if="metaOpen" class="w-4 h-4 text-[#00f0ff]" />
         <ChevronRight v-else class="w-4 h-4 text-[#6b7280]" />
       </button>
@@ -295,6 +305,10 @@ function validate(): boolean {
 
 function getTagName(tagId: number) {
   return tags.value.find(t => t.id === tagId)?.name || ''
+}
+
+function getTagColor(tagId: number) {
+  return tags.value.find(t => t.id === tagId)?.color || ''
 }
 
 function toggleTag(tagId: number) {
