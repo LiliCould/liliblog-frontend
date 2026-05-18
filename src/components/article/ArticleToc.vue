@@ -8,7 +8,7 @@
       <h3 class="text-base font-semibold text-cyber-title m-0">目录</h3>
     </div>
 
-    <nav class="flex flex-col gap-0.5 max-h-80 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
+    <nav class="flex flex-col gap-0.5 max-h-[26rem] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
       <a
         v-for="item in tocItems"
         :key="item.id"

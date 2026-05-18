@@ -1,5 +1,5 @@
 <template>
-  <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
+  <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
     <div class="bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(0,240,255,0.1),0_0_1px_rgba(0,240,255,0.3)] hover:-translate-y-0.5 hover:border-[rgba(0,240,255,0.3)] group"
       style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
     >
@@ -9,7 +9,7 @@
         <h3 class="text-base font-semibold text-cyber-title m-0">分类</h3>
       </div>
 
-      <div class="flex flex-col gap-0.5 max-h-80 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
+      <div class="flex flex-col gap-0.5 max-h-[26rem] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(0,240,255,0.15)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-[rgba(0,240,255,0.3)]">
         <router-link
           v-for="cat in appStore.categories"
           :key="cat.id"
