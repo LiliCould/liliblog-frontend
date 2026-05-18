@@ -2,8 +2,8 @@
   <div class="flex-1">
     <slot v-if="showHero" name="hero"></slot>
 
-    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] gap-6">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-10 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-[240px_1fr_240px] gap-x-8 gap-y-6">
         <AppSidebar />
 
         <div class="min-w-0">
