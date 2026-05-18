@@ -198,7 +198,7 @@ onUnmounted(() => {
   position: relative;
   font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;
   font-weight: 700;
-  color: #fff;
+  color: transparent;
   letter-spacing: 0.05em;
   user-select: none;
 }
@@ -206,6 +206,7 @@ onUnmounted(() => {
 .glitch-main {
   position: relative;
   z-index: 10;
+  color: #fff;
   text-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 40px rgba(0, 240, 255, 0.15);
 }
 
@@ -217,145 +218,147 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  filter: contrast(200%);
 }
 
 .glitch-before {
+  left: 0;
   color: #ff2d78;
   text-shadow: 1px 0 0 #ff2d78;
   z-index: 20;
-  animation: glitch-anim-1 0.95s infinite linear alternate-reverse;
+  animation: glitch-anim-1 0.95s infinite step-end;
 }
 
 .glitch-after {
+  left: -1px;
   color: #00f0ff;
   text-shadow: -1px 0 0 #00f0ff;
   z-index: 30;
   mix-blend-mode: lighten;
-  animation: glitch-anim-2 1.1s infinite linear alternate-reverse;
+  animation: glitch-anim-2 1.1s infinite step-end 0.2s;
 }
 
 .glitch-line {
   position: absolute;
-  left: -2px;
-  width: calc(100% + 4px);
-  height: 2px;
-  background: rgba(0, 240, 255, 0.6);
-  z-index: 40;
+  left: -1px;
+  width: 200px;
+  height: 1px;
+  background: #000;
+  z-index: 50;
   animation: glitch-line 5s ease-out infinite;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
 }
 
 @keyframes glitch-anim-1 {
   0% {
-    clip-path: inset(40% 0 61% 0);
-    transform: translate(-2px, -1px);
+    top: 0;
+    left: 0;
   }
 
   10% {
-    clip-path: inset(10% 0 85% 0);
-    transform: translate(1px, 0);
+    top: -0.4px;
+    left: -1.1px;
   }
 
   20% {
-    clip-path: inset(80% 0 5% 0);
-    transform: translate(-1px, 1px);
+    top: 0.4px;
+    left: -0.2px;
   }
 
   30% {
-    clip-path: inset(20% 0 60% 0);
-    transform: translate(1px, -1px);
+    top: 0;
+    left: 0.5px;
   }
 
   40% {
-    clip-path: inset(50% 0 30% 0);
-    transform: translate(-2px, 0);
+    top: -0.3px;
+    left: -0.7px;
   }
 
   50% {
-    clip-path: inset(70% 0 10% 0);
-    transform: translate(0, 1px);
+    top: 0;
+    left: 0.2px;
   }
 
   60% {
-    clip-path: inset(5% 0 80% 0);
-    transform: translate(2px, -1px);
+    top: 1.8px;
+    left: -1.2px;
   }
 
   70% {
-    clip-path: inset(60% 0 20% 0);
-    transform: translate(-1px, 1px);
+    top: -1px;
+    left: 0.1px;
   }
 
   80% {
-    clip-path: inset(30% 0 50% 0);
-    transform: translate(1px, 0);
+    top: -0.4px;
+    left: -0.9px;
   }
 
   90% {
-    clip-path: inset(90% 0 2% 0);
-    transform: translate(-2px, -1px);
+    top: 0;
+    left: 1.2px;
   }
 
   100% {
-    clip-path: inset(15% 0 70% 0);
-    transform: translate(0, 1px);
+    top: 0;
+    left: -1.2px;
   }
 }
 
 @keyframes glitch-anim-2 {
   0% {
-    clip-path: inset(65% 0 10% 0);
-    transform: translate(2px, 1px);
+    top: 0;
+    left: -1px;
   }
 
   10% {
-    clip-path: inset(15% 0 70% 0);
-    transform: translate(-1px, 0);
+    top: 0.6px;
+    left: 0.8px;
   }
 
   20% {
-    clip-path: inset(55% 0 25% 0);
-    transform: translate(0, -1px);
+    top: -0.5px;
+    left: -0.3px;
   }
 
   30% {
-    clip-path: inset(5% 0 90% 0);
-    transform: translate(2px, 1px);
+    top: 0.3px;
+    left: 1px;
   }
 
   40% {
-    clip-path: inset(75% 0 5% 0);
-    transform: translate(-1px, 0);
+    top: -0.8px;
+    left: -0.6px;
   }
 
   50% {
-    clip-path: inset(35% 0 40% 0);
-    transform: translate(1px, -1px);
+    top: 0.2px;
+    left: 0.4px;
   }
 
   60% {
-    clip-path: inset(90% 0 2% 0);
-    transform: translate(-2px, 1px);
+    top: -1.5px;
+    left: 1.1px;
   }
 
   70% {
-    clip-path: inset(25% 0 55% 0);
-    transform: translate(0, -1px);
+    top: 0.7px;
+    left: -0.8px;
   }
 
   80% {
-    clip-path: inset(45% 0 35% 0);
-    transform: translate(2px, 0);
+    top: -0.2px;
+    left: 0.9px;
   }
 
   90% {
-    clip-path: inset(10% 0 80% 0);
-    transform: translate(-1px, 1px);
+    top: 1px;
+    left: -1px;
   }
 
   100% {
-    clip-path: inset(60% 0 15% 0);
-    transform: translate(1px, -1px);
+    top: -0.3px;
+    left: 0.6px;
   }
 }
 
@@ -365,39 +368,39 @@ onUnmounted(() => {
   }
 
   9% {
-    top: 40%;
+    top: 38px;
   }
 
   14% {
-    top: 8%;
+    top: 8px;
   }
 
   18% {
-    top: 45%;
+    top: 42px;
   }
 
   22% {
-    top: 3%;
+    top: 1px;
   }
 
   32% {
-    top: 35%;
+    top: 32px;
   }
 
   34% {
-    top: 12%;
+    top: 12px;
   }
 
   40% {
-    top: 28%;
+    top: 26px;
   }
 
   43% {
-    top: 7%;
+    top: 7px;
   }
 
   99% {
-    top: 32%;
+    top: 30px;
   }
 
   100% {
