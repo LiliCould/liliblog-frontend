@@ -2,9 +2,10 @@
   <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] p-4 transition-all duration-300 hover:border-[rgba(0,240,255,0.3)]" style="backdrop-filter:blur(12px)">
     <div class="flex gap-3">
       <img
-        :src="comment.creator?.avatar || '/default-avatar.png'"
+        :src="resolveAvatar(comment.creator?.avatar)"
         :alt="comment.creator?.nickname"
         class="w-9 h-9 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 object-cover"
+        @error="handleAvatarError"
       />
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
@@ -68,9 +69,10 @@
               class="flex gap-2.5 py-1"
             >
               <img
-                :src="child.creator?.avatar || '/default-avatar.png'"
+                :src="resolveAvatar(child.creator?.avatar)"
                 :alt="child.creator?.nickname"
                 class="w-7 h-7 rounded-full border border-[rgba(0,240,255,0.15)] shrink-0 object-cover"
+                @error="handleAvatarError"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-0.5">
@@ -120,7 +122,7 @@ import { Heart, MessageSquare, ChevronDown, ChevronUp } from 'lucide-vue-next'
 import type { Comment } from '@/types/comment.d'
 import { getChildComments, likeComment, unlikeComment, getCommentLikeStatus } from '@/api/comment'
 import { useUserStore } from '@/stores/user'
-import { formatRelativeTime } from '@/utils/format'
+import { formatRelativeTime, resolveAvatar, handleAvatarError } from '@/utils/format'
 
 const props = defineProps<{
   comment: Comment

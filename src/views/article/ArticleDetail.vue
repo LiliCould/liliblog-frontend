@@ -32,8 +32,15 @@
 
           <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap gap-2 mt-3">
             <span v-for="tag in article.tags" :key="tag.id"
-              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[rgba(0,240,255,0.08)] text-[#00f0ff] border border-[rgba(0,240,255,0.2)]">
-              <Tag class="w-3 h-3" />
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 hover:-translate-y-px"
+              :style="{
+                color: tag.color || '#00f0ff',
+                backgroundColor: (tag.color || '#00f0ff') + '15',
+                borderColor: (tag.color || '#00f0ff') + '40',
+                boxShadow: `0 0 6px ${(tag.color || '#00f0ff')}20`
+              }">
+              <span class="w-1.5 h-1.5 rounded-full opacity-70"
+                :style="{ backgroundColor: tag.color || '#00f0ff', boxShadow: `0 0 4px ${tag.color || '#00f0ff'}` }"></span>
               {{ tag.name }}
             </span>
           </div>
@@ -46,15 +53,12 @@
         <MarkdownViewer :content-html="article.contentHtml || ''" />
 
         <div class="flex items-center gap-4 mt-10 pt-6 border-t border-[rgba(0,240,255,0.15)]">
-          <button
-            class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
-            :class="isLiked
-              ? 'bg-[rgba(255,45,120,0.15)] border border-[#ff2d78] text-[#ff2d78] shadow-[0_0_10px_rgba(255,45,120,0.15)]'
-              : 'bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.2)] text-[#6b7280] hover:text-[#ff2d78] hover:border-[#ff2d78] hover:shadow-[0_0_10px_rgba(255,45,120,0.15)]'"
-            @click="toggleLike">
-            <Heart class="w-4 h-4" :class="{ 'fill-current': isLiked }" />
-            {{ isLiked ? '已点赞' : '点赞' }}
-            <span class="text-xs opacity-70">({{ article.likeCount }})</span>
+          <button class="flex items-center gap-1.5 text-sm transition-all duration-300" :class="isLiked
+            ? 'text-[#ff2d78] hover:text-[#ff2d78]/80'
+            : 'text-[#6b7280] hover:text-[#ff2d78]'" @click="toggleLike">
+            <Heart class="w-4 h-4 transition-transform duration-200"
+              :class="{ 'fill-current scale-110': isLiked, 'scale-100': !isLiked }" />
+            {{ article.likeCount }}
           </button>
         </div>
 
@@ -79,7 +83,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Heart, Eye, Clock, FolderOpen, Tag } from 'lucide-vue-next'
+import { Heart, Eye, Clock, FolderOpen } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
 import { getArticleLikeStatus, likeArticle, unlikeArticle } from '@/api/article'
 import { formatDateTime } from '@/utils/format'

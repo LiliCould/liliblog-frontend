@@ -1,5 +1,18 @@
 import dayjs from 'dayjs'
 
+export const DEFAULT_AVATAR = 'https://oss.lilicould.cn/cover/df3523eb-ee5d-43c7-95bf-c85d78444484_xiaodingdang.png'
+
+export function resolveAvatar(avatar?: string | null): string {
+    return avatar || DEFAULT_AVATAR
+}
+
+export function handleAvatarError(e: Event): void {
+    const img = e.target as HTMLImageElement
+    if (img && img.src !== DEFAULT_AVATAR) {
+        img.src = DEFAULT_AVATAR
+    }
+}
+
 export function formatDate(dateStr: string, pattern = 'YYYY-MM-DD'): string {
     if (!dateStr) return ''
     return dayjs(dateStr).format(pattern)

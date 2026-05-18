@@ -39,8 +39,7 @@
               @click="showDropdown = !showDropdown"
             >
               <div class="w-[34px] h-[34px] rounded-full bg-cyber-primary flex items-center justify-center text-white text-sm font-semibold overflow-hidden transition-transform duration-200 hover:rotate-[-3deg] hover:scale-[1.04]">
-                <img v-if="userStore.avatar" :src="userStore.avatar" alt="" class="w-full h-full object-cover" />
-                <span v-else>{{ userStore.nickname?.charAt(0) || 'U' }}</span>
+                <img :src="resolveAvatar(userStore.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
               </div>
               <span class="hidden md:block text-sm text-cyber-title font-medium max-w-[100px] truncate">{{ userStore.nickname || userStore.username }}</span>
               <ChevronDown class="hidden md:block w-3.5 h-3.5 text-cyber-muted transition-transform duration-200" :class="showDropdown ? 'rotate-180' : ''" />
@@ -102,6 +101,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { Home, Info, PenSquare, User, LogOut, Menu, FileText, ChevronDown } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
 

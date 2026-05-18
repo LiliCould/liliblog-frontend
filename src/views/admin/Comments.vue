@@ -31,8 +31,7 @@
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-full bg-[#1a1a24] border border-[rgba(0,240,255,0.15)] flex items-center justify-center overflow-hidden flex-shrink-0">
-                      <img v-if="comment.creator?.avatar" :src="comment.creator.avatar" alt="" class="w-full h-full object-cover" />
-                      <MessageSquare v-else class="w-3.5 h-3.5 text-[#6b7280]" />
+                      <img :src="resolveAvatar(comment.creator?.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
                     </div>
                     <span class="text-[#e0e0e8]">{{ comment.creator?.nickname || '匿名' }}</span>
                   </div>
@@ -73,11 +72,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Trash2, MessageSquare } from 'lucide-vue-next'
+import { Trash2 } from 'lucide-vue-next'
 import { deleteComment } from '@/api/comment'
 import type { Comment } from '@/types/comment'
 
-import { formatRelativeTime } from '@/utils/format'
+import { formatRelativeTime, resolveAvatar, handleAvatarError } from '@/utils/format'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import request from '@/utils/request'

@@ -9,8 +9,7 @@
         <div class="flex items-center gap-6 mb-6">
           <div class="relative group">
             <div class="w-20 h-20 rounded-full bg-[#1a1a24] border-2 border-[rgba(0,240,255,0.3)] flex items-center justify-center overflow-hidden">
-              <img v-if="avatarPreview || userStore.avatar" :src="avatarPreview || userStore.avatar" alt="" class="w-full h-full object-cover" />
-              <User v-else class="w-10 h-10 text-[#6b7280]" />
+              <img :src="resolveAvatar(avatarPreview || userStore.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
             </div>
             <label class="absolute inset-0 rounded-full bg-[rgba(0,0,0,0.6)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
               <Camera class="w-6 h-6 text-[#00f0ff]" />
@@ -87,8 +86,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Camera, Save, Lock, User } from 'lucide-vue-next'
+import { Camera, Save, Lock } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { updateUser } from '@/api/user'
 import { uploadFile } from '@/api/file'
 import request from '@/utils/request'

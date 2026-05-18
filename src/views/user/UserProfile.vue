@@ -6,8 +6,7 @@
         <div class="px-6 pb-6 -mt-10">
           <div class="flex items-end gap-4">
             <div class="w-20 h-20 rounded-full bg-[#1a1a24] border-2 border-[#00f0ff] flex items-center justify-center overflow-hidden shadow-[0_0_12px_rgba(0,240,255,0.3)]">
-              <img v-if="userInfo?.avatar" :src="userInfo.avatar" alt="" class="w-full h-full object-cover" />
-              <User v-else class="w-10 h-10 text-[#00f0ff]" />
+              <img :src="resolveAvatar(userInfo?.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
             </div>
             <div class="pb-1">
               <h1 class="text-xl font-bold text-white">{{ userInfo?.nickname || '用户' }}</h1>
@@ -43,8 +42,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, FileText } from 'lucide-vue-next'
+import { FileText } from 'lucide-vue-next'
 import { getUserById } from '@/api/user'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { getArticles } from '@/api/article'
 import type { User as UserType } from '@/types/user'
 import type { Article } from '@/types/article'

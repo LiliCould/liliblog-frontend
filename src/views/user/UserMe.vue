@@ -4,8 +4,7 @@
       <div class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-6 mb-8">
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-full bg-[rgba(0,240,255,0.1)] border-2 border-[#00f0ff] flex items-center justify-center overflow-hidden">
-            <img v-if="userStore.avatar" :src="userStore.avatar" alt="" class="w-full h-full object-cover" />
-            <User v-else class="w-8 h-8 text-[#00f0ff]" />
+            <img :src="resolveAvatar(userStore.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
           </div>
           <div>
             <h1 class="text-xl font-bold text-white">{{ userStore.nickname }}</h1>
@@ -48,8 +47,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { User } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { getArticles } from '@/api/article'
 import type { Article } from '@/types/article'
 import type { ApiResponse } from '@/types/api'

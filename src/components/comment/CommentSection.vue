@@ -3,17 +3,11 @@
     <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] p-5" style="backdrop-filter:blur(12px)">
       <div class="flex gap-3">
         <img
-          v-if="userStore.isLoggedIn && userStore.avatar"
-          :src="userStore.avatar"
+          :src="resolveAvatar(userStore.isLoggedIn ? userStore.avatar : '')"
           :alt="userStore.nickname"
-          class="w-10 h-10 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0"
+          class="w-10 h-10 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 object-cover"
+          @error="handleAvatarError"
         />
-        <div
-          v-else
-          class="w-10 h-10 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 bg-[rgba(0,240,255,0.06)] flex items-center justify-center text-[#6b7280] text-xs"
-        >
-          匿
-        </div>
         <div class="flex-1 min-w-0">
           <textarea
             v-model="commentContent"
@@ -67,6 +61,7 @@ import { Send } from 'lucide-vue-next'
 import type { Comment, CommentCreateDTO } from '@/types/comment.d'
 import { getComments, createComment } from '@/api/comment'
 import { useUserStore } from '@/stores/user'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import CommentItem from './CommentItem.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 

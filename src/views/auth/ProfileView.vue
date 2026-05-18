@@ -7,17 +7,11 @@
         <div v-if="profile" class="flex gap-6 items-start">
           <div class="relative shrink-0">
             <img
-              v-if="profile.avatar"
-              :src="profile.avatar"
+              :src="resolveAvatar(profile.avatar)"
               :alt="profile.nickname"
               class="w-20 h-20 rounded-full object-cover border-2 border-[#00f0ff] shadow-[0_0_12px_rgba(0,240,255,0.2)]"
+              @error="handleAvatarError"
             />
-            <div
-              v-else
-              class="w-20 h-20 rounded-full bg-[#1a1a24] border-2 border-[rgba(0,240,255,0.2)] flex items-center justify-center text-2xl text-[#00f0ff] font-bold"
-            >
-              {{ profile.nickname?.charAt(0) || 'U' }}
-            </div>
             <label class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[rgba(0,240,255,0.12)] border border-[rgba(0,240,255,0.3)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_8px_rgba(0,240,255,0.15)]">
               <Camera class="w-3.5 h-3.5 text-[#00f0ff]" />
               <input type="file" accept="image/*" class="hidden" @change="handleAvatarUpload" />
@@ -106,6 +100,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Camera, Save, Lock } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { getCurrentUser, updateUser } from '@/api/user'
 import { uploadFile } from '@/api/file'
 import AppLayout from '@/components/layout/AppLayout.vue'

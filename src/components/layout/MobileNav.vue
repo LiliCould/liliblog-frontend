@@ -40,8 +40,7 @@
           <template v-if="userStore.isLoggedIn">
             <div class="flex items-center gap-3 px-5 py-3 mb-2">
               <div class="w-12 h-12 rounded-full bg-cyber-primary flex items-center justify-center text-white text-base font-semibold overflow-hidden">
-                <img v-if="userStore.avatar" :src="userStore.avatar" alt="" class="w-full h-full object-cover" />
-                <span v-else>{{ userStore.nickname?.charAt(0) || 'U' }}</span>
+                <img :src="resolveAvatar(userStore.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
               </div>
               <div class="flex-1 min-w-0">
                 <div class="text-[15px] font-semibold text-cyber-title truncate">{{ userStore.nickname || userStore.username }}</div>
@@ -103,6 +102,7 @@
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
+import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { X, Home, Info, PenSquare, FileText, User as UserIcon, LogOut, UserPlus } from 'lucide-vue-next'
 
 const router = useRouter()
