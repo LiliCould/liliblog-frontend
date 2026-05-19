@@ -4,7 +4,7 @@
       class="absolute -top-px left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-t-primary to-transparent opacity-60">
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-6">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-10 pt-12 pb-6">
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8 pb-8 border-b border-t-border relative">
         <div class="sm:col-span-2 lg:col-span-1 max-w-xs">

@@ -21,7 +21,7 @@
                 class="w-6 h-6 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] object-cover transition-all duration-300 group-hover:border-t-primary group-hover:shadow-[0_0_6px_rgba(var(--color-primary-rgb),0.3)]"
                 @error="handleAvatarError" />
               <span class="transition-colors duration-300 group-hover:text-t-primary">{{ article.creator.nickname
-                }}</span>
+              }}</span>
             </router-link>
             <span class="flex items-center gap-1.5">
               <Clock class="w-4 h-4 text-t-primary" />
@@ -80,7 +80,7 @@
       </article>
     </div>
 
-    <template v-if="article" #rightSidebar>
+    <template v-if="article" #rightSidebarTop>
       <ArticleToc :html-content="article.contentHtml || ''" />
     </template>
 

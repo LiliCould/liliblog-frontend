@@ -1,5 +1,7 @@
 <template>
   <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
+    <slot name="top"></slot>
+
     <div
       class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
       style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">

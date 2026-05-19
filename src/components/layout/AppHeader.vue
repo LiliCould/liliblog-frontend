@@ -2,7 +2,7 @@
   <header class="fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300 border-b border-t-border"
     :class="isScrolled ? 'bg-[rgba(var(--color-bg-rgb),0.95)] shadow-[0_2px_20px_rgba(var(--color-primary-rgb),0.08)]' : 'bg-[rgba(var(--color-bg-rgb),0.85)]'"
     style="backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
-    <div class="h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center">
+    <div class="h-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-10 flex items-center">
       <router-link to="/"
         class="flex items-center gap-2.5 no-underline transition-transform duration-200 hover:scale-[1.02] group shrink-0">
         <img :src="logoSvg" alt="LiliBlog"

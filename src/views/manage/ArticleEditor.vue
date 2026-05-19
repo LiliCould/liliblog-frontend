@@ -105,14 +105,15 @@
               <FolderOpen class="w-3.5 h-3.5 text-t-primary" />
               分类 <span class="text-t-secondary">*</span>
             </label>
-            <select v-model="form.categoryId"
-              class="w-full h-9 px-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-t-body text-sm outline-none transition-all duration-300 focus:border-t-primary appearance-none cursor-pointer"
-              :class="errors.categoryId ? 'border-t-secondary' : 'border-t-border'"
-              @change="clearError('categoryId'); onContentChange()">
-              <option :value="undefined" disabled class="bg-t-bg">选择分类</option>
-              <option v-for="cat in categories" :key="cat.id" :value="cat.id" class="bg-t-bg">{{ cat.name }}
-              </option>
-            </select>
+            <button
+              class="w-full h-9 px-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-left text-sm outline-none transition-all duration-300 flex items-center justify-between"
+              :class="errors.categoryId ? 'border-t-secondary' : 'border-t-border hover:border-[rgba(var(--color-primary-rgb),0.4)]'"
+              @click="showCategoryModal = true">
+              <span :class="form.categoryId ? 'text-t-body' : 'text-t-muted'">
+                {{ selectedCategoryName || '选择分类' }}
+              </span>
+              <ChevronRight class="w-3.5 h-3.5 text-t-muted" />
+            </button>
             <p v-if="errors.categoryId" class="mt-1 text-xs text-t-secondary">{{ errors.categoryId }}</p>
           </div>
 
@@ -138,31 +139,36 @@
 
           <div>
             <label class="flex items-center gap-1.5 text-xs font-semibold text-t-body mb-1.5 uppercase tracking-wider">
-              <Tag class="w-3.5 h-3.5 text-t-primary" />
+              <TagIcon class="w-3.5 h-3.5 text-t-primary" />
               标签
             </label>
-            <div class="flex flex-wrap gap-2 mb-2">
+            <div v-if="form.tags.length > 0" class="flex flex-wrap gap-2 mb-3 pb-3 border-b border-t-border">
               <span v-for="tagId in form.tags" :key="tagId"
                 class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border cursor-pointer transition-all duration-200 hover:-translate-y-px"
                 :style="{
-                  color: getTagColor(tagId) || '#00f0ff',
-                  backgroundColor: (getTagColor(tagId) || '#00f0ff') + '15',
-                  borderColor: (getTagColor(tagId) || '#00f0ff') + '40',
+                  color: getTagColor(tagId) || 'var(--color-primary)',
+                  backgroundColor: (getTagColor(tagId) || 'var(--color-primary)') + '15',
+                  borderColor: (getTagColor(tagId) || 'var(--color-primary)') + '40',
                 }" @click="toggleTag(tagId)">
                 <span class="w-1.5 h-1.5 rounded-full opacity-70"
-                  :style="{ backgroundColor: getTagColor(tagId) || '#00f0ff', boxShadow: `0 0 4px ${getTagColor(tagId) || '#00f0ff'}` }"></span>
+                  :style="{ backgroundColor: getTagColor(tagId) || 'var(--color-primary)' }"></span>
                 {{ getTagName(tagId) }}
                 <span class="text-[10px] opacity-60">✕</span>
               </span>
             </div>
-            <div class="flex flex-wrap gap-1.5">
+            <div class="flex flex-wrap gap-2">
               <button v-for="tag in availableTags" :key="tag.id"
                 class="px-2.5 py-1 rounded-full text-xs font-medium border transition-all duration-200 hover:-translate-y-px"
                 :style="{
-                  color: (tag.color || '#00f0ff') + 'aa',
-                  borderColor: (tag.color || '#00f0ff') + '30',
+                  color: (tag.color || 'var(--color-primary)') + 'aa',
+                  borderColor: (tag.color || 'var(--color-primary)') + '30',
                 }" @click="toggleTag(tag.id)">
                 + {{ tag.name }}
+              </button>
+              <button v-if="tagCurrentPage < tagTotalPages"
+                class="px-2.5 py-1 rounded-full text-xs font-medium text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-all duration-200"
+                @click="loadMoreTags">
+                加载更多...
               </button>
             </div>
           </div>
@@ -195,14 +201,63 @@
           </div>
         </div>
       </div>
+
+      <div v-if="showCategoryModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(0,0,0,0.6)]"
+        style="backdrop-filter:blur(4px)" @click.self="showCategoryModal = false">
+        <div class="rounded-xl w-full max-w-sm mx-4 border border-[rgba(var(--color-primary-rgb),0.2)] overflow-hidden"
+          style="background:rgba(var(--color-surface-rgb),0.98)">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-t-border">
+            <h3 class="text-base font-semibold text-t-title m-0">选择分类</h3>
+            <button
+              class="w-7 h-7 flex items-center justify-center rounded-md text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-colors"
+              @click="showCategoryModal = false">
+              <X class="w-4 h-4" />
+            </button>
+          </div>
+
+          <div v-if="categoryLoading" class="p-5 space-y-3">
+            <div v-for="i in 4" :key="i" class="h-8 bg-[rgba(var(--color-primary-rgb),0.06)] rounded-lg animate-pulse">
+            </div>
+          </div>
+
+          <div v-else class="max-h-[320px] overflow-y-auto p-3">
+            <button v-for="cat in categoryList" :key="cat.id"
+              class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-200"
+              :class="form.categoryId === cat.id ? 'text-t-primary bg-[rgba(var(--color-primary-rgb),0.1)] font-medium' : 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary'"
+              @click="selectCategory(cat.id)">
+              <span>{{ cat.name }}</span>
+              <Check v-if="form.categoryId === cat.id" class="w-4 h-4 text-t-primary" />
+            </button>
+            <div v-if="categoryList.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm">
+              <FolderOpen class="w-8 h-8 opacity-40" />
+              <span>暂无分类</span>
+            </div>
+          </div>
+
+          <div v-if="categoryTotalPages > 1"
+            class="flex items-center justify-between px-5 py-3 border-t border-t-border">
+            <button
+              class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="categoryCurrentPage <= 1" @click="loadCategories(categoryCurrentPage - 1)">
+              上一页
+            </button>
+            <span class="text-xs text-t-muted">{{ categoryCurrentPage }} / {{ categoryTotalPages }}</span>
+            <button
+              class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="categoryCurrentPage >= categoryTotalPages" @click="loadCategories(categoryCurrentPage + 1)">
+              下一页
+            </button>
+          </div>
+        </div>
+      </div>
     </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Save, Send, Image, FolderOpen, Tag, Link, FileText, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Type, AlignLeft, Upload } from 'lucide-vue-next'
+import { Save, Send, Image, FolderOpen, Tag as TagIcon, Link, FileText, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Type, AlignLeft, Upload, Check, X } from 'lucide-vue-next'
 import { createArticle, updateArticle, getArticleById } from '@/api/article'
 import { uploadFile } from '@/api/file'
 import { getCategories } from '@/api/category'
@@ -219,8 +274,17 @@ const route = useRoute()
 const saving = ref(false)
 const metaOpen = ref(true)
 const showRestoreDialog = ref(false)
+const showCategoryModal = ref(false)
 const categories = ref<Category[]>([])
 const tags = ref<TagType[]>([])
+
+const categoryList = ref<Category[]>([])
+const categoryCurrentPage = ref(1)
+const categoryTotalPages = ref(1)
+const categoryLoading = ref(false)
+
+const tagCurrentPage = ref(1)
+const tagTotalPages = ref(1)
 
 const isEdit = computed(() => !!route.params.id)
 const draftKey = computed(() => `article_${isEdit.value ? route.params.id : 'new'}`)
@@ -240,6 +304,12 @@ const errors = reactive<Record<string, string>>({
   slug: '',
   summary: '',
   categoryId: '',
+})
+
+const selectedCategoryName = computed(() => {
+  if (!form.categoryId) return ''
+  const allCats = [...categories.value, ...categoryList.value]
+  return allCats.find(c => c.id === form.categoryId)?.name || ''
 })
 
 const availableTags = computed(() => tags.value.filter(t => !form.tags.includes(t.id)))
@@ -314,6 +384,44 @@ function toggleTag(tagId: number) {
   if (idx > -1) form.tags.splice(idx, 1)
   else form.tags.push(tagId)
   onContentChange()
+}
+
+function selectCategory(id: number) {
+  form.categoryId = id
+  clearError('categoryId')
+  onContentChange()
+  showCategoryModal.value = false
+}
+
+async function loadCategories(page: number = 1) {
+  categoryLoading.value = true
+  try {
+    const res = await getCategories({ current: page, size: 20 }) as any
+    categoryList.value = res.data?.records || []
+    categoryCurrentPage.value = res.data?.current || 1
+    categoryTotalPages.value = res.data?.totalPage || 1
+  } catch {
+    categoryList.value = []
+  } finally {
+    categoryLoading.value = false
+  }
+}
+
+async function loadMoreTags() {
+  if (tagCurrentPage.value >= tagTotalPages.value) return
+  const nextPage = tagCurrentPage.value + 1
+  try {
+    const res = await getTags({ current: nextPage, size: 50 }) as any
+    const newTags = res.data?.records || []
+    const existingIds = new Set(tags.value.map(t => t.id))
+    for (const t of newTags) {
+      if (!existingIds.has(t.id)) tags.value.push(t)
+    }
+    tagCurrentPage.value = res.data?.current || nextPage
+    tagTotalPages.value = res.data?.totalPage || 1
+  } catch {
+    // skip
+  }
 }
 
 async function handleCoverUpload(e: Event) {
@@ -408,10 +516,16 @@ function discardRestore() {
 onMounted(async () => {
   const [catRes, tagRes] = await Promise.allSettled([
     getCategories({ size: 100 }) as any,
-    getTags({ size: 100 }) as any,
+    getTags({ current: 1, size: 50 }) as any,
   ])
-  if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
-  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
+  if (catRes.status === 'fulfilled') {
+    categories.value = catRes.value.data?.records || []
+  }
+  if (tagRes.status === 'fulfilled') {
+    tags.value = tagRes.value.data?.records || []
+    tagCurrentPage.value = tagRes.value.data?.current || 1
+    tagTotalPages.value = tagRes.value.data?.totalPage || 1
+  }
 
   await loadArticleForEdit()
 
@@ -419,5 +533,9 @@ onMounted(async () => {
   if (hasDraft) {
     showRestoreDialog.value = true
   }
+})
+
+watch(showCategoryModal, (val) => {
+  if (val) loadCategories(1)
 })
 </script>

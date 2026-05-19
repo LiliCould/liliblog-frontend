@@ -34,6 +34,5 @@ onMounted(() => {
 function handlePageChange(page: number) {
   currentPage.value = page
   articleStore.fetchPublicArticles({ status: 1, current: page, size: pageSize })
-  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>

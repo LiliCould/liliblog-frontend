@@ -11,6 +11,7 @@
         </div>
 
         <RightSidebar>
+          <template #top><slot name="rightSidebarTop"></slot></template>
           <slot name="rightSidebar"></slot>
         </RightSidebar>
       </div>
