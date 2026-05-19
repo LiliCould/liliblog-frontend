@@ -1,0 +1,16 @@
+{
+  "name": "立里博客 | LiliBlog",
+  "short_name": "LiliBlog",
+  "description": "立里可的技术与生活分享空间",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

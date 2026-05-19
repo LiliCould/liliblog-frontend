@@ -112,7 +112,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search } from 'lucide-vue-next'
+import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search, MessageCircle } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
 
 const router = useRouter()
@@ -129,6 +129,7 @@ const isSearchFocused = ref(false)
 const navItems = [
   { path: '/', label: '首页', icon: Home },
   { path: '/about', label: '关于', icon: Info },
+  { path: '/article/2', label: '交流', icon: MessageCircle },
 ]
 
 const handleScroll = () => {

@@ -1,10 +1,9 @@
 <template>
   <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] p-4 transition-all duration-300 hover:border-[rgba(0,240,255,0.3)]" style="backdrop-filter:blur(12px)">
     <div class="flex gap-3">
-      <router-link
-        v-if="comment.creator"
-        :to="`/user/${comment.creator.id}`"
-        class="shrink-0"
+      <component :is="comment.creator ? 'router-link' : 'div'"
+        :to="comment.creator ? `/user/${comment.creator.id}` : undefined"
+        :class="comment.creator ? 'shrink-0' : 'shrink-0'"
       >
         <img
           :src="resolveAvatar(comment.creator?.avatar)"
@@ -12,14 +11,7 @@
           class="w-9 h-9 rounded-full border border-[rgba(0,240,255,0.2)] object-cover transition-all duration-300 hover:border-[#00f0ff] hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
           @error="handleAvatarError"
         />
-      </router-link>
-      <img
-        v-else
-        :src="resolveAvatar(comment.creator?.avatar)"
-        :alt="comment.creator?.nickname"
-        class="w-9 h-9 rounded-full border border-[rgba(0,240,255,0.2)] shrink-0 object-cover"
-        @error="handleAvatarError"
-      />
+      </component>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
           <router-link
@@ -27,7 +19,7 @@
             :to="`/user/${comment.creator.id}`"
             class="text-sm font-semibold text-[#00f0ff] no-underline transition-colors duration-300 hover:text-[#00f0ff]/80"
           >{{ comment.creator.nickname || '匿名' }}</router-link>
-          <span v-else class="text-sm font-semibold text-[#00f0ff]">{{ comment.creator?.nickname || '匿名' }}</span>
+          <span v-else class="text-sm font-semibold text-[#00f0ff]">匿名</span>
           <span class="text-xs text-[#6b7280]">{{ formatRelativeTime(comment.createTime) }}</span>
         </div>
 
@@ -86,9 +78,8 @@
               :key="child.id"
               class="flex gap-2.5 py-1"
             >
-              <router-link
-                v-if="child.creator"
-                :to="`/user/${child.creator.id}`"
+              <component :is="child.creator ? 'router-link' : 'div'"
+                :to="child.creator ? `/user/${child.creator.id}` : undefined"
                 class="shrink-0"
               >
                 <img
@@ -97,14 +88,7 @@
                   class="w-7 h-7 rounded-full border border-[rgba(0,240,255,0.15)] object-cover transition-all duration-300 hover:border-[#00f0ff] hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
                   @error="handleAvatarError"
                 />
-              </router-link>
-              <img
-                v-else
-                :src="resolveAvatar(child.creator?.avatar)"
-                :alt="child.creator?.nickname"
-                class="w-7 h-7 rounded-full border border-[rgba(0,240,255,0.15)] shrink-0 object-cover"
-                @error="handleAvatarError"
-              />
+              </component>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-0.5">
                   <router-link
@@ -112,7 +96,7 @@
                     :to="`/user/${child.creator.id}`"
                     class="text-xs font-semibold text-[#00f0ff] no-underline transition-colors duration-300 hover:text-[#00f0ff]/80"
                   >{{ child.creator.nickname || '匿名' }}</router-link>
-                  <span v-else class="text-xs font-semibold text-[#00f0ff]">{{ child.creator?.nickname || '匿名' }}</span>
+                  <span v-else class="text-xs font-semibold text-[#00f0ff]">匿名</span>
                   <span class="text-[10px] text-[#6b7280]">{{ formatRelativeTime(child.createTime) }}</span>
                 </div>
                 <p class="text-xs text-[#e0e0e8] leading-relaxed break-words">{{ child.content }}</p>

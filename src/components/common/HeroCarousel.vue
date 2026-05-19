@@ -73,21 +73,16 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
 
-import hero1 from '@/assets/heros/hero-1.png'
-import hero2 from '@/assets/heros/hero-2.png'
-import hero3 from '@/assets/heros/hero-3.png'
-import hero4 from '@/assets/heros/hero-4.jpg'
-
 const MAIN_TEXT = "LiliCould's Blog"
 
 const SUB_TEXT = '技术与生活的分享空间'
 const SUB_TYPE_SPEED = 100
 
 const slides = [
-  { src: hero1, alt: 'Hero 1' },
-  { src: hero2, alt: 'Hero 2' },
-  { src: hero3, alt: 'Hero 3' },
-  { src: hero4, alt: 'Hero 4' },
+  { src: 'https://oss.lilicould.cn/file/hero-1.png', alt: 'Hero 1' },
+  { src: 'https://oss.lilicould.cn/file/hero-2.png', alt: 'Hero 2' },
+  { src: 'https://oss.lilicould.cn/file/hero-3.png', alt: 'Hero 3' },
+  { src: 'https://oss.lilicould.cn/file/hero-4.jpg', alt: 'Hero 4' },
 ]
 
 const currentIndex = ref(0)
