@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
@@ -43,7 +43,7 @@ import ToastContainer from '@/components/common/ToastContainer.vue'
 import { useTheme } from '@/composables/useTheme'
 
 const route = useRoute()
-const { initTheme } = useTheme()
+const { initTheme, destroyTheme } = useTheme()
 
 const layout = computed(() => {
   if (route.meta.layout === 'blank') return 'blank'
@@ -52,6 +52,7 @@ const layout = computed(() => {
 })
 
 onMounted(initTheme)
+onUnmounted(destroyTheme)
 </script>
 
 <style>

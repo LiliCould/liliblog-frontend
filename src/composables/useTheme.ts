@@ -4,6 +4,7 @@ export interface ThemeInfo {
   id: string
   name: string
   preview: { primary: string; bg: string; surface: string }
+  systemMapping?: 'light' | 'dark'
 }
 
 export interface CustomThemeOverrides {
@@ -18,17 +19,20 @@ export interface CustomThemeOverrides {
 
 const THEME_KEY = 'liliblog-theme'
 const CUSTOM_KEY = 'liliblog-theme-custom'
+const FOLLOW_SYSTEM_KEY = 'liliblog-theme-follow-system'
 
 export const themes: ThemeInfo[] = [
-  {
-    id: 'cyber-dark',
-    name: '赛博暗夜',
-    preview: { primary: '#00f0ff', bg: '#0a0a0f', surface: '#111118' },
-  },
   {
     id: 'light',
     name: '明亮模式',
     preview: { primary: '#0284c7', bg: '#f8fafc', surface: '#ffffff' },
+    systemMapping: 'light',
+  },
+  {
+    id: 'cyber-dark',
+    name: '赛博暗夜',
+    preview: { primary: '#00f0ff', bg: '#0a0a0f', surface: '#111118' },
+    systemMapping: 'dark',
   },
   {
     id: 'ocean',
@@ -42,8 +46,9 @@ export const themes: ThemeInfo[] = [
   },
 ]
 
-const currentTheme = ref<string>(localStorage.getItem(THEME_KEY) || 'cyber-dark')
+const currentTheme = ref<string>(localStorage.getItem(THEME_KEY) || 'light')
 const customOverrides = ref<CustomThemeOverrides>(loadCustom())
+const followSystem = ref<boolean>(localStorage.getItem(FOLLOW_SYSTEM_KEY) === 'true')
 
 function loadCustom(): CustomThemeOverrides {
   try {
@@ -59,6 +64,15 @@ function hexToRgb(hex: string): string {
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   return `${r}, ${g}, ${b}`
+}
+
+function getSystemTheme(): 'light' | 'dark' {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function resolveThemeForSystem(systemPref: 'light' | 'dark'): string {
+  const mapped = themes.find(t => t.systemMapping === systemPref)
+  return mapped ? mapped.id : 'light'
 }
 
 function applyTheme(themeId: string) {
@@ -127,9 +141,51 @@ function resetCustom() {
   root.removeProperty('--radius-lg')
 }
 
+function enableFollowSystem() {
+  followSystem.value = true
+  localStorage.setItem(FOLLOW_SYSTEM_KEY, 'true')
+  resetCustom()
+  const systemPref = getSystemTheme()
+  applyTheme(resolveThemeForSystem(systemPref))
+}
+
+function disableFollowSystem() {
+  followSystem.value = false
+  localStorage.setItem(FOLLOW_SYSTEM_KEY, 'false')
+}
+
+function setTheme(themeId: string) {
+  followSystem.value = false
+  localStorage.setItem(FOLLOW_SYSTEM_KEY, 'false')
+  applyTheme(themeId)
+}
+
+function handleSystemThemeChange(e: MediaQueryListEvent) {
+  if (!followSystem.value) return
+  const systemPref: 'light' | 'dark' = e.matches ? 'dark' : 'light'
+  applyTheme(resolveThemeForSystem(systemPref))
+}
+
+let mediaQuery: MediaQueryList | null = null
+
 function initTheme() {
-  const saved = localStorage.getItem(THEME_KEY) || 'cyber-dark'
-  applyTheme(saved)
+  if (followSystem.value) {
+    const systemPref = getSystemTheme()
+    applyTheme(resolveThemeForSystem(systemPref))
+  } else {
+    const saved = localStorage.getItem(THEME_KEY) || 'light'
+    applyTheme(saved)
+  }
+
+  mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.addEventListener('change', handleSystemThemeChange)
+}
+
+function destroyTheme() {
+  if (mediaQuery) {
+    mediaQuery.removeEventListener('change', handleSystemThemeChange)
+    mediaQuery = null
+  }
 }
 
 watch(currentTheme, (val) => {
@@ -141,9 +197,14 @@ export function useTheme() {
     currentTheme,
     themes,
     customOverrides,
-    setTheme: applyTheme,
+    followSystem,
+    setTheme,
     setCustom,
     resetCustom,
+    enableFollowSystem,
+    disableFollowSystem,
     initTheme,
+    destroyTheme,
+    getSystemTheme,
   }
 }
