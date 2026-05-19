@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
-    <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-t-border p-5" style="backdrop-filter:blur(12px)">
+    <div class="rounded-xl bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border p-5"
+      style="backdrop-filter:blur(12px)">
       <div class="flex gap-3">
         <img :src="resolveAvatar(userStore.isLoggedIn ? userStore.avatar : '')" :alt="userStore.nickname"
           class="w-10 h-10 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] shrink-0 object-cover"
@@ -9,7 +10,7 @@
           <textarea v-model="commentContent"
             :placeholder="replyTarget ? `回复 @${replyTarget.creator?.nickname}...` : userStore.isLoggedIn ? '写下你的评论...' : '请先登录后评论'"
             :disabled="!userStore.isLoggedIn"
-            class="w-full min-h-[80px] p-3 rounded-lg bg-[rgba(0,0,0,0.3)] border border-t-border text-t-body text-sm placeholder-t-muted outline-none resize-none transition-all duration-300 focus:border-t-primary focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)] disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
+            class="w-full min-h-[80px] p-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.3)] border border-t-border text-t-body text-sm placeholder-t-muted outline-none resize-none transition-all duration-300 focus:border-t-primary focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)] disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
           <div class="flex items-center justify-between mt-2">
             <button v-if="replyTarget" class="text-xs text-t-muted hover:text-t-primary transition-colors"
               @click="cancelReply">
@@ -29,7 +30,7 @@
 
     <div v-if="loading" class="flex flex-col gap-4">
       <div v-for="i in 3" :key="i"
-        class="h-24 rounded-xl bg-[rgba(20,20,35,0.5)] border border-[rgba(var(--color-primary-rgb),0.1)] animate-pulse">
+        class="h-24 rounded-xl bg-[rgba(var(--color-card-rgb),0.5)] border border-[rgba(var(--color-primary-rgb),0.1)] animate-pulse">
       </div>
     </div>
 

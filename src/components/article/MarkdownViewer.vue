@@ -1,7 +1,7 @@
 <template>
   <div class="w-full min-h-full p-5 px-6 rounded-lg bg-t-bg transition-all duration-250 box-border">
     <div
-      class="prose prose-invert max-w-none prose-headings:text-t-title prose-p:text-t-body prose-a:text-t-primary prose-strong:text-white prose-code:text-t-primary prose-pre:bg-t-elevated prose-blockquote:border-t-primary prose-li:text-t-body"
+      class="prose max-w-none prose-headings:text-t-title prose-p:text-t-body prose-a:text-t-primary prose-strong:text-t-title prose-code:text-t-primary prose-pre:bg-t-elevated prose-blockquote:border-t-primary prose-li:text-t-body"
       v-html="sanitizedHtml"></div>
   </div>
 </template>

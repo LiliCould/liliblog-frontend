@@ -6,6 +6,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
+import { useTheme } from '@/composables/useTheme'
 
 const props = defineProps<{
   modelValue: string
@@ -16,8 +17,17 @@ const emit = defineEmits<{
   (e: 'input'): void
 }>()
 
+const { currentTheme } = useTheme()
 const editorContainer = ref<HTMLElement | null>(null)
 let vditorInstance: Vditor | null = null
+
+function isLightTheme(): boolean {
+  return currentTheme.value === 'light'
+}
+
+function getVditorTheme(): 'classic' | 'dark' {
+  return isLightTheme() ? 'classic' : 'dark'
+}
 
 function switchMode() {
   if (!vditorInstance || !editorContainer.value) return
@@ -31,15 +41,27 @@ function switchMode() {
   }
 }
 
+function updateVditorTheme() {
+  if (!vditorInstance) return
+  const theme = getVditorTheme()
+  try {
+    vditorInstance.setTheme(theme)
+  } catch {
+    // ignore if method not available
+  }
+}
+
 defineExpose({ switchMode })
 
 onMounted(() => {
   if (!editorContainer.value) return
 
+  const vditorTheme = getVditorTheme()
+
   vditorInstance = new Vditor(editorContainer.value, {
     height: '100%',
     mode: 'wysiwyg',
-    theme: 'dark',
+    theme: vditorTheme,
     icon: 'ant',
     value: props.modelValue || '',
     placeholder: '开始写作...',
@@ -60,11 +82,11 @@ onMounted(() => {
       mode: 'both',
       maxWidth: 768,
       theme: {
-        current: 'dark',
+        current: vditorTheme,
       },
       hljs: {
         enable: true,
-        style: 'dracula',
+        style: isLightTheme() ? 'github' : 'dracula',
         lineNumber: true,
       },
       markdown: {
@@ -146,6 +168,10 @@ onMounted(() => {
   })
 })
 
+watch(currentTheme, () => {
+  updateVditorTheme()
+})
+
 watch(() => props.modelValue, (val) => {
   if (vditorInstance && val !== vditorInstance.getValue()) {
     vditorInstance.setValue(val || '')
@@ -170,20 +196,20 @@ onUnmounted(() => {
   position: sticky !important;
   top: 0 !important;
   z-index: 10 !important;
-  background: rgba(17, 17, 24, 0.95) !important;
+  background: rgba(var(--color-surface-rgb), 0.95) !important;
   backdrop-filter: blur(8px) !important;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.1) !important;
 }
 
 .vditor-content {
-  background-color: rgba(17, 17, 24, 0.4) !important;
-  border: 1px solid rgba(0, 240, 255, 0.08) !important;
+  background-color: rgba(var(--color-bg-rgb), 0.4) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.08) !important;
   border-radius: 0.375rem !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 .vditor-reset {
-  color: #e0e0e8 !important;
+  color: var(--color-body) !important;
 }
 
 .vditor-wysiwyg {
@@ -207,52 +233,52 @@ onUnmounted(() => {
 }
 
 .vditor-outline {
-  background: rgba(17, 17, 24, 0.95) !important;
-  border-right: 1px solid rgba(0, 240, 255, 0.08) !important;
+  background: rgba(var(--color-surface-rgb), 0.95) !important;
+  border-right: 1px solid rgba(var(--color-primary-rgb), 0.08) !important;
 }
 
 .vditor-outline__title {
-  color: #e0e0e8 !important;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.08) !important;
+  color: var(--color-title) !important;
+  border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.08) !important;
 }
 
 .vditor-outline__item {
-  color: #9ca3af !important;
+  color: var(--color-muted) !important;
 }
 
 .vditor-outline__item--current {
-  color: #00f0ff !important;
+  color: var(--color-primary) !important;
 }
 
 .vditor-popover {
-  background: rgba(17, 17, 24, 0.95) !important;
-  border: 1px solid rgba(0, 240, 255, 0.15) !important;
+  background: rgba(var(--color-surface-rgb), 0.95) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
   border-radius: 6px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
 .vditor-panel {
-  background: rgba(17, 17, 24, 0.95) !important;
-  border: 1px solid rgba(0, 240, 255, 0.15) !important;
+  background: rgba(var(--color-surface-rgb), 0.95) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
   border-radius: 6px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
 .vditor-hint {
-  background: rgba(17, 17, 24, 0.95) !important;
-  border: 1px solid rgba(0, 240, 255, 0.15) !important;
+  background: rgba(var(--color-surface-rgb), 0.95) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
   border-radius: 6px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
 .vditor-hint button {
-  color: #e0e0e8 !important;
+  color: var(--color-body) !important;
 }
 
 .vditor-hint button:not(.vditor-menu--disabled):hover,
 .vditor-hint button:not(.vditor-menu--disabled):focus {
-  background-color: rgba(0, 240, 255, 0.1) !important;
-  color: #00f0ff !important;
+  background-color: rgba(var(--color-primary-rgb), 0.1) !important;
+  color: var(--color-primary) !important;
 }
 
 .vditor-toolbar__item[data-type="edit-mode"] {
@@ -266,22 +292,62 @@ onUnmounted(() => {
 
 .vditor-wysiwyg table th,
 .vditor-wysiwyg table td {
-  border: 1px solid rgba(0, 240, 255, 0.15) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
   padding: 6px 12px !important;
   min-width: 60px !important;
 }
 
 .vditor-wysiwyg table th {
-  background: rgba(0, 240, 255, 0.06) !important;
+  background: rgba(var(--color-primary-rgb), 0.06) !important;
   font-weight: 600 !important;
-  color: #00f0ff !important;
+  color: var(--color-primary) !important;
 }
 
 .vditor-wysiwyg table tr:nth-child(even) {
-  background: rgba(10, 10, 15, 0.3) !important;
+  background: rgba(var(--color-bg-rgb), 0.3) !important;
 }
 
 .vditor-wysiwyg table tr:hover {
-  background: rgba(0, 240, 255, 0.04) !important;
+  background: rgba(var(--color-primary-rgb), 0.04) !important;
+}
+
+.vditor-toolbar__item .vditor-tooltipped {
+  color: var(--color-body) !important;
+}
+
+.vditor-toolbar__item:hover .vditor-tooltipped,
+.vditor-toolbar__item .vditor-tooltipped:hover {
+  color: var(--color-primary) !important;
+}
+
+.vditor-reset strong {
+  color: var(--color-title) !important;
+}
+
+.vditor-reset h1,
+.vditor-reset h2,
+.vditor-reset h3,
+.vditor-reset h4,
+.vditor-reset h5,
+.vditor-reset h6 {
+  color: var(--color-title) !important;
+}
+
+.vditor-reset a {
+  color: var(--color-primary) !important;
+}
+
+.vditor-reset blockquote {
+  border-left: 4px solid var(--color-primary) !important;
+  color: var(--color-body-secondary) !important;
+}
+
+.vditor-reset code {
+  color: var(--color-primary) !important;
+  background: rgba(var(--color-primary-rgb), 0.08) !important;
+}
+
+.vditor-reset hr {
+  border-color: rgba(var(--color-primary-rgb), 0.2) !important;
 }
 </style>

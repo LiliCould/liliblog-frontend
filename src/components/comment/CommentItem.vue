@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-t-border p-4 transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)]"
+    class="rounded-xl bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border p-4 transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)]"
     style="backdrop-filter:blur(12px)">
     <div class="flex gap-3">
       <component :is="comment.creator ? 'router-link' : 'div'"
