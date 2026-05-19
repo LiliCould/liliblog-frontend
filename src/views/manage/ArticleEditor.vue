@@ -382,44 +382,45 @@ async function loadArticleForEdit() {
   } catch {
     router.push('/user/me')
   }
+}
 
-  async function confirmRestore() {
-    showRestoreDialog.value = false
-    const data = await restore()
-    if (data) {
-      try {
-        const parsed = JSON.parse(data)
-        form.title = parsed.title || ''
-        form.slug = parsed.slug || ''
-        form.summary = parsed.summary || ''
-        form.content = parsed.content || ''
-        form.coverImage = parsed.coverImage || ''
-        form.categoryId = parsed.categoryId
-        form.tags = parsed.tags || []
-      } catch {
-        // skip
-      }
+async function confirmRestore() {
+  showRestoreDialog.value = false
+  const data = await restore()
+  if (data) {
+    try {
+      const parsed = JSON.parse(data)
+      form.title = parsed.title || ''
+      form.slug = parsed.slug || ''
+      form.summary = parsed.summary || ''
+      form.content = parsed.content || ''
+      form.coverImage = parsed.coverImage || ''
+      form.categoryId = parsed.categoryId
+      form.tags = parsed.tags || []
+    } catch {
+      // skip
     }
   }
+}
 
-  function discardRestore() {
-    showRestoreDialog.value = false
-    markClean()
+function discardRestore() {
+  showRestoreDialog.value = false
+  markClean()
+}
+
+onMounted(async () => {
+  const [catRes, tagRes] = await Promise.allSettled([
+    getCategories({ size: 100 }) as any,
+    getTags({ size: 100 }) as any,
+  ])
+  if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
+  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
+
+  await loadArticleForEdit()
+
+  const hasDraft = await checkAndRestore()
+  if (hasDraft) {
+    showRestoreDialog.value = true
   }
-
-  onMounted(async () => {
-    const [catRes, tagRes] = await Promise.allSettled([
-      getCategories({ size: 100 }) as any,
-      getTags({ size: 100 }) as any,
-    ])
-    if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
-    if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
-
-    await loadArticleForEdit()
-
-    const hasDraft = await checkAndRestore()
-    if (hasDraft) {
-      showRestoreDialog.value = true
-    }
-  })
+})
 </script>

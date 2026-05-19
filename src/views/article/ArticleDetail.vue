@@ -16,6 +16,19 @@
           </h1>
 
           <div class="flex flex-wrap items-center gap-4 text-sm text-[#6b7280]">
+            <router-link
+              v-if="article.creator"
+              :to="`/user/${article.creator.id}`"
+              class="flex items-center gap-2 text-[#6b7280] no-underline transition-colors duration-300 hover:text-[#00f0ff] group"
+            >
+              <img
+                :src="resolveAvatar(article.creator.avatar)"
+                :alt="article.creator.nickname"
+                class="w-6 h-6 rounded-full border border-[rgba(0,240,255,0.2)] object-cover transition-all duration-300 group-hover:border-[#00f0ff] group-hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
+                @error="handleAvatarError"
+              />
+              <span class="transition-colors duration-300 group-hover:text-[#00f0ff]">{{ article.creator.nickname }}</span>
+            </router-link>
             <span class="flex items-center gap-1.5">
               <Clock class="w-4 h-4 text-[#00f0ff]" />
               {{ formatDateTime(article.updateTime || article.createTime) }}
@@ -86,7 +99,7 @@ import { useRoute } from 'vue-router'
 import { Heart, Eye, Clock, FolderOpen } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
 import { getArticleLikeStatus, likeArticle, unlikeArticle } from '@/api/article'
-import { formatDateTime } from '@/utils/format'
+import { formatDateTime, resolveAvatar, handleAvatarError } from '@/utils/format'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 import ArticleToc from '@/components/article/ArticleToc.vue'
