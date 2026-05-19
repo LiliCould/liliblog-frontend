@@ -4,13 +4,13 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3 w-full sm:w-auto">
           <div class="relative flex-1 sm:flex-initial">
-            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280]" />
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
             <input v-model="keyword" type="text" placeholder="搜索文章..."
-              class="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm outline-none transition-all duration-300 focus:border-[#00f0ff] focus:shadow-[0_0_8px_rgba(0,240,255,0.15)]"
+              class="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-all duration-300 focus:border-t-primary focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.15)]"
               @keyup.enter="fetchArticles" />
           </div>
           <select v-model="statusFilter"
-            class="px-3 py-2.5 rounded-lg bg-[#0a0a0f] border border-[rgba(0,240,255,0.15)] text-[#e0e0e8] text-sm outline-none transition-all duration-300 focus:border-[#00f0ff] cursor-pointer"
+            class="px-3 py-2.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-all duration-300 focus:border-t-primary cursor-pointer"
             @change="fetchArticles">
             <option :value="undefined">全部状态</option>
             <option :value="0">审核中</option>
@@ -19,59 +19,59 @@
           </select>
         </div>
         <button
-          class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[rgba(0,240,255,0.1)] border border-[#00f0ff] text-[#00f0ff] text-sm font-medium transition-all duration-300 hover:bg-[rgba(0,240,255,0.2)] hover:shadow-[0_0_12px_rgba(0,240,255,0.2)] cursor-pointer"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[rgba(var(--color-primary-rgb),0.1)] border border-t-primary text-t-primary text-sm font-medium transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.2)] cursor-pointer"
           @click="router.push('/write')">
           <Plus class="w-4 h-4" />
           新建文章
         </button>
       </div>
 
-      <div class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] overflow-hidden">
+      <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-[rgba(0,240,255,0.15)]">
-                <th class="text-left px-5 py-3.5 text-[#6b7280] font-medium">标题</th>
-                <th class="text-left px-5 py-3.5 text-[#6b7280] font-medium">分类</th>
-                <th class="text-left px-5 py-3.5 text-[#6b7280] font-medium">状态</th>
-                <th class="text-left px-5 py-3.5 text-[#6b7280] font-medium">创建时间</th>
-                <th class="text-right px-5 py-3.5 text-[#6b7280] font-medium">操作</th>
+              <tr class="border-b border-t-border">
+                <th class="text-left px-5 py-3.5 text-t-muted font-medium">标题</th>
+                <th class="text-left px-5 py-3.5 text-t-muted font-medium">分类</th>
+                <th class="text-left px-5 py-3.5 text-t-muted font-medium">状态</th>
+                <th class="text-left px-5 py-3.5 text-t-muted font-medium">创建时间</th>
+                <th class="text-right px-5 py-3.5 text-t-muted font-medium">操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="article in articles" :key="article.id"
-                class="border-b border-[rgba(0,240,255,0.08)] transition-colors duration-200 hover:bg-[rgba(0,240,255,0.03)]">
+                class="border-b border-[rgba(var(--color-primary-rgb),0.08)] transition-colors duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.03)]">
                 <td class="px-5 py-3.5">
-                  <span class="text-[#e0e0e8] font-medium line-clamp-1">{{ article.title }}</span>
+                  <span class="text-t-body font-medium line-clamp-1">{{ article.title }}</span>
                 </td>
                 <td class="px-5 py-3.5">
-                  <span class="text-[#6b7280]">{{ article.category?.name || '未分类' }}</span>
+                  <span class="text-t-muted">{{ article.category?.name || '未分类' }}</span>
                 </td>
                 <td class="px-5 py-3.5">
                   <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium" :class="article.status === 1
-                    ? 'bg-[rgba(0,240,255,0.1)] text-[#00f0ff] border border-[rgba(0,240,255,0.3)]'
+                    ? 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
                     : article.status === 0
                       ? 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
-                      : 'bg-[rgba(107,114,128,0.1)] text-[#6b7280] border border-[rgba(107,114,128,0.3)]'">
+                      : 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'">
                     {{ statusText(article.status) }}
                   </span>
                 </td>
-                <td class="px-5 py-3.5 text-[#6b7280]">{{ formatDate(article.createTime) }}</td>
+                <td class="px-5 py-3.5 text-t-muted">{{ formatDate(article.createTime) }}</td>
                 <td class="px-5 py-3.5">
                   <div class="flex items-center justify-end gap-1">
                     <button
-                      class="p-1.5 rounded-lg text-[#6b7280] transition-all duration-200 hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] cursor-pointer"
+                      class="p-1.5 rounded-lg text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] cursor-pointer"
                       title="切换状态" @click="toggleStatus(article)">
                       <Eye v-if="article.status !== 1" class="w-4 h-4" />
                       <EyeOff v-else class="w-4 h-4" />
                     </button>
                     <button
-                      class="p-1.5 rounded-lg text-[#6b7280] transition-all duration-200 hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] cursor-pointer"
+                      class="p-1.5 rounded-lg text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] cursor-pointer"
                       title="编辑" @click="router.push(`/write/${article.id}`)">
                       <Edit class="w-4 h-4" />
                     </button>
                     <button
-                      class="p-1.5 rounded-lg text-[#6b7280] transition-all duration-200 hover:text-[#ff2d78] hover:bg-[rgba(255,45,120,0.1)] cursor-pointer"
+                      class="p-1.5 rounded-lg text-t-muted transition-all duration-200 hover:text-t-secondary hover:bg-[rgba(var(--color-secondary-rgb),0.1)] cursor-pointer"
                       title="删除" @click="handleDelete(article)">
                       <Trash2 class="w-4 h-4" />
                     </button>
@@ -82,7 +82,7 @@
           </table>
         </div>
 
-        <div v-if="articles.length === 0 && !loading" class="text-center py-12 text-[#6b7280] text-sm">
+        <div v-if="articles.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
           暂无文章
         </div>
       </div>

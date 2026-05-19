@@ -1,110 +1,82 @@
 <template>
-  <div class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-[rgba(0,240,255,0.15)] p-4 transition-all duration-300 hover:border-[rgba(0,240,255,0.3)]" style="backdrop-filter:blur(12px)">
+  <div
+    class="rounded-xl bg-[rgba(20,20,35,0.85)] border border-t-border p-4 transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)]"
+    style="backdrop-filter:blur(12px)">
     <div class="flex gap-3">
       <component :is="comment.creator ? 'router-link' : 'div'"
         :to="comment.creator ? `/user/${comment.creator.id}` : undefined"
-        :class="comment.creator ? 'shrink-0' : 'shrink-0'"
-      >
-        <img
-          :src="resolveAvatar(comment.creator?.avatar)"
-          :alt="comment.creator?.nickname"
-          class="w-9 h-9 rounded-full border border-[rgba(0,240,255,0.2)] object-cover transition-all duration-300 hover:border-[#00f0ff] hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
-          @error="handleAvatarError"
-        />
+        :class="comment.creator ? 'shrink-0' : 'shrink-0'">
+        <img :src="resolveAvatar(comment.creator?.avatar)" :alt="comment.creator?.nickname"
+          class="w-9 h-9 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] object-cover transition-all duration-300 hover:border-t-primary hover:shadow-[0_0_6px_rgba(var(--color-primary-rgb),0.3)]"
+          @error="handleAvatarError" />
       </component>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <router-link
-            v-if="comment.creator"
-            :to="`/user/${comment.creator.id}`"
-            class="text-sm font-semibold text-[#00f0ff] no-underline transition-colors duration-300 hover:text-[#00f0ff]/80"
-          >{{ comment.creator.nickname || '匿名' }}</router-link>
-          <span v-else class="text-sm font-semibold text-[#00f0ff]">匿名</span>
-          <span class="text-xs text-[#6b7280]">{{ formatRelativeTime(comment.createTime) }}</span>
+          <router-link v-if="comment.creator" :to="`/user/${comment.creator.id}`"
+            class="text-sm font-semibold text-t-primary no-underline transition-colors duration-300 hover:text-t-primary/80">{{
+              comment.creator.nickname || '匿名' }}</router-link>
+          <span v-else class="text-sm font-semibold text-t-primary">匿名</span>
+          <span class="text-xs text-t-muted">{{ formatRelativeTime(comment.createTime) }}</span>
         </div>
 
-        <p class="text-sm text-[#e0e0e8] leading-relaxed mb-2 break-words">{{ comment.content }}</p>
+        <p class="text-sm text-t-body leading-relaxed mb-2 break-words">{{ comment.content }}</p>
 
         <div class="flex items-center gap-4">
           <button
-            class="flex items-center gap-1 text-xs text-[#6b7280] transition-colors duration-300 hover:text-[#ff2d78]"
-            @click="emit('reply', comment)"
-          >
+            class="flex items-center gap-1 text-xs text-t-muted transition-colors duration-300 hover:text-t-secondary"
+            @click="emit('reply', comment)">
             <MessageSquare class="w-3.5 h-3.5" />
             回复
           </button>
-          <button
-            class="flex items-center gap-1 text-xs transition-all duration-300"
-            :class="isLiked
-              ? 'text-[#ff2d78] hover:text-[#ff2d78]/80'
-              : 'text-[#6b7280] hover:text-[#ff2d78]'"
-            :disabled="likeLoading"
-            @click="toggleLike"
-          >
-            <Heart class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'fill-current scale-110': isLiked, 'scale-100': !isLiked }" />
+          <button class="flex items-center gap-1 text-xs transition-all duration-300" :class="isLiked
+            ? 'text-t-secondary hover:text-t-secondary/80'
+            : 'text-t-muted hover:text-t-secondary'" :disabled="likeLoading" @click="toggleLike">
+            <Heart class="w-3.5 h-3.5 transition-transform duration-200"
+              :class="{ 'fill-current scale-110': isLiked, 'scale-100': !isLiked }" />
             {{ likeCount }}
           </button>
 
-          <button
-            v-if="comment.childCount > 0 && !expanded"
-            class="flex items-center gap-1 text-xs text-[#00f0ff] transition-all duration-300 hover:text-[#ff2d78]"
-            @click="toggleChildren"
-          >
+          <button v-if="comment.childCount > 0 && !expanded"
+            class="flex items-center gap-1 text-xs text-t-primary transition-all duration-300 hover:text-t-secondary"
+            @click="toggleChildren">
             <ChevronDown class="w-3.5 h-3.5 transition-transform duration-300" :class="{ 'rotate-180': expanded }" />
             展开 {{ comment.childCount }} 条回复
           </button>
 
-          <button
-            v-if="expanded"
-            class="flex items-center gap-1 text-xs text-[#6b7280] transition-all duration-300 hover:text-[#00f0ff]"
-            @click="toggleChildren"
-          >
+          <button v-if="expanded"
+            class="flex items-center gap-1 text-xs text-t-muted transition-all duration-300 hover:text-t-primary"
+            @click="toggleChildren">
             <ChevronUp class="w-3.5 h-3.5" />
             收起回复
           </button>
         </div>
 
-        <transition
-          enter-active-class="transition-all duration-300 ease-out"
-          leave-active-class="transition-all duration-200 ease-in"
-          enter-from-class="opacity-0 max-h-0"
-          enter-to-class="opacity-100 max-h-[2000px]"
-          leave-from-class="opacity-100 max-h-[2000px]"
-          leave-to-class="opacity-0 max-h-0"
-        >
-          <div v-if="expanded && children.length > 0" class="mt-3 pl-4 border-l-2 border-[rgba(0,240,255,0.15)] space-y-3 overflow-hidden">
-            <div
-              v-for="child in children"
-              :key="child.id"
-              class="flex gap-2.5 py-1"
-            >
+        <transition enter-active-class="transition-all duration-300 ease-out"
+          leave-active-class="transition-all duration-200 ease-in" enter-from-class="opacity-0 max-h-0"
+          enter-to-class="opacity-100 max-h-[2000px]" leave-from-class="opacity-100 max-h-[2000px]"
+          leave-to-class="opacity-0 max-h-0">
+          <div v-if="expanded && children.length > 0"
+            class="mt-3 pl-4 border-l-2 border-t-border space-y-3 overflow-hidden">
+            <div v-for="child in children" :key="child.id" class="flex gap-2.5 py-1">
               <component :is="child.creator ? 'router-link' : 'div'"
-                :to="child.creator ? `/user/${child.creator.id}` : undefined"
-                class="shrink-0"
-              >
-                <img
-                  :src="resolveAvatar(child.creator?.avatar)"
-                  :alt="child.creator?.nickname"
-                  class="w-7 h-7 rounded-full border border-[rgba(0,240,255,0.15)] object-cover transition-all duration-300 hover:border-[#00f0ff] hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
-                  @error="handleAvatarError"
-                />
+                :to="child.creator ? `/user/${child.creator.id}` : undefined" class="shrink-0">
+                <img :src="resolveAvatar(child.creator?.avatar)" :alt="child.creator?.nickname"
+                  class="w-7 h-7 rounded-full border border-t-border object-cover transition-all duration-300 hover:border-t-primary hover:shadow-[0_0_6px_rgba(var(--color-primary-rgb),0.3)]"
+                  @error="handleAvatarError" />
               </component>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-0.5">
-                  <router-link
-                    v-if="child.creator"
-                    :to="`/user/${child.creator.id}`"
-                    class="text-xs font-semibold text-[#00f0ff] no-underline transition-colors duration-300 hover:text-[#00f0ff]/80"
-                  >{{ child.creator.nickname || '匿名' }}</router-link>
-                  <span v-else class="text-xs font-semibold text-[#00f0ff]">匿名</span>
-                  <span class="text-[10px] text-[#6b7280]">{{ formatRelativeTime(child.createTime) }}</span>
+                  <router-link v-if="child.creator" :to="`/user/${child.creator.id}`"
+                    class="text-xs font-semibold text-t-primary no-underline transition-colors duration-300 hover:text-t-primary/80">{{
+                      child.creator.nickname || '匿名' }}</router-link>
+                  <span v-else class="text-xs font-semibold text-t-primary">匿名</span>
+                  <span class="text-[10px] text-t-muted">{{ formatRelativeTime(child.createTime) }}</span>
                 </div>
-                <p class="text-xs text-[#e0e0e8] leading-relaxed break-words">{{ child.content }}</p>
+                <p class="text-xs text-t-body leading-relaxed break-words">{{ child.content }}</p>
                 <div class="flex items-center gap-3 mt-1">
                   <button
-                    class="flex items-center gap-1 text-[10px] text-[#6b7280] transition-colors duration-300 hover:text-[#ff2d78]"
-                    @click="emit('reply', child)"
-                  >
+                    class="flex items-center gap-1 text-[10px] text-t-muted transition-colors duration-300 hover:text-t-secondary"
+                    @click="emit('reply', child)">
                     <MessageSquare class="w-3 h-3" />
                     回复
                   </button>
@@ -114,22 +86,25 @@
             </div>
 
             <div v-if="childrenLoading" class="flex justify-center py-2">
-              <div class="w-5 h-5 border-2 border-[rgba(0,240,255,0.3)] border-t-[#00f0ff] rounded-full animate-spin"></div>
+              <div
+                class="w-5 h-5 border-2 border-[rgba(var(--color-primary-rgb),0.3)] border-t-t-primary rounded-full animate-spin">
+              </div>
             </div>
 
-            <button
-              v-if="hasMoreChildren && !childrenLoading"
-              class="flex items-center gap-1 text-xs text-[#00f0ff] transition-colors duration-300 hover:text-[#ff2d78] py-1"
-              @click="loadMoreChildren"
-            >
+            <button v-if="hasMoreChildren && !childrenLoading"
+              class="flex items-center gap-1 text-xs text-t-primary transition-colors duration-300 hover:text-t-secondary py-1"
+              @click="loadMoreChildren">
               <ChevronDown class="w-3.5 h-3.5" />
               加载更多回复
             </button>
           </div>
         </transition>
 
-        <div v-if="expanded && childrenLoading && children.length === 0" class="mt-3 pl-4 border-l-2 border-[rgba(0,240,255,0.15)] flex justify-center py-3">
-          <div class="w-5 h-5 border-2 border-[rgba(0,240,255,0.3)] border-t-[#00f0ff] rounded-full animate-spin"></div>
+        <div v-if="expanded && childrenLoading && children.length === 0"
+          class="mt-3 pl-4 border-l-2 border-t-border flex justify-center py-3">
+          <div
+            class="w-5 h-5 border-2 border-[rgba(var(--color-primary-rgb),0.3)] border-t-t-primary rounded-full animate-spin">
+          </div>
         </div>
       </div>
     </div>
@@ -213,7 +188,7 @@ const ChildLikeButton = {
     return () => h('button', {
       class: [
         'flex items-center gap-1 text-[10px] transition-all duration-300',
-        liked.value ? 'text-[#ff2d78] hover:text-[#ff2d78]/80' : 'text-[#6b7280] hover:text-[#ff2d78]'
+        liked.value ? 'text-t-secondary hover:text-t-secondary/80' : 'text-t-muted hover:text-t-secondary'
       ],
       disabled: loading.value,
       onClick: toggleChildLike,

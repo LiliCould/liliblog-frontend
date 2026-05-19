@@ -26,15 +26,15 @@
       <p class="tracking-wide flex items-center justify-center min-h-[2em]" :class="subtitleSizeClass"
         style="font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;">
         <span v-if="subtitleStarted" class="text-[#9ca3af]">
-          <span class="text-[#00f0ff]">&lt;</span>
+          <span class="text-t-primary">&lt;</span>
           <span>{{ subDisplayText }}</span>
           <span class="typewriter-cursor" :class="{ 'cursor-blink': subTypingDone }">|</span>
-          <span v-if="subTypingDone" class="text-[#00f0ff]"> /&gt;</span>
+          <span v-if="subTypingDone" class="text-t-primary"> /&gt;</span>
         </span>
       </p>
 
       <div
-        class="w-20 h-0.5 bg-gradient-to-r from-transparent via-[#00f0ff] to-transparent shadow-[0_0_10px_rgba(0,240,255,0.5)]"
+        class="w-20 h-0.5 bg-gradient-to-r from-transparent via-t-primary to-transparent shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.5)]"
         :class="{ 'opacity-0': !subTypingDone, 'opacity-100 transition-opacity duration-700': subTypingDone }"></div>
     </div>
 
@@ -42,25 +42,25 @@
       <button v-for="(_, index) in slides" :key="index"
         class="w-2.5 h-2.5 rounded-full transition-all duration-300 border" :class="[
           index === currentIndex
-            ? 'bg-[#00f0ff] border-[#00f0ff] w-8 shadow-[0_0_8px_rgba(0,240,255,0.5)]'
-            : 'bg-transparent border-[rgba(0,240,255,0.4)] hover:border-[#00f0ff] hover:bg-[rgba(0,240,255,0.3)]'
+            ? 'bg-t-primary border-t-primary w-8 shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)]'
+            : 'bg-transparent border-[rgba(var(--color-primary-rgb),0.4)] hover:border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.3)]'
         ]" @click="goTo(index)"></button>
     </div>
 
     <button
-      class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(0,240,255,0.2)] text-[#00f0ff] transition-all duration-200 hover:bg-[rgba(0,240,255,0.15)] hover:border-[rgba(0,240,255,0.5)] hover:[box-shadow:0_0_12px_rgba(0,240,255,0.3)]"
+      class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.5)] hover:[box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)]"
       @click="prev">
       <ChevronLeft class="w-5 h-5" />
     </button>
     <button
-      class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(0,240,255,0.2)] text-[#00f0ff] transition-all duration-200 hover:bg-[rgba(0,240,255,0.15)] hover:border-[rgba(0,240,255,0.5)] hover:[box-shadow:0_0_12px_rgba(0,240,255,0.3)]"
+      class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.5)] hover:[box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)]"
       @click="next">
       <ChevronRight class="w-5 h-5" />
     </button>
 
     <div class="absolute bottom-8 right-4 z-20">
       <button
-        class="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(0,240,255,0.2)] text-[#00f0ff] transition-all duration-200 hover:bg-[rgba(0,240,255,0.15)]"
+        class="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)]"
         @click="togglePause">
         <Pause v-if="!paused" class="w-3.5 h-3.5" />
         <Play v-else class="w-3.5 h-3.5" />

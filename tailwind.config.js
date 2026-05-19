@@ -8,6 +8,32 @@ export default {
   theme: {
     extend: {
       colors: {
+        t: {
+          bg: 'var(--color-bg)',
+          surface: 'var(--color-surface)',
+          elevated: 'var(--color-elevated)',
+          card: 'var(--color-card)',
+          primary: 'var(--color-primary)',
+          'primary-hover': 'var(--color-primary-hover)',
+          secondary: 'var(--color-secondary)',
+          tertiary: 'var(--color-tertiary)',
+          title: 'var(--color-title)',
+          'title-secondary': 'var(--color-title-secondary)',
+          body: 'var(--color-body)',
+          'body-secondary': 'var(--color-body-secondary)',
+          muted: 'var(--color-muted)',
+          'muted-light': 'var(--color-muted-light)',
+          border: 'var(--color-border)',
+          'border-hover': 'var(--color-border-hover)',
+          'border-solid': 'var(--color-border-solid)',
+          accent: 'var(--color-accent)',
+          success: 'var(--color-success)',
+          danger: 'var(--color-danger)',
+          warning: 'var(--color-warning)',
+          info: 'var(--color-info)',
+          'input-bg': 'var(--color-input-bg)',
+          'code-bg': 'var(--color-code-bg)',
+        },
         cyber: {
           bg: '#0a0a0f',
           surface: '#111118',

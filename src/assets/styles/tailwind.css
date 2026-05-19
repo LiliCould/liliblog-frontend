@@ -1,25 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  :root {
-    --bg-canvas: #ffffff;
-    --bg-surface: #f8fafc;
-    --bg-elevated: #ffffff;
-    --text-title: #0f172a;
-    --text-body: #334155;
-    --text-meta: #64748b;
-    --border: #e2e8f0;
-  }
-
-  .dark {
-    --bg-canvas: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-elevated: #334155;
-    --text-title: #ffffff;
-    --text-body: #cbd5e1;
-    --text-meta: #94a3b8;
-    --border: #334155;
-  }
-}

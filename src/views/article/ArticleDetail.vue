@@ -1,44 +1,38 @@
 <template>
   <AppLayout :show-hero="false">
     <div v-if="loading" class="flex flex-col gap-4">
-      <div class="h-10 w-3/5 rounded bg-[#111118] animate-pulse"></div>
-      <div class="h-6 w-2/5 rounded bg-[#111118] animate-pulse"></div>
-      <div class="h-80 rounded-xl bg-[#111118] animate-pulse"></div>
+      <div class="h-10 w-3/5 rounded bg-t-surface animate-pulse"></div>
+      <div class="h-6 w-2/5 rounded bg-t-surface animate-pulse"></div>
+      <div class="h-80 rounded-xl bg-t-surface animate-pulse"></div>
     </div>
 
     <div v-else-if="article">
-      <article
-        class="rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+      <article class="rounded-xl bg-t-surface border border-t-border p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
         <header class="mb-8">
-          <h1 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-4"
+          <h1 class="text-2xl md:text-3xl font-bold text-t-title leading-snug mb-4"
             style="text-shadow:0 0 20px rgba(0,240,255,0.15)">
             {{ article.title }}
           </h1>
 
-          <div class="flex flex-wrap items-center gap-4 text-sm text-[#6b7280]">
-            <router-link
-              v-if="article.creator"
-              :to="`/user/${article.creator.id}`"
-              class="flex items-center gap-2 text-[#6b7280] no-underline transition-colors duration-300 hover:text-[#00f0ff] group"
-            >
-              <img
-                :src="resolveAvatar(article.creator.avatar)"
-                :alt="article.creator.nickname"
-                class="w-6 h-6 rounded-full border border-[rgba(0,240,255,0.2)] object-cover transition-all duration-300 group-hover:border-[#00f0ff] group-hover:shadow-[0_0_6px_rgba(0,240,255,0.3)]"
-                @error="handleAvatarError"
-              />
-              <span class="transition-colors duration-300 group-hover:text-[#00f0ff]">{{ article.creator.nickname }}</span>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-t-muted">
+            <router-link v-if="article.creator" :to="`/user/${article.creator.id}`"
+              class="flex items-center gap-2 text-t-muted no-underline transition-colors duration-300 hover:text-t-primary group">
+              <img :src="resolveAvatar(article.creator.avatar)" :alt="article.creator.nickname"
+                class="w-6 h-6 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] object-cover transition-all duration-300 group-hover:border-t-primary group-hover:shadow-[0_0_6px_rgba(var(--color-primary-rgb),0.3)]"
+                @error="handleAvatarError" />
+              <span class="transition-colors duration-300 group-hover:text-t-primary">{{ article.creator.nickname
+                }}</span>
             </router-link>
             <span class="flex items-center gap-1.5">
-              <Clock class="w-4 h-4 text-[#00f0ff]" />
+              <Clock class="w-4 h-4 text-t-primary" />
               {{ formatDateTime(article.updateTime || article.createTime) }}
             </span>
             <span class="flex items-center gap-1.5">
-              <Eye class="w-4 h-4 text-[#00f0ff]" />
+              <Eye class="w-4 h-4 text-t-primary" />
               {{ article.viewCount }}
             </span>
             <span class="flex items-center gap-1.5">
-              <FolderOpen class="w-4 h-4 text-[#00f0ff]" />
+              <FolderOpen class="w-4 h-4 text-t-primary" />
               {{ article.category?.name || '未分类' }}
             </span>
           </div>
@@ -59,16 +53,17 @@
           </div>
         </header>
 
-        <div v-if="article.coverImage" class="mb-8 rounded-lg overflow-hidden border border-[rgba(0,240,255,0.1)]">
+        <div v-if="article.coverImage"
+          class="mb-8 rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)]">
           <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[400px] object-cover" />
         </div>
 
         <MarkdownViewer :content-html="article.contentHtml || ''" />
 
-        <div class="flex items-center gap-4 mt-10 pt-6 border-t border-[rgba(0,240,255,0.15)]">
+        <div class="flex items-center gap-4 mt-10 pt-6 border-t border-t-border">
           <button class="flex items-center gap-1.5 text-sm transition-all duration-300" :class="isLiked
-            ? 'text-[#ff2d78] hover:text-[#ff2d78]/80'
-            : 'text-[#6b7280] hover:text-[#ff2d78]'" @click="toggleLike">
+            ? 'text-t-secondary hover:text-t-secondary/80'
+            : 'text-t-muted hover:text-t-secondary'" @click="toggleLike">
             <Heart class="w-4 h-4 transition-transform duration-200"
               :class="{ 'fill-current scale-110': isLiked, 'scale-100': !isLiked }" />
             {{ article.likeCount }}
@@ -77,7 +72,7 @@
 
         <div class="mt-10">
           <h3
-            class="text-lg font-semibold text-white mb-4 pb-2 border-b-2 border-[#00f0ff] inline-block shadow-[0_2px_8px_rgba(0,240,255,0.2)]">
+            class="text-lg font-semibold text-t-title mb-4 pb-2 border-b-2 border-t-primary inline-block shadow-[0_2px_8px_rgba(var(--color-primary-rgb),0.2)]">
             评论区
           </h3>
           <CommentSection :article-id="article.id" />

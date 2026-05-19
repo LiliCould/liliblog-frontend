@@ -2,22 +2,19 @@
   <Teleport to="body">
     <div class="toast-container">
       <TransitionGroup name="toast">
-        <div
-          v-for="item in toasts"
-          :key="item.id"
-          class="toast-item"
-          :class="[`toast-${item.type}`, { 'toast-leaving': item.leaving }]"
-          role="alert"
-          :aria-live="item.type === 'error' ? 'assertive' : 'polite'"
-        >
+        <div v-for="item in toasts" :key="item.id" class="toast-item"
+          :class="[`toast-${item.type}`, { 'toast-leaving': item.leaving }]" role="alert"
+          :aria-live="item.type === 'error' ? 'assertive' : 'polite'">
           <div class="toast-icon">
             <svg v-if="item.type === 'success'" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
-              <path d="M6.5 10.5L9 13L13.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M6.5 10.5L9 13L13.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
             <svg v-else-if="item.type === 'error'" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" />
-              <path d="M7.5 7.5L12.5 12.5M12.5 7.5L7.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M7.5 7.5L12.5 12.5M12.5 7.5L7.5 12.5" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" />
             </svg>
             <svg v-else-if="item.type === 'warning'" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M10 3L18.5 17H1.5L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
@@ -99,8 +96,8 @@ const { toasts, dismiss } = useToast()
 }
 
 .toast-info {
-  background: rgba(0, 240, 255, 0.08);
-  border: 1px solid rgba(0, 240, 255, 0.15);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
   color: #67e8f9;
 }
 

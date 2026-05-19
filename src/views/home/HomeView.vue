@@ -5,17 +5,11 @@
     </template>
 
     <div v-if="articleStore.loading && articleStore.publicList.length === 0" class="flex flex-col gap-4">
-      <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] animate-pulse"></div>
+      <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse"></div>
     </div>
 
-    <ArticleList
-      v-else-if="articleStore.publicList.length > 0"
-      :articles="articleStore.publicList"
-      :total="articleStore.total"
-      :current="currentPage"
-      :page-size="pageSize"
-      @page-change="handlePageChange"
-    />
+    <ArticleList v-else-if="articleStore.publicList.length > 0" :articles="articleStore.publicList"
+      :total="articleStore.total" :current="currentPage" :page-size="pageSize" @page-change="handlePageChange" />
 
     <EmptyState v-else message="暂无文章" />
   </AppLayout>
