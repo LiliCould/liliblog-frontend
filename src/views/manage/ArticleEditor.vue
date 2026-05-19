@@ -152,9 +152,9 @@
                   color: getTagColor(tagId) || '#00f0ff',
                   backgroundColor: (getTagColor(tagId) || '#00f0ff') + '15',
                   borderColor: (getTagColor(tagId) || '#00f0ff') + '40',
-                }"
-                @click="toggleTag(tagId)">
-                <span class="w-1.5 h-1.5 rounded-full opacity-70" :style="{ backgroundColor: getTagColor(tagId) || '#00f0ff', boxShadow: `0 0 4px ${getTagColor(tagId) || '#00f0ff'}` }"></span>
+                }" @click="toggleTag(tagId)">
+                <span class="w-1.5 h-1.5 rounded-full opacity-70"
+                  :style="{ backgroundColor: getTagColor(tagId) || '#00f0ff', boxShadow: `0 0 4px ${getTagColor(tagId) || '#00f0ff'}` }"></span>
                 {{ getTagName(tagId) }}
                 <span class="text-[10px] opacity-60">✕</span>
               </span>
@@ -165,8 +165,7 @@
                 :style="{
                   color: (tag.color || '#00f0ff') + 'aa',
                   borderColor: (tag.color || '#00f0ff') + '30',
-                }"
-                @click="toggleTag(tag.id)">
+                }" @click="toggleTag(tag.id)">
                 + {{ tag.name }}
               </button>
             </div>
@@ -358,7 +357,7 @@ async function handleSubmit(status: number) {
       toast.success(status === 1 ? '文章发布成功' : '草稿保存成功')
     }
     await clearDraft()
-    router.push('/manage/articles')
+    router.push('/user/me')
   } catch {
     // handled by interceptor
   } finally {
@@ -381,47 +380,46 @@ async function loadArticleForEdit() {
     form.tags = article.tags?.map((t: any) => t.id) || []
     markClean()
   } catch {
-    router.push('/manage/articles')
+    router.push('/user/me')
   }
-}
 
-async function confirmRestore() {
-  showRestoreDialog.value = false
-  const data = await restore()
-  if (data) {
-    try {
-      const parsed = JSON.parse(data)
-      form.title = parsed.title || ''
-      form.slug = parsed.slug || ''
-      form.summary = parsed.summary || ''
-      form.content = parsed.content || ''
-      form.coverImage = parsed.coverImage || ''
-      form.categoryId = parsed.categoryId
-      form.tags = parsed.tags || []
-    } catch {
-      // skip
+  async function confirmRestore() {
+    showRestoreDialog.value = false
+    const data = await restore()
+    if (data) {
+      try {
+        const parsed = JSON.parse(data)
+        form.title = parsed.title || ''
+        form.slug = parsed.slug || ''
+        form.summary = parsed.summary || ''
+        form.content = parsed.content || ''
+        form.coverImage = parsed.coverImage || ''
+        form.categoryId = parsed.categoryId
+        form.tags = parsed.tags || []
+      } catch {
+        // skip
+      }
     }
   }
-}
 
-function discardRestore() {
-  showRestoreDialog.value = false
-  markClean()
-}
-
-onMounted(async () => {
-  const [catRes, tagRes] = await Promise.allSettled([
-    getCategories({ size: 100 }) as any,
-    getTags({ size: 100 }) as any,
-  ])
-  if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
-  if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
-
-  await loadArticleForEdit()
-
-  const hasDraft = await checkAndRestore()
-  if (hasDraft) {
-    showRestoreDialog.value = true
+  function discardRestore() {
+    showRestoreDialog.value = false
+    markClean()
   }
-})
+
+  onMounted(async () => {
+    const [catRes, tagRes] = await Promise.allSettled([
+      getCategories({ size: 100 }) as any,
+      getTags({ size: 100 }) as any,
+    ])
+    if (catRes.status === 'fulfilled') categories.value = catRes.value.data?.records || []
+    if (tagRes.status === 'fulfilled') tags.value = tagRes.value.data?.records || []
+
+    await loadArticleForEdit()
+
+    const hasDraft = await checkAndRestore()
+    if (hasDraft) {
+      showRestoreDialog.value = true
+    }
+  })
 </script>

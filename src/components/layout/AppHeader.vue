@@ -69,15 +69,9 @@
                 </button>
                 <button
                   class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-cyber-body hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] transition-colors duration-200 cursor-pointer"
-                  @click="handleCommand('profile')">
+                  @click="handleCommand('myHome')">
                   <User class="w-4 h-4" />
-                  <span>个人信息</span>
-                </button>
-                <button
-                  class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-cyber-body hover:text-cyber-primary hover:bg-[rgba(0,240,255,0.06)] transition-colors duration-200 cursor-pointer"
-                  @click="handleCommand('myArticles')">
-                  <FileText class="w-4 h-4" />
-                  <span>我的文章</span>
+                  <span>我的主页</span>
                 </button>
                 <div class="h-px bg-[rgba(0,240,255,0.1)]"></div>
                 <button
@@ -118,7 +112,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { Home, Info, PenSquare, User, LogOut, Menu, FileText, ChevronDown, Search } from 'lucide-vue-next'
+import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
 
 const router = useRouter()
@@ -174,11 +168,8 @@ function handleCommand(command: string) {
     case 'write':
       router.push('/manage/editor')
       break
-    case 'profile':
-      router.push('/profile')
-      break
-    case 'myArticles':
-      router.push('/manage/articles')
+    case 'myHome':
+      router.push('/user/me')
       break
     case 'logout':
       userStore.logout()

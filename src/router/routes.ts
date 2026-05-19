@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/user/me',
         name: 'UserMe',
-        component: () => import('@/views/user/UserMe.vue'),
+        component: () => import('@/views/user/UserProfile.vue'),
         meta: { title: '我的首页', requiresAuth: true },
     },
     {
@@ -50,22 +50,10 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '注册', layout: 'blank' },
     },
     {
-        path: '/settings',
-        name: 'Settings',
-        component: () => import('@/views/settings/SettingsView.vue'),
-        meta: { title: '用户设置', requiresAuth: true },
-    },
-    {
-        path: '/profile',
-        name: 'Profile',
-        component: () => import('@/views/auth/ProfileView.vue'),
-        meta: { title: '个人信息', requiresAuth: true },
-    },
-    {
-        path: '/manage/articles',
-        name: 'MyArticles',
-        component: () => import('@/views/manage/MyArticles.vue'),
-        meta: { title: '我的文章', requiresAuth: true },
+        path: '/profile/edit',
+        name: 'ProfileEdit',
+        component: () => import('@/views/user/ProfileEdit.vue'),
+        meta: { title: '编辑资料', requiresAuth: true },
     },
     {
         path: '/manage/editor',

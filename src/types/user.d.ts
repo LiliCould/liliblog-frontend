@@ -11,4 +11,7 @@ export interface User {
 export interface UserUpdateDTO {
     nickname?: string
     avatar?: string
+    oldPassword?: string
+    newPassword?: string
+    confirmPassword?: string
 }

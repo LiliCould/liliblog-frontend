@@ -65,13 +65,9 @@
                 <PenSquare class="w-[18px] h-[18px]" />
                 <span>写文章</span>
               </a>
-              <a class="flex items-center gap-3 px-5 py-3 text-sm text-cyber-body cursor-pointer transition-all duration-200 relative hover:bg-[rgba(0,240,255,0.06)] hover:text-cyber-primary before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-0 before:bg-cyber-primary before:rounded-full before:transition-[height] before:duration-200 before:[box-shadow:0_0_6px_rgba(0,240,255,0.4)] hover:before:h-3/5" @click="navigate('/manage/articles')">
-                <FileText class="w-[18px] h-[18px]" />
-                <span>我的文章</span>
-              </a>
-              <a class="flex items-center gap-3 px-5 py-3 text-sm text-cyber-body cursor-pointer transition-all duration-200 relative hover:bg-[rgba(0,240,255,0.06)] hover:text-cyber-primary before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-0 before:bg-cyber-primary before:rounded-full before:transition-[height] before:duration-200 before:[box-shadow:0_0_6px_rgba(0,240,255,0.4)] hover:before:h-3/5" @click="navigate('/profile')">
+              <a class="flex items-center gap-3 px-5 py-3 text-sm text-cyber-body cursor-pointer transition-all duration-200 relative hover:bg-[rgba(0,240,255,0.06)] hover:text-cyber-primary before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-0 before:bg-cyber-primary before:rounded-full before:transition-[height] before:duration-200 before:[box-shadow:0_0_6px_rgba(0,240,255,0.4)] hover:before:h-3/5" @click="navigate('/user/me')">
                 <UserIcon class="w-[18px] h-[18px]" />
-                <span>个人信息</span>
+                <span>我的主页</span>
               </a>
               <div class="h-px bg-[rgba(0,240,255,0.15)] my-2 mx-5 relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(0,240,255,0.2)] after:to-transparent"></div>
               <a class="flex items-center gap-3 px-5 py-3 text-sm text-cyber-pink cursor-pointer transition-all duration-200 relative hover:bg-[rgba(255,45,120,0.08)]" @click="handleLogout">
@@ -103,7 +99,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { X, Home, Info, PenSquare, FileText, User as UserIcon, LogOut, UserPlus } from 'lucide-vue-next'
+import { X, Home, Info, PenSquare, User as UserIcon, LogOut, UserPlus } from 'lucide-vue-next'
 
 const router = useRouter()
 const userStore = useUserStore()
