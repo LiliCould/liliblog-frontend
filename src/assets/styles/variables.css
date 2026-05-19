@@ -168,8 +168,8 @@
     --color-title-secondary: #1e293b;
     --color-body: #334155;
     --color-body-secondary: #475569;
-    --color-muted: #64748b;
-    --color-muted-light: #94a3b8;
+    --color-muted: #475569;
+    --color-muted-light: #64748b;
 
     --color-border: rgba(2, 132, 199, 0.2);
     --color-border-hover: rgba(2, 132, 199, 0.5);

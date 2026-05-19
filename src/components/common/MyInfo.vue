@@ -1,9 +1,9 @@
 <template>
   <div
-    class="bg-[rgba(20,20,35,0.85)] border border-t-border rounded-lg overflow-hidden transition-all duration-250 relative hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+    class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg overflow-hidden transition-all duration-250 relative hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
     style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
     <div
-      class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-pink transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
+      class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
     </div>
 
     <div class="relative">
@@ -15,10 +15,10 @@
     </div>
 
     <div class="p-5">
-      <h3 class="text-xl font-bold text-center text-cyber-title mb-2">
+      <h3 class="text-xl font-bold text-center text-t-title mb-2">
         {{ userInfo.nickname }}
       </h3>
-      <p class="text-sm text-center text-cyber-body mb-4 leading-relaxed opacity-80">
+      <p class="text-sm text-center text-t-body mb-4 leading-relaxed opacity-80">
         {{ userInfo.signature }}
       </p>
 
@@ -36,15 +36,15 @@
 
       <div class="space-y-1">
         <a v-for="link in infoLinks" :key="link.text" :href="link.url"
-          class="flex items-center justify-between px-3 py-3 rounded-md text-sm text-cyber-body no-underline transition-all duration-200 relative hover:text-cyber-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/link">
+          class="flex items-center justify-between px-3 py-3 rounded-md text-sm text-t-body no-underline transition-all duration-200 relative hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/link">
           <span
-            class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-cyber-primary to-cyber-pink rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/link:h-3/5"></span>
+            class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-t-primary to-t-secondary rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/link:h-3/5"></span>
           <span class="flex items-center gap-2">
             {{ link.text }}
             <span>{{ link.emoji }}</span>
           </span>
           <ChevronRight
-            class="w-4 h-4 text-cyber-muted opacity-0 -translate-x-1 transition-all duration-250 group-hover/link:opacity-100 group-hover/link:translate-x-0" />
+            class="w-4 h-4 text-t-muted opacity-0 -translate-x-1 transition-all duration-250 group-hover/link:opacity-100 group-hover/link:translate-x-0" />
         </a>
       </div>
     </div>

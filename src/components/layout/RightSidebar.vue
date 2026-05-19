@@ -1,14 +1,14 @@
 <template>
   <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
     <div
-      class="bg-[rgba(20,20,35,0.85)] border border-t-border rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
       style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
       <div
-        class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-green transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
+        class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-success transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
       </div>
       <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-        <Shuffle class="w-5 h-5 text-cyber-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
-        <h3 class="text-base font-semibold text-cyber-title m-0">随机文章</h3>
+        <Shuffle class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+        <h3 class="text-base font-semibold text-t-title m-0">随机文章</h3>
       </div>
 
       <div v-if="loading" class="flex flex-col gap-3">
@@ -17,12 +17,12 @@
 
       <div v-else class="flex flex-col gap-1">
         <router-link v-for="article in articles" :key="article.id" :to="`/article/${article.id}`"
-          class="flex items-start gap-2 px-3 py-2.5 rounded-md text-sm text-cyber-body no-underline transition-all duration-200 hover:text-cyber-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/article">
+          class="flex items-start gap-2 px-3 py-2.5 rounded-md text-sm text-t-body no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/article">
           <ChevronRight
-            class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyber-muted transition-colors duration-200 group-hover/article:text-cyber-primary" />
+            class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-t-muted transition-colors duration-200 group-hover/article:text-t-primary" />
           <span class="line-clamp-2 leading-snug">{{ article.title }}</span>
         </router-link>
-        <div v-if="articles.length === 0" class="flex flex-col items-center gap-2 py-6 text-cyber-muted text-sm">
+        <div v-if="articles.length === 0" class="flex flex-col items-center gap-2 py-6 text-t-muted text-sm">
           <FileText class="w-8 h-8 opacity-40" />
           <span>暂无文章</span>
         </div>
@@ -30,14 +30,14 @@
     </div>
 
     <div
-      class="bg-[rgba(20,20,35,0.85)] border border-t-border rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-250 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
       style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
       <div
-        class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyber-primary to-cyber-pink transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
+        class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
       </div>
       <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-        <TagIcon class="w-5 h-5 text-cyber-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
-        <h3 class="text-base font-semibold text-cyber-title m-0">标签云</h3>
+        <TagIcon class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+        <h3 class="text-base font-semibold text-t-title m-0">标签云</h3>
       </div>
 
       <div
@@ -50,7 +50,7 @@
           {{ tag.name }}
         </router-link>
         <div v-if="appStore.tags.length === 0"
-          class="flex flex-col items-center gap-2 py-8 text-cyber-muted text-sm w-full">
+          class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm w-full">
           <AlertCircle class="w-10 h-10 opacity-40" />
           <span>暂无标签</span>
         </div>

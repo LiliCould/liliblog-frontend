@@ -1,11 +1,11 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#0e0e14] overflow-hidden">
-    <header class="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-6 z-50"
-      style="background:rgba(10,10,15,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,240,255,0.15)">
+  <div class="h-screen flex flex-col bg-t-bg overflow-hidden">
+    <header class="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-6 z-50 border-b border-t-border"
+      style="background:rgba(var(--color-bg-rgb),0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
       <div class="flex items-center gap-3">
         <router-link to="/" class="flex items-center gap-2 no-underline group">
           <img :src="logoSvg" alt="LiliBlog"
-            class="w-[100px] h-auto object-contain transition-[filter] duration-400 group-hover:[filter:drop-shadow(0_0_8px_rgba(0,240,255,0.6))]" />
+            class="w-[100px] h-auto object-contain transition-[filter] duration-400 group-hover:[filter:drop-shadow(0_0_8px_rgba(var(--color-primary-rgb),0.6))]" />
         </router-link>
         <span class="text-t-muted text-xs hidden sm:inline">/</span>
         <span class="text-t-body text-sm font-medium hidden sm:inline">{{ isEdit ? '编辑文章' : '写文章' }}</span>
@@ -50,10 +50,10 @@
     </header>
 
     <div class="flex flex-1 min-h-0">
-      <div class="flex-1 min-w-0 flex flex-col bg-[#0e0e14]">
+      <div class="flex-1 min-w-0 flex flex-col bg-t-bg">
         <div class="flex-1 min-h-0 p-4">
           <div class="h-full rounded-xl overflow-hidden border border-[rgba(var(--color-primary-rgb),0.06)]"
-            style="background:rgba(14,14,20,0.8)">
+            style="background:rgba(var(--color-bg-rgb),0.8)">
             <MarkdownEditor v-model="form.content" @input="onContentChange" />
           </div>
         </div>
@@ -61,7 +61,7 @@
 
       <aside
         class="flex-shrink-0 overflow-y-auto transition-all duration-300 border-l border-[rgba(var(--color-primary-rgb),0.08)]"
-        :class="metaOpen ? 'w-80' : 'w-0 border-l-0'" style="background:rgba(14,14,20,0.6)">
+        :class="metaOpen ? 'w-80' : 'w-0 border-l-0'" style="background:rgba(var(--color-bg-rgb),0.6)">
         <div v-if="metaOpen" class="w-80 p-4 space-y-4">
           <div>
             <label class="flex items-center gap-1.5 text-xs font-semibold text-t-body mb-1.5 uppercase tracking-wider">
@@ -69,7 +69,7 @@
               标题 <span class="text-t-secondary">*</span>
             </label>
             <input v-model="form.title" type="text" placeholder="输入文章标题"
-              class="w-full h-9 px-3 rounded-lg bg-[rgba(0,0,0,0.3)] border text-t-body text-sm outline-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
+              class="w-full h-9 px-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-t-body text-sm outline-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
               :class="errors.title ? 'border-t-secondary' : 'border-t-border focus:border-t-primary'"
               @input="clearError('title'); onContentChange()" />
             <p v-if="errors.title" class="mt-1 text-xs text-t-secondary">{{ errors.title }}</p>
@@ -81,7 +81,7 @@
               别名 <span class="text-t-secondary">*</span>
             </label>
             <input v-model="form.slug" type="text" placeholder="仅支持字母、数字和连字符"
-              class="w-full h-9 px-3 rounded-lg bg-[rgba(0,0,0,0.3)] border text-t-body text-sm outline-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
+              class="w-full h-9 px-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-t-body text-sm outline-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
               :class="errors.slug ? 'border-t-secondary' : 'border-t-border focus:border-t-primary'"
               @input="validateSlug" />
             <p v-if="errors.slug" class="mt-1 text-xs text-t-secondary">{{ errors.slug }}</p>
@@ -94,7 +94,7 @@
               摘要 <span class="text-t-secondary">*</span>
             </label>
             <textarea v-model="form.summary" placeholder="输入文章摘要"
-              class="w-full min-h-[100px] p-3 rounded-lg bg-[rgba(0,0,0,0.3)] border text-t-body text-sm leading-relaxed placeholder-t-muted outline-none resize-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
+              class="w-full min-h-[100px] p-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-t-body text-sm leading-relaxed placeholder-t-muted outline-none resize-none transition-all duration-300 focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
               :class="errors.summary ? 'border-t-secondary' : 'border-t-border focus:border-t-primary'"
               @input="clearError('summary'); onContentChange()"></textarea>
             <p v-if="errors.summary" class="mt-1 text-xs text-t-secondary">{{ errors.summary }}</p>
@@ -106,7 +106,7 @@
               分类 <span class="text-t-secondary">*</span>
             </label>
             <select v-model="form.categoryId"
-              class="w-full h-9 px-3 rounded-lg bg-[rgba(0,0,0,0.3)] border text-t-body text-sm outline-none transition-all duration-300 focus:border-t-primary appearance-none cursor-pointer"
+              class="w-full h-9 px-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.5)] border text-t-body text-sm outline-none transition-all duration-300 focus:border-t-primary appearance-none cursor-pointer"
               :class="errors.categoryId ? 'border-t-secondary' : 'border-t-border'"
               @change="clearError('categoryId'); onContentChange()">
               <option :value="undefined" disabled class="bg-t-bg">选择分类</option>
@@ -125,7 +125,7 @@
               class="relative rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)] mb-2">
               <img :src="form.coverImage" :alt="form.title" class="w-full h-32 object-cover" />
               <button
-                class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[rgba(0,0,0,0.6)] text-t-secondary flex items-center justify-center text-xs hover:bg-[rgba(var(--color-secondary-rgb),0.2)] transition-colors"
+                class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[rgba(var(--color-bg-rgb),0.6)] text-t-secondary flex items-center justify-center text-xs hover:bg-[rgba(var(--color-secondary-rgb),0.2)] transition-colors"
                 @click="form.coverImage = ''">✕</button>
             </div>
             <label
@@ -171,7 +171,8 @@
 
       <button
         class="flex-shrink-0 w-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.06)]"
-        style="background:rgba(14,14,20,0.4);border-left:1px solid rgba(0,240,255,0.08)" @click="metaOpen = !metaOpen">
+        style="background:rgba(var(--color-bg-rgb),0.4);border-left:1px solid rgba(var(--color-primary-rgb),0.08)"
+        @click="metaOpen = !metaOpen">
         <ChevronLeft v-if="metaOpen" class="w-4 h-4 text-t-primary" />
         <ChevronRight v-else class="w-4 h-4 text-t-muted" />
       </button>
@@ -181,7 +182,7 @@
       <div v-if="showRestoreDialog" class="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(0,0,0,0.7)]"
         style="backdrop-filter:blur(4px)">
         <div class="rounded-xl p-6 max-w-md w-full mx-4 border border-[rgba(var(--color-primary-rgb),0.2)]"
-          style="background:rgba(17,17,24,0.95)">
+          style="background:rgba(var(--color-surface-rgb),0.95)">
           <h3 class="text-lg font-semibold text-t-title mb-3">发现未保存的草稿</h3>
           <p class="text-sm text-t-muted mb-5">检测到上次编辑的未保存内容，是否恢复？</p>
           <div class="flex justify-end gap-3">
