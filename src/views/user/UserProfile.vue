@@ -43,7 +43,7 @@
         </div>
         <button v-if="isSelf"
           class="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)]"
-          @click="router.push('/manage/editor')">
+          @click="router.push('/write')">
           <Plus class="w-4 h-4" />
           写文章
         </button>

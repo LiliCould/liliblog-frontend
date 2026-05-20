@@ -71,48 +71,165 @@
 
                 <div class="h-px bg-t-border mb-6"></div>
 
-                <div class="mb-6" :class="followSystem ? 'opacity-40 pointer-events-none' : ''">
-                    <div class="flex items-center justify-between mb-3">
+                <div :class="followSystem ? 'opacity-40 pointer-events-none' : ''">
+                    <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-semibold text-t-body">自定义配色</h3>
                         <button class="text-xs text-t-muted hover:text-t-primary transition-colors duration-200"
                             @click="handleReset">
-                            重置
+                            全部重置
                         </button>
                     </div>
-                    <div class="flex flex-col gap-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-t-muted">主色调</span>
-                            <div class="flex items-center gap-2">
+
+                    <div class="mb-5">
+                        <h4 class="text-xs font-semibold text-t-muted uppercase tracking-wider mb-3">品牌色</h4>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">主色调</span>
+                                    <span class="text-[10px] text-t-muted">链接、按钮、激活态</span>
+                                </div>
                                 <input type="color"
-                                    :value="customOverrides.primary || getComputedColor('--color-primary')"
+                                    :value="localOverrides.primary || getComputedColor('--color-primary')"
                                     class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
                                     @input="updateCustom('primary', ($event.target as HTMLInputElement).value)" />
                             </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-t-muted">强调色</span>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">强调色</span>
+                                    <span class="text-[10px] text-t-muted">次要按钮、标签高亮</span>
+                                </div>
                                 <input type="color"
-                                    :value="customOverrides.secondary || getComputedColor('--color-secondary')"
+                                    :value="localOverrides.secondary || getComputedColor('--color-secondary')"
                                     class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
                                     @input="updateCustom('secondary', ($event.target as HTMLInputElement).value)" />
                             </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">辅助色</span>
+                                    <span class="text-[10px] text-t-muted">渐变、装饰元素</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.tertiary || getComputedColor('--color-tertiary')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('tertiary', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">功能强调色</span>
+                                    <span class="text-[10px] text-t-muted">特殊高亮、引用块边框</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.accent || getComputedColor('--color-accent')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('accent', ($event.target as HTMLInputElement).value)" />
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-t-muted">背景色</span>
-                            <div class="flex items-center gap-2">
-                                <input type="color" :value="customOverrides.bg || getComputedColor('--color-bg')"
+                    </div>
+
+                    <div class="mb-5">
+                        <h4 class="text-xs font-semibold text-t-muted uppercase tracking-wider mb-3">文字色</h4>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">标题色</span>
+                                    <span class="text-[10px] text-t-muted">文章标题、页面大标题</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.title || getComputedColor('--color-title')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('title', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">正文色</span>
+                                    <span class="text-[10px] text-t-muted">段落文字、描述文本</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.body || getComputedColor('--color-body')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('body', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h4 class="text-xs font-semibold text-t-muted uppercase tracking-wider mb-3">背景与表面</h4>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">页面背景</span>
+                                    <span class="text-[10px] text-t-muted">最底层画布色</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.bg || getComputedColor('--color-bg')"
                                     class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
                                     @input="updateCustom('bg', ($event.target as HTMLInputElement).value)" />
                             </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-t-muted">卡片色</span>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">面板色</span>
+                                    <span class="text-[10px] text-t-muted">侧边栏、导航栏</span>
+                                </div>
                                 <input type="color"
-                                    :value="customOverrides.surface || getComputedColor('--color-surface')"
+                                    :value="localOverrides.surface || getComputedColor('--color-surface')"
                                     class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
                                     @input="updateCustom('surface', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">卡片色</span>
+                                    <span class="text-[10px] text-t-muted">文章卡片、信息面板</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.card || getComputedColor('--color-card')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('card', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">浮层色</span>
+                                    <span class="text-[10px] text-t-muted">弹窗、下拉菜单</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.elevated || getComputedColor('--color-elevated')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('elevated', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h4 class="text-xs font-semibold text-t-muted uppercase tracking-wider mb-3">边框与输入</h4>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">边框色</span>
+                                    <span class="text-[10px] text-t-muted">卡片边框、分割线</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.border || getComputedColor('--color-border-solid')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('border', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">输入框背景</span>
+                                    <span class="text-[10px] text-t-muted">搜索框、表单输入</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.inputBg || getComputedColor('--color-input-bg')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('inputBg', ($event.target as HTMLInputElement).value)" />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">代码块背景</span>
+                                    <span class="text-[10px] text-t-muted">行内代码、代码片段</span>
+                                </div>
+                                <input type="color"
+                                    :value="localOverrides.codeBg || getComputedColor('--color-code-bg')"
+                                    class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                                    @input="updateCustom('codeBg', ($event.target as HTMLInputElement).value)" />
                             </div>
                         </div>
                     </div>
@@ -125,7 +242,10 @@
                     <div class="flex flex-col gap-4">
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <span class="text-sm text-t-muted">字体大小</span>
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">字体大小</span>
+                                    <span class="text-[10px] text-t-muted">正文基础字号</span>
+                                </div>
                                 <span class="text-xs text-t-primary font-mono">{{ localOverrides.fontSize || 15
                                 }}px</span>
                             </div>
@@ -135,13 +255,44 @@
                         </div>
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <span class="text-sm text-t-muted">圆角大小</span>
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">行高</span>
+                                    <span class="text-[10px] text-t-muted">正文行间距</span>
+                                </div>
+                                <span class="text-xs text-t-primary font-mono">{{ localOverrides.lineHeight || 1.6
+                                }}</span>
+                            </div>
+                            <input type="range" :min="1.2" :max="2.0" :step="0.1"
+                                :value="localOverrides.lineHeight || 1.6"
+                                class="w-full h-1.5 rounded-full appearance-none bg-[rgba(var(--color-primary-rgb),0.15)] cursor-pointer accent-[var(--color-primary)]"
+                                @input="updateCustom('lineHeight', Number(($event.target as HTMLInputElement).value))" />
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">圆角大小</span>
+                                    <span class="text-[10px] text-t-muted">卡片、按钮圆角</span>
+                                </div>
                                 <span class="text-xs text-t-primary font-mono">{{ localOverrides.borderRadius ?? 8
                                 }}px</span>
                             </div>
                             <input type="range" :min="0" :max="20" :value="localOverrides.borderRadius ?? 8"
                                 class="w-full h-1.5 rounded-full appearance-none bg-[rgba(var(--color-primary-rgb),0.15)] cursor-pointer accent-[var(--color-primary)]"
                                 @input="updateCustom('borderRadius', Number(($event.target as HTMLInputElement).value))" />
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-t-body">内容宽度</span>
+                                    <span class="text-[10px] text-t-muted">主内容区最大宽度</span>
+                                </div>
+                                <span class="text-xs text-t-primary font-mono">{{ localOverrides.contentMaxWidth || 1100
+                                }}px</span>
+                            </div>
+                            <input type="range" :min="800" :max="1400" :step="50"
+                                :value="localOverrides.contentMaxWidth || 1100"
+                                class="w-full h-1.5 rounded-full appearance-none bg-[rgba(var(--color-primary-rgb),0.15)] cursor-pointer accent-[var(--color-primary)]"
+                                @input="updateCustom('contentMaxWidth', Number(($event.target as HTMLInputElement).value))" />
                         </div>
                     </div>
                 </div>

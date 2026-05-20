@@ -1,6 +1,5 @@
 <template>
-  <AdminLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold text-t-title">分类管理</h2>
         <button
@@ -126,7 +125,6 @@
         </Transition>
       </Teleport>
     </div>
-  </AdminLayout>
 </template>
 
 <script setup lang="ts">
@@ -137,7 +135,7 @@ import type { Category } from '@/types/category'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { useToast } from '@/composables/useToast'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+
 
 const categories = ref<Category[]>([])
 const loading = ref(false)

@@ -1,6 +1,5 @@
 <template>
-  <AdminLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold text-t-title">标签管理</h2>
         <button
@@ -105,7 +104,6 @@
         </Transition>
       </Teleport>
     </div>
-  </AdminLayout>
 </template>
 
 <script setup lang="ts">
@@ -117,7 +115,7 @@ import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { formatDate } from '@/utils/format'
 import { useToast } from '@/composables/useToast'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)

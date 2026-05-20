@@ -56,18 +56,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '编辑资料', requiresAuth: true },
     },
     {
-        path: '/manage/editor',
-        name: 'ArticleCreate',
-        component: () => import('@/views/manage/ArticleEditor.vue'),
-        meta: { title: '写文章', requiresAuth: true, layout: 'blank' },
-    },
-    {
-        path: '/manage/editor/:id(\\d+)',
-        name: 'ArticleEdit',
-        component: () => import('@/views/manage/ArticleEditor.vue'),
-        meta: { title: '编辑文章', requiresAuth: true, layout: 'blank' },
-    },
-    {
         path: '/write',
         name: 'Write',
         component: () => import('@/views/manage/ArticleEditor.vue'),

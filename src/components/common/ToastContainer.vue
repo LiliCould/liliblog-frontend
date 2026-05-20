@@ -66,39 +66,51 @@ const { toasts, dismiss } = useToast()
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  border-radius: 10px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-solid);
+  box-shadow: var(--shadow-lg);
   pointer-events: auto;
   min-width: 280px;
   max-width: 480px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
   font-size: 14px;
   line-height: 1.5;
 }
 
 .toast-success {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #4ade80;
+  border-left: 3px solid var(--color-success);
+}
+
+.toast-success .toast-icon,
+.toast-success .toast-message {
+  color: var(--color-success);
 }
 
 .toast-error {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #f87171;
+  border-left: 3px solid var(--color-danger);
+}
+
+.toast-error .toast-icon,
+.toast-error .toast-message {
+  color: var(--color-danger);
 }
 
 .toast-warning {
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  color: #fbbf24;
+  border-left: 3px solid var(--color-warning);
+}
+
+.toast-warning .toast-icon,
+.toast-warning .toast-message {
+  color: var(--color-warning);
 }
 
 .toast-info {
-  background: rgba(var(--color-primary-rgb), 0.08);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
-  color: #67e8f9;
+  border-left: 3px solid var(--color-primary);
+}
+
+.toast-info .toast-icon,
+.toast-info .toast-message {
+  color: var(--color-primary);
 }
 
 .toast-icon {
@@ -113,6 +125,7 @@ const { toasts, dismiss } = useToast()
 .toast-message {
   flex: 1;
   word-break: break-word;
+  color: var(--color-body);
 }
 
 .toast-close {
@@ -127,22 +140,22 @@ const { toasts, dismiss } = useToast()
   color: inherit;
   opacity: 0.5;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   transition: opacity 0.15s, background 0.15s;
   padding: 0;
 }
 
 .toast-close:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
 }
 
 .toast-enter-active {
-  transition: opacity 300ms ease, transform 300ms ease;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .toast-leave-active {
-  transition: opacity 200ms ease, transform 200ms ease;
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
 .toast-enter-from {

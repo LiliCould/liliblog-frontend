@@ -177,7 +177,7 @@ function handleCommand(command: string) {
   showDropdown.value = false
   switch (command) {
     case 'write':
-      router.push('/manage/editor')
+      router.push('/write')
       break
     case 'myHome':
       router.push('/user/me')

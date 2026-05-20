@@ -1,6 +1,5 @@
 <template>
-  <AdminLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div
           class="rounded-xl bg-t-surface border border-t-border p-5 transition-all duration-300 hover:border-t-primary hover:shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.1)]">
@@ -74,7 +73,6 @@
         <div v-else class="text-center py-8 text-t-muted text-sm">暂无文章</div>
       </div>
     </div>
-  </AdminLayout>
 </template>
 
 <script setup lang="ts">
@@ -89,7 +87,7 @@ import type { Tag as TagType } from '@/types/tag'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { formatRelativeTime } from '@/utils/format'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+
 
 const stats = reactive({
   articleCount: 0,

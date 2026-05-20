@@ -1,6 +1,5 @@
 <template>
-  <AdminLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3 w-full sm:w-auto">
           <div class="relative flex-1 sm:flex-initial">
@@ -91,7 +90,6 @@
         <Pagination :current="current" :total="total" :page-size="pageSize" @update:current="handlePageChange" />
       </div>
     </div>
-  </AdminLayout>
 </template>
 
 <script setup lang="ts">
@@ -103,7 +101,7 @@ import type { Article } from '@/types/article'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { formatDate } from '@/utils/format'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+
 import Pagination from '@/components/ui/Pagination.vue'
 
 const router = useRouter()

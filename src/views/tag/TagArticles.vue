@@ -3,15 +3,15 @@
     <div class="min-h-screen">
       <div class="mb-8">
         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.3)] flex items-center justify-center">
-            <Tag class="w-5 h-5 text-[#00f0ff]" />
+          <div class="w-10 h-10 rounded-lg bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center">
+            <Tag class="w-5 h-5 text-t-primary" />
           </div>
-          <h1 class="text-2xl font-bold text-white">{{ tagName }}</h1>
+          <h1 class="text-2xl font-bold text-t-title">{{ tagName }}</h1>
         </div>
       </div>
 
       <div v-if="loading" class="flex flex-col gap-6">
-        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-[#111118] border border-[rgba(0,240,255,0.15)] animate-pulse"></div>
+        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse"></div>
       </div>
 
       <ArticleList
