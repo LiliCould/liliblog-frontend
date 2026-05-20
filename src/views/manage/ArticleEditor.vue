@@ -255,7 +255,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Save, Send, Image, FolderOpen, Tag as TagIcon, Link, FileText, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Type, AlignLeft, Upload, Check, X } from 'lucide-vue-next'
 import { createArticle, updateArticle, getArticleById } from '@/api/article'
@@ -513,7 +513,15 @@ function discardRestore() {
   markClean()
 }
 
+function handleKeydown(e: KeyboardEvent) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    manualSave()
+  }
+}
+
 onMounted(async () => {
+  window.addEventListener('keydown', handleKeydown)
   const [catRes, tagRes] = await Promise.allSettled([
     getCategories({ size: 100 }) as any,
     getTags({ current: 1, size: 50 }) as any,
@@ -537,5 +545,9 @@ onMounted(async () => {
 
 watch(showCategoryModal, (val) => {
   if (val) loadCategories(1)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>

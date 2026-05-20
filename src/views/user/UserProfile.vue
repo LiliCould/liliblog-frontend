@@ -100,7 +100,7 @@
           <div v-if="isSelf" class="flex items-center gap-1 shrink-0">
             <button
               class="w-8 h-8 rounded-lg flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all duration-200"
-              @click="router.push(`/manage/editor/${article.id}`)">
+              @click="router.push(`/write/${article.id}`)">
               <Edit class="w-4 h-4" />
             </button>
             <button
@@ -118,7 +118,7 @@
       <EmptyState v-else :message="emptyMessage">
         <button v-if="isSelf"
           class="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)]"
-          @click="router.push('/manage/editor')">
+          @click="router.push('/write')">
           <Plus class="w-4 h-4" />
           开始写作
         </button>
