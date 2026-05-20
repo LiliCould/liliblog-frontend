@@ -14,10 +14,6 @@ export function register(data: RegisterDTO) {
     return request.post<ApiResponse<null>>('/auth/register', data)
 }
 
-export function refreshToken() {
-    return request.post<ApiResponse<{ token: string }>>('/auth/refresh')
-}
-
 export function logout() {
     return request.post<ApiResponse<null>>('/auth/logout')
 }

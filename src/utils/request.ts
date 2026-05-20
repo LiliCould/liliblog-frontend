@@ -1,14 +1,16 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
-import { getToken, setToken, clearAuth } from '@/utils/storage'
+import { getToken, setToken, setTokenExpires, clearAuth } from '@/utils/storage'
 import type { ApiResponse } from '@/types/api'
 import router from '@/router/index'
-
 import { useToast } from '@/composables/useToast'
+
+const LOG_PREFIX = '[认证]'
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 15000,
+    withCredentials: true,
 })
 
 let isRefreshing = false
@@ -48,6 +50,13 @@ function showToast(type: 'error' | 'success', message: string) {
     }
 }
 
+function handleRefreshTokenExpired() {
+    console.warn(`${LOG_PREFIX} 刷新令牌已过期，清除登录状态`)
+    clearAuth()
+    showToast('error', '登录已过期，请重新登录')
+    router.push('/login')
+}
+
 service.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const token = getToken()
@@ -79,31 +88,38 @@ service.interceptors.response.use(
             if (!isRefreshing) {
                 isRefreshing = true
                 originalConfig._retry = true
+                console.log(`${LOG_PREFIX} 访问令牌过期，尝试使用刷新令牌获取新令牌`)
                 try {
-                    const { data } = await axios.post<ApiResponse<{ accessToken: string }>>(
+                    const { data } = await axios.post<ApiResponse<{ accessToken: string; expiresIn: number }>>(
                         `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
                         {},
-                        { headers: { Authorization: `Bearer ${getToken()}` } }
+                        { withCredentials: true },
                     )
                     if (data.code === 0) {
+                        console.log(`${LOG_PREFIX} 令牌刷新成功`)
                         setToken(data.data.accessToken)
+                        setTokenExpires(data.data.expiresIn)
                         pendingRequests.forEach((cb) => cb(data.data.accessToken))
                         pendingRequests = []
                         originalConfig.headers.Authorization = `Bearer ${data.data.accessToken}`
                         return service(originalConfig)
                     } else {
-                        clearAuth()
-                        router.push('/login')
+                        console.warn(`${LOG_PREFIX} 令牌刷新失败，业务码: ${data.code}`)
+                        handleRefreshTokenExpired()
                         return Promise.reject(error)
                     }
-                } catch {
-                    clearAuth()
-                    router.push('/login')
+                } catch (refreshError: any) {
+                    console.warn(`${LOG_PREFIX} 刷新令牌请求失败`)
+                    if (refreshError?.response?.status === 401) {
+                        console.warn(`${LOG_PREFIX} 刷新令牌已过期`)
+                    }
+                    handleRefreshTokenExpired()
                     return Promise.reject(error)
                 } finally {
                     isRefreshing = false
                 }
             } else {
+                console.log(`${LOG_PREFIX} 令牌刷新中，请求进入等待队列`)
                 return new Promise((resolve) => {
                     pendingRequests.push((token: string) => {
                         originalConfig.headers.Authorization = `Bearer ${token}`
@@ -131,5 +147,38 @@ service.interceptors.response.use(
         return Promise.reject(error)
     },
 )
+
+export async function proactiveRefresh(): Promise<boolean> {
+    if (isRefreshing) return false
+    isRefreshing = true
+    console.log(`${LOG_PREFIX} 主动刷新令牌`)
+    try {
+        const { data } = await axios.post<ApiResponse<{ accessToken: string; expiresIn: number }>>(
+            `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+            {},
+            { withCredentials: true },
+        )
+        if (data.code === 0) {
+            console.log(`${LOG_PREFIX} 主动刷新成功`)
+            setToken(data.data.accessToken)
+            setTokenExpires(data.data.expiresIn)
+            pendingRequests.forEach((cb) => cb(data.data.accessToken))
+            pendingRequests = []
+            return true
+        } else {
+            console.warn(`${LOG_PREFIX} 主动刷新失败，业务码: ${data.code}`)
+            handleRefreshTokenExpired()
+            return false
+        }
+    } catch (refreshError: any) {
+        console.warn(`${LOG_PREFIX} 主动刷新请求失败`)
+        if (refreshError?.response?.status === 401) {
+            handleRefreshTokenExpired()
+        }
+        return false
+    } finally {
+        isRefreshing = false
+    }
+}
 
 export default service

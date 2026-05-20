@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'liliblog_token'
+const TOKEN_EXPIRES_KEY = 'liliblog_token_expires'
 const USER_INFO_KEY = 'liliblog_user_info'
 
 export function getToken(): string | null {
@@ -11,6 +12,32 @@ export function setToken(token: string): void {
 
 export function removeToken(): void {
     localStorage.removeItem(TOKEN_KEY)
+}
+
+export function getTokenExpires(): number {
+    const val = localStorage.getItem(TOKEN_EXPIRES_KEY)
+    return val ? Number(val) : 0
+}
+
+export function setTokenExpires(expiresIn: number): void {
+    const expiresAt = Date.now() + expiresIn * 1000
+    localStorage.setItem(TOKEN_EXPIRES_KEY, String(expiresAt))
+}
+
+export function removeTokenExpires(): void {
+    localStorage.removeItem(TOKEN_EXPIRES_KEY)
+}
+
+export function isTokenExpiringSoon(thresholdMs: number = 5 * 60 * 1000): boolean {
+    const expiresAt = getTokenExpires()
+    if (!expiresAt) return false
+    return Date.now() + thresholdMs >= expiresAt
+}
+
+export function isTokenExpired(): boolean {
+    const expiresAt = getTokenExpires()
+    if (!expiresAt) return true
+    return Date.now() >= expiresAt
 }
 
 export function getUserInfo<T>(): T | null {
@@ -33,5 +60,6 @@ export function removeUserInfo(): void {
 
 export function clearAuth(): void {
     removeToken()
+    removeTokenExpires()
     removeUserInfo()
 }

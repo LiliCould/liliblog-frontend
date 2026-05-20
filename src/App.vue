@@ -41,9 +41,11 @@ import MobileNav from '@/components/layout/MobileNav.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 import { useTheme } from '@/composables/useTheme'
+import { useTokenRefresh } from '@/composables/useTokenRefresh'
 
 const route = useRoute()
 const { initTheme, destroyTheme } = useTheme()
+useTokenRefresh()
 
 const layout = computed(() => {
   if (route.meta.layout === 'blank') return 'blank'
