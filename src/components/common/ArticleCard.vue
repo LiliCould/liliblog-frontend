@@ -31,6 +31,12 @@
           </span>
           <span
             class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
+            <Calendar
+              class="w-3.5 h-3.5 text-t-primary opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+            <time :datetime="article.createTime">{{ formatRelativeTime(article.createTime) }}</time>
+          </span>
+          <span
+            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
             <Clock
               class="w-3.5 h-3.5 text-t-primary opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             <time :datetime="article.updateTime">{{ formatRelativeTime(article.updateTime) }}</time>
@@ -81,7 +87,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Eye, MessageSquare, Heart, Clock, FolderOpen } from 'lucide-vue-next'
+import { Eye, MessageSquare, Heart, Clock, Calendar, FolderOpen } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
 import { formatRelativeTime, formatNumber } from '@/utils/format'
 import TagBadge from './TagBadge.vue'

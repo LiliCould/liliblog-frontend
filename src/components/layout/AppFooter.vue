@@ -47,7 +47,7 @@
         <div>
           <h4 class="text-sm font-semibold text-t-title uppercase tracking-wider mb-3">友情链接</h4>
           <nav class="flex flex-col gap-2">
-            <a href="https://traums.cn" target="_blank" rel="noopener"
+            <a href="https://traums.cn/login" target="_blank" rel="noopener"
               class="text-sm text-t-body no-underline w-fit relative transition-colors duration-200 hover:text-t-primary [text-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.3)] after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[1.5px] after:bg-gradient-to-r after:from-t-primary after:to-t-secondary after:transition-[width] after:duration-300 hover:after:w-full">TraumSpace</a>
           </nav>
         </div>

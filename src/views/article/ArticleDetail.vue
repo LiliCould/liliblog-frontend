@@ -24,8 +24,13 @@
               }}</span>
             </router-link>
             <span class="flex items-center gap-1.5">
+              <Calendar class="w-4 h-4 text-t-primary" />
+              发布于 <time :datetime="article.createTime">{{ formatDateTime(article.createTime) }}</time>
+            </span>
+            <span v-if="article.updateTime && article.updateTime !== article.createTime"
+              class="flex items-center gap-1.5">
               <Clock class="w-4 h-4 text-t-primary" />
-              {{ formatDateTime(article.updateTime || article.createTime) }}
+              更新于 <time :datetime="article.updateTime">{{ formatDateTime(article.updateTime) }}</time>
             </span>
             <span class="flex items-center gap-1.5">
               <Eye class="w-4 h-4 text-t-primary" />
@@ -91,7 +96,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Heart, Eye, Clock, FolderOpen } from 'lucide-vue-next'
+import { Heart, Eye, Clock, Calendar, FolderOpen } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
 import { getArticleLikeStatus, likeArticle, unlikeArticle } from '@/api/article'
 import { formatDateTime, resolveAvatar, handleAvatarError } from '@/utils/format'
