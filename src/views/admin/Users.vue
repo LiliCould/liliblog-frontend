@@ -46,10 +46,27 @@
                 </span>
               </td>
               <td class="px-5 py-3.5">
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium" :class="user.status === 1 ? 'text-[#4ade80]' : 'text-[#f43f5e]'">
-                  <span class="w-1.5 h-1.5 rounded-full" :class="user.status === 1 ? 'bg-[#4ade80]' : 'bg-[#f43f5e]'"></span>
-                  {{ user.status === 1 ? '启用' : '禁用' }}
-                </span>
+                <div class="flex items-center gap-2">
+                  <button
+                    class="relative w-9 h-5 rounded-full transition-colors duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-t-primary focus-visible:ring-offset-1"
+                    :class="toggleLoadingMap[user.id] ? 'opacity-60 cursor-wait' : ''"
+                    :style="{
+                      backgroundColor: user.status === 1 ? 'var(--color-primary)' : 'var(--color-border-solid)',
+                    }"
+                    :aria-label="user.status === 1 ? '点击禁用用户' : '点击启用用户'"
+                    :disabled="toggleLoadingMap[user.id]"
+                    @click="toggleUserStatus(user)">
+                    <span
+                      class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300"
+                      :style="{
+                        left: user.status === 1 ? '18px' : '2px',
+                      }"></span>
+                  </button>
+                  <span class="text-xs font-medium transition-colors duration-300"
+                    :class="user.status === 1 ? 'text-[#4ade80]' : 'text-[#f43f5e]'">
+                    {{ user.status === 1 ? '启用' : '禁用' }}
+                  </span>
+                </div>
               </td>
               <td class="px-5 py-3.5 text-t-muted">
                 {{ user.lastLoginTime ? formatRelativeTime(user.lastLoginTime) : '从未登录' }}
@@ -251,6 +268,7 @@ const form = reactive({
 
 const showDeleteConfirm = ref(false)
 const deleteTarget = ref<AdminUser | null>(null)
+const toggleLoadingMap = reactive<Record<number, boolean>>({})
 
 async function loadUsers(page = 1) {
   loading.value = true
@@ -261,6 +279,20 @@ async function loadUsers(page = 1) {
     current.value = res.data?.current || page
   } finally {
     loading.value = false
+  }
+}
+
+async function toggleUserStatus(user: AdminUser) {
+  toggleLoadingMap[user.id] = true
+  try {
+    const newStatus = user.status === 1 ? 0 : 1
+    await updateAdminUser(user.id, { status: newStatus } as AdminUserUpdateDTO)
+    user.status = newStatus
+    toast.success(newStatus === 1 ? '用户已启用' : '用户已禁用')
+  } catch {
+    // handled by interceptor
+  } finally {
+    delete toggleLoadingMap[user.id]
   }
 }
 
