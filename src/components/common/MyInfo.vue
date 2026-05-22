@@ -34,6 +34,11 @@
         </a>
       </div>
 
+      <div v-if="userEmail" class="flex items-center justify-center gap-2 mb-4 pb-4 border-b border-t-border">
+        <Mail class="w-4 h-4 text-t-muted" />
+        <span class="text-sm text-t-muted">{{ userEmail }}</span>
+      </div>
+
       <div class="space-y-1">
         <a v-for="link in infoLinks" :key="link.text" :href="link.url"
           class="flex items-center justify-between px-3 py-3 rounded-md text-sm text-t-body no-underline transition-all duration-200 relative hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/link">
@@ -52,8 +57,13 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+import { h, computed } from 'vue'
 import { Tv, Music, Mail, ChevronRight } from 'lucide-vue-next'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+
+const userEmail = computed(() => userStore.userInfo?.email || '')
 
 const GithubIcon = {
   name: 'GithubIcon',

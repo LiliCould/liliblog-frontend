@@ -71,8 +71,7 @@
         <Transition enter-active-class="transition duration-200" enter-from-class="opacity-0"
           enter-to-class="opacity-100" leave-active-class="transition duration-150" leave-from-class="opacity-100"
           leave-to-class="opacity-0">
-          <div v-if="modalVisible" class="fixed inset-0 z-50 bg-[rgba(0,0,0,0.6)] flex items-center justify-center p-4"
-            @click.self="closeModal">
+          <div v-if="modalVisible" class="fixed inset-0 z-50 bg-[rgba(0,0,0,0.6)] flex items-center justify-center p-4">
             <div
               class="w-full max-w-md rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_0_30px_rgba(var(--color-primary-rgb),0.1)]">
               <h3 class="text-lg font-semibold text-t-title mb-5">{{ editingId ? '编辑分类' : '新增分类' }}</h3>

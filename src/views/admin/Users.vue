@@ -10,12 +10,87 @@
       </button>
     </div>
 
+    <div class="rounded-xl bg-t-surface border border-t-border p-4">
+      <div class="flex flex-wrap items-end gap-3">
+        <div class="flex-1 min-w-[180px]">
+          <label class="block text-xs text-t-muted mb-1">关键词</label>
+          <input v-model="filters.keyword" type="text"
+            class="w-full px-3 py-1.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+            placeholder="用户名 / 昵称 / 邮箱" />
+        </div>
+        <div class="min-w-[120px]">
+          <label class="block text-xs text-t-muted mb-1">角色</label>
+          <select v-model="filters.role"
+            class="w-full px-3 py-1.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+            <option :value="undefined">全部角色</option>
+            <option :value="0">管理员</option>
+            <option :value="1">普通用户</option>
+          </select>
+        </div>
+        <div class="min-w-[120px]">
+          <label class="block text-xs text-t-muted mb-1">状态</label>
+          <select v-model="filters.status"
+            class="w-full px-3 py-1.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+            <option :value="undefined">全部状态</option>
+            <option :value="1">启用</option>
+            <option :value="0">禁用</option>
+          </select>
+        </div>
+        <div class="min-w-[150px]">
+          <label class="block text-xs text-t-muted mb-1">注册时间起</label>
+          <input v-model="filters.createTimeStart" type="date"
+            class="w-full px-3 py-1.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+        </div>
+        <div class="min-w-[150px]">
+          <label class="block text-xs text-t-muted mb-1">注册时间止</label>
+          <input v-model="filters.createTimeEnd" type="date"
+            class="w-full px-3 py-1.5 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+            @click="applyFilters">
+            查询
+          </button>
+          <button
+            class="px-4 py-1.5 rounded-lg text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+            @click="resetFilters">
+            重置
+          </button>
+        </div>
+      </div>
+      <div v-if="hasActiveFilters" class="flex items-center gap-2 mt-3 pt-3 border-t border-t-border">
+        <span class="text-xs text-t-muted">当前筛选：</span>
+        <span v-if="filters.keyword" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+          关键词: {{ filters.keyword }}
+          <button class="hover:opacity-70 cursor-pointer" @click="filters.keyword = undefined">×</button>
+        </span>
+        <span v-if="filters.role !== undefined" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+          角色: {{ filters.role === 0 ? '管理员' : '普通用户' }}
+          <button class="hover:opacity-70 cursor-pointer" @click="filters.role = undefined">×</button>
+        </span>
+        <span v-if="filters.status !== undefined" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+          状态: {{ filters.status === 1 ? '启用' : '禁用' }}
+          <button class="hover:opacity-70 cursor-pointer" @click="filters.status = undefined">×</button>
+        </span>
+        <span v-if="filters.createTimeStart" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+          起: {{ filters.createTimeStart }}
+          <button class="hover:opacity-70 cursor-pointer" @click="filters.createTimeStart = undefined">×</button>
+        </span>
+        <span v-if="filters.createTimeEnd" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+          止: {{ filters.createTimeEnd }}
+          <button class="hover:opacity-70 cursor-pointer" @click="filters.createTimeEnd = undefined">×</button>
+        </span>
+      </div>
+    </div>
+
     <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-t-border">
               <th class="text-left px-5 py-3.5 text-t-muted font-medium">用户</th>
+              <th class="text-left px-5 py-3.5 text-t-muted font-medium">邮箱</th>
               <th class="text-left px-5 py-3.5 text-t-muted font-medium">角色</th>
               <th class="text-left px-5 py-3.5 text-t-muted font-medium">状态</th>
               <th class="text-left px-5 py-3.5 text-t-muted font-medium">上次登录</th>
@@ -37,6 +112,9 @@
                     <p class="text-xs text-t-muted">@{{ user.username }}</p>
                   </div>
                 </div>
+              </td>
+              <td class="px-5 py-3.5 text-t-muted text-sm">
+                {{ user.email || '-' }}
               </td>
               <td class="px-5 py-3.5">
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" :class="user.role === 0
@@ -119,16 +197,41 @@
     </div>
 
     <Teleport to="body">
-      <div v-if="showDialog" class="fixed inset-0 z-[1200] flex items-center justify-center" @click.self="showDialog = false">
+      <div v-if="showDialog" class="fixed inset-0 z-[1200] flex items-center justify-center">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div class="relative w-full max-w-md mx-4 rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
-          <h3 class="text-base font-semibold text-t-title mb-5">{{ isEditing ? '编辑用户' : '添加用户' }}</h3>
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-semibold text-t-title">{{ isEditing ? '编辑用户' : '添加用户' }}</h3>
+            <button
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
+              @click="showDialog = false">
+              <X class="w-4 h-4" />
+            </button>
+          </div>
 
           <div class="space-y-4">
+            <div v-if="isEditing" class="flex items-center gap-4">
+              <div class="relative group">
+                <div
+                  class="w-16 h-16 rounded-full bg-t-elevated border-2 border-[rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center overflow-hidden">
+                  <img :src="resolveAvatar(avatarPreview)" alt="" class="w-full h-full object-cover"
+                    @error="handleAvatarError" />
+                </div>
+                <label
+                  class="absolute inset-0 rounded-full bg-[rgba(0,0,0,0.6)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <Camera class="w-5 h-5 text-white" />
+                  <input type="file" accept="image/*" class="hidden" @change="handleAvatarChange" />
+                </label>
+              </div>
+              <div>
+                <p class="text-sm text-t-body">点击头像更换</p>
+                <p class="text-xs text-t-muted mt-0.5">支持 JPG、PNG 格式</p>
+              </div>
+            </div>
             <div>
               <label class="block text-sm text-t-body mb-1.5">用户名</label>
-              <input v-model="form.username" type="text" :disabled="isEditing"
-                class="w-full px-3 py-2 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              <input v-model="form.username" type="text"
+                class="w-full px-3 py-2 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                 placeholder="请输入用户名" />
             </div>
             <div>
@@ -154,6 +257,12 @@
               <input v-model="form.confirmPassword" type="password"
                 class="w-full px-3 py-2 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                 placeholder="请再次输入密码" />
+            </div>
+            <div v-if="isEditing">
+              <label class="block text-sm text-t-body mb-1.5">重置密码</label>
+              <input v-model="form.newPassword" type="password"
+                class="w-full px-3 py-2 rounded-lg bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                placeholder="留空则不修改密码" />
             </div>
             <div v-if="isEditing">
               <label class="block text-sm text-t-body mb-1.5">角色</label>
@@ -190,18 +299,24 @@
     </Teleport>
 
     <Teleport to="body">
-      <div v-if="showDeleteConfirm" class="fixed inset-0 z-[1300] flex items-center justify-center"
-        @click.self="showDeleteConfirm = false">
+      <div v-if="showDeleteConfirm" class="fixed inset-0 z-[1300] flex items-center justify-center">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div
           class="relative w-full max-w-sm mx-4 rounded-xl p-6 border border-[rgba(var(--color-primary-rgb),0.2)]"
           style="background:rgba(var(--color-surface-rgb),0.98)">
-          <div class="flex items-center gap-3 mb-4">
-            <div
-              class="w-10 h-10 rounded-full bg-[rgba(244,63,94,0.1)] flex items-center justify-center">
-              <AlertTriangle class="w-5 h-5 text-[#f43f5e]" />
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-[rgba(244,63,94,0.1)] flex items-center justify-center">
+                <AlertTriangle class="w-5 h-5 text-[#f43f5e]" />
+              </div>
+              <h3 class="text-base font-semibold text-t-title m-0">确认删除</h3>
             </div>
-            <h3 class="text-base font-semibold text-t-title m-0">确认删除</h3>
+            <button
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
+              @click="showDeleteConfirm = false">
+              <X class="w-4 h-4" />
+            </button>
           </div>
           <p class="text-sm text-t-body leading-relaxed mb-6">
             确定要删除用户「{{ deleteTarget?.nickname }}」吗？此操作不可撤销。
@@ -225,12 +340,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { Plus, Pencil, Trash2, AlertTriangle } from 'lucide-vue-next'
+import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
+import { Plus, Pencil, Trash2, AlertTriangle, X, Camera } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '@/api/admin/user'
+import { uploadFile } from '@/api/file'
 import { resolveAvatar, handleAvatarError, formatRelativeTime } from '@/utils/format'
-import type { AdminUser, AdminUserCreateDTO, AdminUserUpdateDTO } from '@/types/admin'
+import type { AdminUser, AdminUserQuery, AdminUserCreateDTO, AdminUserUpdateDTO } from '@/types/admin'
+import type { ApiResponse } from '@/types/api'
 
 const toast = useToast()
 
@@ -252,6 +369,45 @@ const displayPages = computed(() => {
   return pages
 })
 
+const filters = reactive<{
+  keyword?: string
+  role?: number
+  status?: number
+  createTimeStart?: string
+  createTimeEnd?: string
+}>({})
+
+const hasActiveFilters = computed(() => {
+  return !!filters.keyword || filters.role !== undefined || filters.status !== undefined || !!filters.createTimeStart || !!filters.createTimeEnd
+})
+
+function buildQueryParams(page: number): AdminUserQuery {
+  const params: AdminUserQuery = { current: page, size: pageSize }
+  if (filters.keyword) {
+    params.username = filters.keyword
+    params.nickname = filters.keyword
+    params.email = filters.keyword
+  }
+  if (filters.role !== undefined) params.role = filters.role
+  if (filters.status !== undefined) params.status = filters.status
+  if (filters.createTimeStart) params.createTimeStart = filters.createTimeStart + ' 00:00:00'
+  if (filters.createTimeEnd) params.createTimeEnd = filters.createTimeEnd + ' 23:59:59'
+  return params
+}
+
+function applyFilters() {
+  loadUsers(1)
+}
+
+function resetFilters() {
+  filters.keyword = undefined
+  filters.role = undefined
+  filters.status = undefined
+  filters.createTimeStart = undefined
+  filters.createTimeEnd = undefined
+  loadUsers(1)
+}
+
 const showDialog = ref(false)
 const isEditing = ref(false)
 const editingId = ref<number | null>(null)
@@ -262,18 +418,47 @@ const form = reactive({
   email: '',
   password: '',
   confirmPassword: '',
+  newPassword: '',
   role: 1 as number,
   status: 1 as number,
 })
+
+const avatarPreview = ref('')
+const avatarFile = ref<File | null>(null)
+const uploadLoading = ref(false)
 
 const showDeleteConfirm = ref(false)
 const deleteTarget = ref<AdminUser | null>(null)
 const toggleLoadingMap = reactive<Record<number, boolean>>({})
 
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+function debouncedApplyFilters() {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+  debounceTimer = setTimeout(() => {
+    loadUsers(1)
+  }, 1000)
+}
+
+watch(
+  () => [filters.keyword, filters.role, filters.status, filters.createTimeStart, filters.createTimeEnd],
+  () => {
+    debouncedApplyFilters()
+  },
+)
+
+onUnmounted(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 async function loadUsers(page = 1) {
   loading.value = true
   try {
-    const res = await getAdminUsers({ current: page, size: pageSize }) as any
+    const res = await getAdminUsers(buildQueryParams(page)) as any
     users.value = res.data?.records || []
     total.value = res.data?.total || 0
     current.value = res.data?.current || page
@@ -302,8 +487,11 @@ function resetForm() {
   form.email = ''
   form.password = ''
   form.confirmPassword = ''
+  form.newPassword = ''
   form.role = 1
   form.status = 1
+  avatarPreview.value = ''
+  avatarFile.value = null
 }
 
 function openCreateDialog() {
@@ -313,16 +501,27 @@ function openCreateDialog() {
   showDialog.value = true
 }
 
+function handleAvatarChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (!input.files?.length) return
+  const file = input.files[0]
+  avatarFile.value = file
+  avatarPreview.value = URL.createObjectURL(file)
+}
+
 async function openEditDialog(user: AdminUser) {
   isEditing.value = true
   editingId.value = user.id
   form.username = user.username
   form.nickname = user.nickname
-  form.email = ''
+  form.email = user.email || ''
   form.password = ''
   form.confirmPassword = ''
+  form.newPassword = ''
   form.role = user.role
   form.status = user.status
+  avatarPreview.value = user.avatar || ''
+  avatarFile.value = null
   showDialog.value = true
 }
 
@@ -330,17 +529,28 @@ async function handleSubmit() {
   if (isEditing.value && editingId.value) {
     const data: AdminUserUpdateDTO = {
       nickname: form.nickname,
+      username: form.username,
       role: form.role,
       status: form.status,
     }
     if (form.email) data.email = form.email
+    if (form.newPassword) {
+      data.newPassword = form.newPassword
+      data.confirmPassword = form.newPassword
+    }
     try {
+      if (avatarFile.value) {
+        uploadLoading.value = true
+        const uploadRes = await uploadFile(avatarFile.value, 'avatar') as unknown as ApiResponse<string>
+        data.avatar = uploadRes.data
+        uploadLoading.value = false
+      }
       await updateAdminUser(editingId.value, data)
       toast.success('用户信息已更新')
       showDialog.value = false
       loadUsers(current.value)
     } catch {
-      // handled by interceptor
+      uploadLoading.value = false
     }
   } else {
     if (!form.username || !form.nickname || !form.email || !form.password || !form.confirmPassword) {

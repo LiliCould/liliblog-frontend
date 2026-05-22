@@ -1,6 +1,6 @@
 <template>
     <Teleport to="body">
-        <div class="fixed inset-0 z-[1100] flex items-center justify-center" @click.self="$emit('close')">
+        <div class="fixed inset-0 z-[1100] flex items-center justify-center">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
             <div
                 class="relative w-full max-w-md mx-4 max-h-[85vh] overflow-y-auto rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">

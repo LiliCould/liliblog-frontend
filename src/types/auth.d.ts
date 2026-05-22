@@ -35,6 +35,7 @@ export interface UserInfo {
     username: string
     nickname: string
     avatar: string
+    email?: string
     role: number
     status: number
     lastLoginTime: string

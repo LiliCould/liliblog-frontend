@@ -16,6 +16,7 @@
               <div class="pb-1">
                 <h1 class="text-xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
                 <p class="text-sm text-t-muted">@{{ targetUser?.username }}</p>
+                <p v-if="targetUser?.email" class="text-sm text-t-muted mt-0.5">{{ targetUser.email }}</p>
               </div>
             </div>
             <div v-if="isSelf" class="flex items-center gap-2 pb-1">
