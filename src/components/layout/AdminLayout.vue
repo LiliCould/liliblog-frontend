@@ -121,7 +121,7 @@ import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { LayoutDashboard, FileText, FolderOpen, Tag, MessageSquare, ArrowLeft, Menu, X } from 'lucide-vue-next'
+import { LayoutDashboard, FileText, FolderOpen, Tag, MessageSquare, Users, ArrowLeft, Menu, X } from 'lucide-vue-next'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -133,6 +133,7 @@ const navItems = [
   { path: '/admin/categories', label: '分类管理', icon: FolderOpen },
   { path: '/admin/tags', label: '标签管理', icon: Tag },
   { path: '/admin/comments', label: '评论管理', icon: MessageSquare },
+  { path: '/admin/users', label: '用户管理', icon: Users },
 ]
 
 const pageTitle = computed(() => {

@@ -98,6 +98,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '评论管理', requiresAuth: true, requiresAdmin: true, layout: 'admin' },
     },
     {
+        path: '/admin/users',
+        name: 'AdminUsers',
+        component: () => import('@/views/admin/Users.vue'),
+        meta: { title: '用户管理', requiresAuth: true, requiresAdmin: true, layout: 'admin' },
+    },
+    {
         path: '/about',
         name: 'About',
         component: () => import('@/views/about/AboutView.vue'),
