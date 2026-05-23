@@ -80,7 +80,7 @@ const GithubIcon = {
 const userInfo = {
   avatar: new URL('@/assets/my.png', import.meta.url).href,
   nickname: '立里可',
-  signature: '一个没有追求的不想摆烂的人',
+  signature: '一个没有追求但不想摆烂的人',
   badge: '关于作者'
 }
 

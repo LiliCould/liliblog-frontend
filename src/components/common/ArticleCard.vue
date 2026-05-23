@@ -23,6 +23,15 @@
         </p>
 
         <div class="flex flex-wrap gap-4 mb-4 pt-2 border-t border-t-border">
+          <router-link v-if="article.creator"
+            :to="`/user/${article.creator.id}`"
+            class="flex items-center gap-1.5 text-xs text-t-muted no-underline transition-colors duration-500 group-hover:text-t-primary"
+            @click.stop>
+            <img :src="resolveAvatar(article.creator.avatar)" :alt="article.creator.nickname"
+              class="w-4 h-4 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] object-cover"
+              @error="handleAvatarError" />
+            {{ article.creator.nickname }}
+          </router-link>
           <span
             class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
             <FolderOpen
@@ -89,7 +98,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Eye, MessageSquare, Heart, Clock, Calendar, FolderOpen } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
-import { formatRelativeTime, formatNumber } from '@/utils/format'
+import { formatRelativeTime, formatNumber, resolveAvatar, handleAvatarError } from '@/utils/format'
 import TagBadge from './TagBadge.vue'
 
 const props = defineProps<{

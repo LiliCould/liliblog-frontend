@@ -102,3 +102,36 @@ export interface AdminArticleQuery extends PageParams {
     startTime?: string
     endTime?: string
 }
+
+export interface AdminCommentCreator {
+    id: number
+    username: string
+    nickname: string
+    email: string
+    avatar: string
+    role: number
+    status: number
+    lastLoginTime: string
+}
+
+export interface AdminComment {
+    id: number
+    content: string
+    likeCount: number
+    childCount: number
+    articleId: number
+    parentId: number
+    ipAddress: string
+    status: number
+    createTime: string
+    creator: AdminCommentCreator
+    level: number
+}
+
+export interface AdminCommentQuery extends PageParams {
+    content?: string
+    articleId?: number
+    status?: number
+    startTime?: string
+    endTime?: string
+}

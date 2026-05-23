@@ -20,7 +20,7 @@ export function batchDeleteAdminArticles(ids: number[]) {
 }
 
 export function reviewAdminArticle(id: number, status: number, reason?: string) {
-    const params: Record<string, string> = {}
-    if (reason) params.reason = reason
-    return request.get<ApiResponse<string>>(`/api/admin/article/${id}/${status}`, { params })
+    const data: Record<string, unknown> = {}
+    if (reason) data.reason = reason
+    return request.put<ApiResponse<string>>(`/api/admin/article/${id}/${status}`, data)
 }
