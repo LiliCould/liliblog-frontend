@@ -45,3 +45,60 @@ export interface AdminUserUpdateDTO {
     status?: number
     email?: string
 }
+
+export interface AdminArticleCategory {
+    id: number
+    name: string
+    slug: string
+    description: string
+    sortOrder: number
+}
+
+export interface AdminArticleTag {
+    id: number
+    name: string
+    color: string
+}
+
+export interface AdminArticleUser {
+    id: number
+    username: string
+    nickname: string
+    email: string
+    avatar: string
+    role: number
+    status: number
+    lastLoginTime: string
+}
+
+export interface AdminArticle {
+    id: number
+    title: string
+    slug: string
+    summary: string
+    coverImage: string
+    viewCount: number
+    likeCount: number
+    commentCount: number
+    status: number
+    category: AdminArticleCategory
+    tags: AdminArticleTag[]
+    updateTime: string
+    updater: AdminArticleUser
+    createTime: string
+    creator: AdminArticleUser
+}
+
+export interface AdminArticleDetail extends AdminArticle {
+    content: string
+    contentHtml: string
+}
+
+export interface AdminArticleQuery extends PageParams {
+    title?: string
+    createBy?: number
+    categoryId?: number
+    status?: number
+    startTime?: string
+    endTime?: string
+}
