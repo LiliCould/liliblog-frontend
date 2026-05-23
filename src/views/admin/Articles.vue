@@ -86,8 +86,8 @@
         </div>
       </div>
 
-      <div v-if="total > pageSize" class="flex justify-center">
-        <Pagination :current="current" :total="total" :page-size="pageSize" @update:current="handlePageChange" />
+      <div v-if="total > 0" class="flex justify-center">
+        <Pagination :current="current" :total="total" :page-size="pageSize" @update:current="handlePageChange" @update:page-size="handlePageSizeChange" />
       </div>
     </div>
 </template>
@@ -109,7 +109,7 @@ const router = useRouter()
 const articles = ref<Article[]>([])
 const total = ref(0)
 const current = ref(1)
-const pageSize = 10
+const pageSize = ref(10)
 const loading = ref(false)
 const keyword = ref('')
 const statusFilter = ref<number | undefined>(undefined)
@@ -124,7 +124,7 @@ async function fetchArticles() {
   try {
     const params: Record<string, any> = {
       current: current.value,
-      size: pageSize,
+      size: pageSize.value,
     }
     if (statusFilter.value !== undefined) params.status = statusFilter.value
     if (keyword.value) params.title = keyword.value
@@ -138,6 +138,12 @@ async function fetchArticles() {
 
 function handlePageChange(page: number) {
   current.value = page
+  fetchArticles()
+}
+
+function handlePageSizeChange(size: number) {
+  pageSize.value = size
+  current.value = 1
   fetchArticles()
 }
 

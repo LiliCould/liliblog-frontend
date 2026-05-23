@@ -22,6 +22,7 @@
         :current="current"
         :page-size="pageSize"
         @page-change="handlePageChange"
+        @page-size-change="handlePageSizeChange"
       />
 
       <EmptyState v-else message="该分类暂无文章" />
@@ -75,6 +76,12 @@ async function fetchArticles() {
 
 function handlePageChange(page: number) {
   current.value = page
+  fetchArticles()
+}
+
+function handlePageSizeChange(size: number) {
+  pageSize.value = size
+  current.value = 1
   fetchArticles()
 }
 

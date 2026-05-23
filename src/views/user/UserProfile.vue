@@ -112,8 +112,8 @@
           </div>
         </div>
 
-        <Pagination v-if="total > pageSize" :current="currentPage" :total="total" :page-size="pageSize"
-          @update:current="handlePageChange" />
+        <Pagination v-if="total > 0" :current="currentPage" :total="total" :page-size="pageSize"
+          @update:current="handlePageChange" @update:page-size="handlePageSizeChange" />
       </div>
 
       <EmptyState v-else :message="emptyMessage">
@@ -158,7 +158,7 @@ const targetUser = ref<User | null>(null)
 const articles = ref<Article[]>([])
 const total = ref(0)
 const currentPage = ref(1)
-const pageSize = 10
+const pageSize = ref(10)
 const loading = ref(false)
 const activeTab = ref<string>('all')
 const showPasswordModal = ref(false)
@@ -217,7 +217,7 @@ async function fetchArticles() {
     const params: Record<string, any> = {
       createBy: targetUserId.value,
       current: currentPage.value,
-      size: pageSize,
+      size: pageSize.value,
     }
     if (isSelf.value && activeTab.value !== 'all') {
       params.status = Number(activeTab.value)
@@ -240,6 +240,12 @@ function handleTabChange(tab: string) {
 
 function handlePageChange(page: number) {
   currentPage.value = page
+  fetchArticles()
+}
+
+function handlePageSizeChange(size: number) {
+  pageSize.value = size
+  currentPage.value = 1
   fetchArticles()
 }
 

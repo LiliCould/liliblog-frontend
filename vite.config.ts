@@ -25,11 +25,17 @@ export default defineConfig({
   build: {
     target: 'es2020',
     cssCodeSplit: true,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
-          'utils': ['axios', 'dayjs', 'dompurify', 'nprogress'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (['vue', 'vue-router', 'pinia'].some(m => id.includes(m))) {
+              return 'vue-vendor'
+            }
+            if (['axios', 'dayjs', 'dompurify', 'nprogress'].some(m => id.includes(m))) {
+              return 'utils'
+            }
+          }
         },
         entryFileNames: 'assets/js/[name]-[hash].js',
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -49,30 +55,16 @@ export default defineConfig({
           }
           return `assets/[extType]/[name]-[hash][extname]`
         },
+        ...(isProduction && {
+          minify: {
+            compress: {
+              dropConsole: true,
+              dropDebugger: true,
+            },
+          },
+        }),
       },
     },
-    minify: isProduction ? 'terser' : 'esbuild',
-    ...(isProduction && {
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: [
-            'console.log',
-            'console.debug',
-            'console.info',
-            'console.warn',
-          ],
-          passes: 3,
-        },
-        format: {
-          comments: false,
-        },
-        mangle: {
-          toplevel: true,
-        },
-      },
-    }),
     chunkSizeWarningLimit: 1000,
   },
   server: {

@@ -57,12 +57,13 @@
         </div>
       </div>
 
-      <div v-if="total > pageSize" class="flex justify-center">
+      <div v-if="total > 0" class="flex justify-center">
         <Pagination
           :current="current"
           :total="total"
           :page-size="pageSize"
           @update:current="handlePageChange"
+          @update:page-size="handlePageSizeChange"
         />
       </div>
     </div>
@@ -82,14 +83,14 @@ import request from '@/utils/request'
 const comments = ref<Comment[]>([])
 const total = ref(0)
 const current = ref(1)
-const pageSize = 10
+const pageSize = ref(10)
 const loading = ref(false)
 
 async function fetchComments() {
   loading.value = true
   try {
     const res = await request.get('/api/comment', {
-      params: { current: current.value, size: pageSize },
+      params: { current: current.value, size: pageSize.value },
     }) as any
     comments.value = res.data?.records || []
     total.value = res.data?.total || 0
@@ -100,6 +101,12 @@ async function fetchComments() {
 
 function handlePageChange(page: number) {
   current.value = page
+  fetchComments()
+}
+
+function handlePageSizeChange(size: number) {
+  pageSize.value = size
+  current.value = 1
   fetchComments()
 }
 

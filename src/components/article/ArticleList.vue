@@ -3,22 +3,22 @@
     <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
 
     <Pagination
-      v-if="totalPages > 1"
+      v-if="total > 0"
       :current="current"
       :total="total"
       :page-size="pageSize"
       @update:current="(page: number) => emit('page-change', page)"
+      @update:page-size="(size: number) => emit('page-size-change', size)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Article } from '@/types/article.d'
 import ArticleCard from '@/components/common/ArticleCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 
-const props = defineProps<{
+defineProps<{
   articles: Article[]
   total: number
   current: number
@@ -27,7 +27,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'page-change', page: number): void
+  (e: 'page-size-change', size: number): void
 }>()
-
-const totalPages = computed(() => Math.ceil(props.total / props.pageSize))
 </script>

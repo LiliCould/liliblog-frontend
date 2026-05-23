@@ -172,27 +172,38 @@
         暂无用户
       </div>
 
-      <div v-if="total > pageSize" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
-        <span class="text-xs text-t-muted">共 {{ total }} 条</span>
+      <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-t-muted">每页</span>
+          <select :value="pageSize"
+            class="px-2 py-1 rounded bg-t-bg border border-t-border text-t-body text-xs outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+            @change="onPageSizeChange">
+            <option v-for="s in [5, 10, 15, 20, 50]" :key="s" :value="s">{{ s }} 条</option>
+          </select>
+        </div>
         <div class="flex items-center gap-1">
           <button
-            class="px-3 py-1.5 rounded text-xs transition-colors duration-200 cursor-pointer"
-            :class="current > 1 ? 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.1)]' : 'text-t-muted cursor-not-allowed'"
+            class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
             :disabled="current <= 1" @click="loadUsers(current - 1)">
-            上一页
+            <ChevronLeft class="w-4 h-4" />
           </button>
-          <button v-for="p in displayPages" :key="p" class="px-3 py-1.5 rounded text-xs transition-colors duration-200 cursor-pointer"
-            :class="p === current ? 'bg-t-primary text-white' : 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.1)]'"
-            @click="loadUsers(p)">
-            {{ p }}
-          </button>
+          <template v-for="p in displayPages" :key="p">
+            <span v-if="p === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
+            <button v-else class="w-8 h-8 rounded text-xs font-medium transition-all duration-200"
+              :class="p === current
+                ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary'
+                : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'"
+              @click="loadUsers(p as number)">
+              {{ p }}
+            </button>
+          </template>
           <button
-            class="px-3 py-1.5 rounded text-xs transition-colors duration-200 cursor-pointer"
-            :class="current < totalPages ? 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.1)]' : 'text-t-muted cursor-not-allowed'"
+            class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
             :disabled="current >= totalPages" @click="loadUsers(current + 1)">
-            下一页
+            <ChevronRight class="w-4 h-4" />
           </button>
         </div>
+        <span class="text-xs text-t-muted">共 {{ total }} 条</span>
       </div>
     </div>
 
@@ -341,7 +352,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
-import { Plus, Pencil, Trash2, AlertTriangle, X, Camera } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2, AlertTriangle, X, Camera, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '@/api/admin/user'
 import { uploadFile } from '@/api/file'
@@ -354,18 +365,25 @@ const toast = useToast()
 const users = ref<AdminUser[]>([])
 const loading = ref(false)
 const current = ref(1)
-const pageSize = 10
+const pageSize = ref(10)
 const total = ref(0)
-const totalPages = computed(() => Math.ceil(total.value / pageSize))
+const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
 
 const displayPages = computed(() => {
-  const pages: number[] = []
+  const pages: (number | string)[] = []
   const tp = totalPages.value
   const c = current.value
-  let start = Math.max(1, c - 2)
-  const end = Math.min(tp, start + 4)
-  start = Math.max(1, end - 4)
-  for (let i = start; i <= end; i++) pages.push(i)
+  if (tp <= 7) {
+    for (let i = 1; i <= tp; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (c > 3) pages.push('...')
+    const start = Math.max(2, c - 1)
+    const end = Math.min(tp - 1, c + 1)
+    for (let i = start; i <= end; i++) pages.push(i)
+    if (c < tp - 2) pages.push('...')
+    pages.push(tp)
+  }
   return pages
 })
 
@@ -382,7 +400,7 @@ const hasActiveFilters = computed(() => {
 })
 
 function buildQueryParams(page: number): AdminUserQuery {
-  const params: AdminUserQuery = { current: page, size: pageSize }
+  const params: AdminUserQuery = { current: page, size: pageSize.value }
   if (filters.keyword) {
     params.username = filters.keyword
     params.nickname = filters.keyword
@@ -405,6 +423,13 @@ function resetFilters() {
   filters.status = undefined
   filters.createTimeStart = undefined
   filters.createTimeEnd = undefined
+  loadUsers(1)
+}
+
+function onPageSizeChange(e: Event) {
+  const val = Number((e.target as HTMLSelectElement).value)
+  pageSize.value = val
+  current.value = 1
   loadUsers(1)
 }
 
