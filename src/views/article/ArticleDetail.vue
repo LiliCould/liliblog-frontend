@@ -89,7 +89,7 @@
       <ArticleToc :html-content="article.contentHtml || ''" />
     </template>
 
-    <EmptyState v-if="!loading && !article" message="文章不存在" />
+    <EmptyState v-if="!loading && !article" message="文章不存在" type="notfound" />
   </AppLayout>
 </template>
 

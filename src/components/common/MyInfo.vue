@@ -9,18 +9,23 @@
     <div class="relative">
       <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" />
       <div
-        class="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg shadow-orange-500/30">
+        class="absolute top-3 right-3 bg-[rgba(var(--color-primary-rgb),0.85)] text-white px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
         {{ userInfo.badge }}
       </div>
     </div>
 
     <div class="p-5">
-      <h3 class="text-xl font-bold text-center text-t-title mb-2">
-        {{ userInfo.nickname }}
-      </h3>
-      <p class="text-sm text-center text-t-body mb-4 leading-relaxed opacity-80">
-        {{ userInfo.signature }}
-      </p>
+      <div class="text-center mb-5">
+        <h3 class="text-xl font-bold text-t-title">
+          {{ userInfo.nickname }}
+        </h3>
+        <div class="flex items-center justify-center gap-2 mt-1.5">
+          <span class="text-xs text-t-muted">@LiliCould</span>
+          <span class="w-0.5 h-0.5 rounded-full bg-t-border"></span>
+          <span class="text-xs text-t-muted">lilicould@qq.com</span>
+        </div>
+        <p v-if="userInfo.signature" class="text-xs text-t-muted mt-2 opacity-70">{{ userInfo.signature }}</p>
+      </div>
 
       <div class="flex justify-center gap-3 mb-5 pb-5 border-b border-t-border">
         <a v-for="social in socialLinks" :key="social.name" :href="social.url" target="_blank" rel="noopener noreferrer"
@@ -32,11 +37,6 @@
           ]" :title="social.name">
           <component :is="social.icon" class="w-5 h-5" />
         </a>
-      </div>
-
-      <div v-if="userEmail" class="flex items-center justify-center gap-2 mb-4 pb-4 border-b border-t-border">
-        <Mail class="w-4 h-4 text-t-muted" />
-        <span class="text-sm text-t-muted">{{ userEmail }}</span>
       </div>
 
       <div class="space-y-1">
@@ -57,13 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { h, computed } from 'vue'
+import { h } from 'vue'
 import { Tv, Music, Mail, ChevronRight } from 'lucide-vue-next'
-import { useUserStore } from '@/stores/user'
-
-const userStore = useUserStore()
-
-const userEmail = computed(() => userStore.userInfo?.email || '')
 
 const GithubIcon = {
   name: 'GithubIcon',
@@ -84,9 +79,9 @@ const GithubIcon = {
 
 const userInfo = {
   avatar: new URL('@/assets/my.png', import.meta.url).href,
-  nickname: 'LiliCould',
-  signature: '',
-  badge: '我的信息'
+  nickname: '立里可',
+  signature: '一个没有追求的不想摆烂的人',
+  badge: '关于作者'
 }
 
 const socialLinks = [

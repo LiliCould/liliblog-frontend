@@ -1,35 +1,39 @@
 <template>
   <AppLayout :show-hero="false">
     <div class="max-w-4xl mx-auto">
-      <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden mb-6">
-        <div class="h-44 relative">
+      <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden mb-8">
+        <div class="h-32 relative">
           <img :src="heroBg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" />
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-t-surface"></div>
         </div>
-        <div class="px-6 pb-5 -mt-10 relative z-10">
-          <div class="flex items-end justify-between">
-            <div class="flex items-end gap-4">
-              <div
-                class="w-20 h-20 rounded-full bg-t-surface border-2 border-t-primary flex items-center justify-center overflow-hidden shadow-[0_0_16px_rgba(var(--color-surface-rgb),0.9)]">
-                <img :src="resolveAvatar(targetUser?.avatar)" alt="" class="w-full h-full object-cover"
-                  @error="handleAvatarError" />
+        <div class="px-6 pb-6 -mt-12 relative z-10">
+          <div class="flex items-end gap-5">
+            <div
+              class="w-24 h-24 rounded-2xl bg-t-surface border-2 border-t-primary flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(var(--color-surface-rgb),0.95)] flex-shrink-0">
+              <img :src="resolveAvatar(targetUser?.avatar)" alt="" class="w-full h-full object-cover"
+                @error="handleAvatarError" />
+            </div>
+            <div class="flex-1 min-w-0 pb-1">
+              <div class="flex items-center gap-3 flex-wrap">
+                <h1 class="text-2xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
+                <span class="text-sm text-t-muted">@{{ targetUser?.username }}</span>
               </div>
-              <div class="pb-1">
-                <h1 class="text-xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
-                <p class="text-sm text-t-muted">@{{ targetUser?.username }}</p>
-                <p v-if="targetUser?.email" class="text-sm text-t-muted mt-0.5">{{ targetUser.email }}</p>
+              <div v-if="targetUser?.email" class="flex items-center gap-1.5 mt-1.5">
+                <Mail class="w-3.5 h-3.5 text-t-muted" />
+                <span class="text-sm text-t-muted">{{ targetUser.email }}</span>
               </div>
             </div>
-            <div v-if="isSelf" class="flex items-center gap-2 pb-1">
+            <div v-if="isSelf" class="flex items-center gap-2 flex-shrink-0 pb-1">
               <button
-                class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.18)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.12)]"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.18)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.12)]"
                 @click="router.push('/profile/edit')">
-                <PenLine class="w-3.5 h-3.5" />
+                <PenLine class="w-3 h-3" />
                 编辑资料
               </button>
               <button
-                class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-[rgba(var(--color-secondary-rgb),0.08)] border border-[rgba(var(--color-secondary-rgb),0.2)] text-t-secondary transition-all duration-300 hover:bg-[rgba(var(--color-secondary-rgb),0.15)] hover:shadow-[0_0_8px_rgba(var(--color-secondary-rgb),0.12)]"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-secondary-rgb),0.08)] border border-[rgba(var(--color-secondary-rgb),0.2)] text-t-secondary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-secondary-rgb),0.15)] hover:shadow-[0_0_8px_rgba(var(--color-secondary-rgb),0.12)]"
                 @click="showPasswordModal = true">
-                <Lock class="w-3.5 h-3.5" />
+                <Lock class="w-3 h-3" />
                 修改密码
               </button>
             </div>
@@ -43,16 +47,16 @@
           <h2 class="text-lg font-semibold text-t-title">{{ isSelf ? '我的文章' : '已发布文章' }}</h2>
         </div>
         <button v-if="isSelf"
-          class="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)]"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)]"
           @click="router.push('/write')">
-          <Plus class="w-4 h-4" />
+          <Plus class="w-3.5 h-3.5" />
           写文章
         </button>
       </div>
 
       <div v-if="isSelf" class="flex gap-2 mb-6">
         <button v-for="tab in statusTabs" :key="tab.value"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-[background-color,border-color,color,box-shadow] duration-200"
           :class="activeTab === tab.value
             ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]'
             : 'border border-t-border text-t-muted hover:text-t-body hover:border-[rgba(var(--color-primary-rgb),0.3)]'" @click="handleTabChange(tab.value)">
@@ -66,13 +70,19 @@
 
       <div v-else-if="articles.length > 0" class="flex flex-col gap-3">
         <div v-for="article in articles" :key="article.id"
-          class="flex items-center justify-between gap-4 p-4 rounded-xl bg-t-surface border border-t-border transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.06)]">
+          class="flex items-center justify-between gap-4 p-4 rounded-xl bg-t-surface border border-t-border transition-[border-color,box-shadow] duration-200 hover:border-[rgba(var(--color-primary-rgb),0.3)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.06)]">
           <div class="flex-1 min-w-0">
-            <h3
-              class="text-sm font-semibold text-t-body truncate cursor-pointer transition-colors duration-200 hover:text-t-primary"
-              @click="router.push(`/article/${article.id}`)">
-              {{ article.title }}
-            </h3>
+            <div class="flex items-center gap-2">
+              <h3
+                class="text-sm font-semibold text-t-body truncate cursor-pointer transition-[color] duration-200 hover:text-t-primary"
+                @click="router.push(`/article/${article.id}`)">
+                {{ article.title }}
+              </h3>
+              <span v-if="isSelf" class="inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0"
+                :class="articleStatusClass(article.status)">
+                {{ articleStatusText(article.status) }}
+              </span>
+            </div>
             <div class="flex items-center gap-3 mt-1.5 text-xs text-t-muted">
               <span class="flex items-center gap-1">
                 <FolderOpen class="w-3 h-3" />
@@ -100,14 +110,16 @@
           </div>
           <div v-if="isSelf" class="flex items-center gap-1 shrink-0">
             <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all duration-200"
+              class="w-7 h-7 rounded flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[color,background-color] duration-200"
+              aria-label="编辑文章"
               @click="router.push(`/write/${article.id}`)">
-              <Edit class="w-4 h-4" />
+              <Edit class="w-3.5 h-3.5" />
             </button>
             <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-t-muted hover:text-t-secondary hover:bg-[rgba(var(--color-secondary-rgb),0.08)] transition-all duration-200"
+              class="w-7 h-7 rounded flex items-center justify-center text-t-muted hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)] transition-[color,background-color] duration-200"
+              aria-label="删除文章"
               @click="confirmDelete(article)">
-              <Trash2 class="w-4 h-4" />
+              <Trash2 class="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -118,9 +130,9 @@
 
       <EmptyState v-else :message="emptyMessage">
         <button v-if="isSelf"
-          class="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)]"
+          class="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-[background-color] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.2)]"
           @click="router.push('/write')">
-          <Plus class="w-4 h-4" />
+          <Plus class="w-3.5 h-3.5" />
           开始写作
         </button>
       </EmptyState>
@@ -133,7 +145,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Plus, Edit, Trash2, Eye, Clock, FolderOpen, FileText, PenLine, Lock } from 'lucide-vue-next'
+import { Plus, Edit, Trash2, Eye, Clock, FolderOpen, FileText, PenLine, Lock, Mail } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { getUserById } from '@/api/user'
 import { getArticles, deleteArticle } from '@/api/article'
@@ -191,6 +203,17 @@ const emptyMessage = computed(() => {
   return activeTab.value === 'all' ? '还没有文章' : `还没有${currentTabLabel.value}的文章`
 })
 
+function articleStatusText(status: number) {
+  const map: Record<number, string> = { 0: '审核中', 1: '已发布', 2: '草稿' }
+  return map[status] || '未知'
+}
+
+function articleStatusClass(status: number) {
+  if (status === 1) return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
+  if (status === 0) return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
+  return 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'
+}
+
 async function fetchUser() {
   if (isSelf.value) {
     targetUser.value = {
@@ -198,6 +221,7 @@ async function fetchUser() {
       username: userStore.username,
       nickname: userStore.nickname,
       avatar: userStore.avatar,
+      email: userStore.userInfo?.email || '',
       role: userStore.isAdmin ? 0 : 1,
       status: 1,
       lastLoginTime: '',

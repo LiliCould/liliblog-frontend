@@ -112,7 +112,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
-        component: () => import('@/views/home/HomeView.vue'),
+        component: () => import('@/views/NotFound.vue'),
         meta: { title: '页面不存在' },
     },
 ]
