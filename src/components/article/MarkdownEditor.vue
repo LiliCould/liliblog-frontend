@@ -61,6 +61,7 @@ onMounted(() => {
   vditorInstance = new Vditor(editorContainer.value, {
     height: '100%',
     mode: 'wysiwyg',
+    cdn: '/vditor',
     theme: vditorTheme,
     icon: 'ant',
     value: props.modelValue || '',
@@ -110,12 +111,17 @@ onMounted(() => {
         'rocket': '🚀',
         'smile': '😄',
         'tada': '🎉',
+        'doge': '/vditor/dist/images/emoji/doge.png',
+        'huaji': '/vditor/dist/images/emoji/huaji.gif',
+        'trollface': '/vditor/dist/images/emoji/trollface.png',
+        'vditor': '/vditor/dist/images/emoji/vditor.png',
+        'octocat': '/vditor/dist/images/emoji/octocat.png',
       },
     },
     toolbar: [
       'headings', 'bold', 'italic', 'strike', '|',
       'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', '|',
-      'code', 'inline-code', 'link', 'upload', 'table', '|',
+      'code', 'inline-code', 'link', 'upload', 'table', 'emoji', '|',
       'undo', 'redo', '|',
       'outline', 'fullscreen', 'edit-mode',
       {
@@ -129,7 +135,7 @@ onMounted(() => {
         ],
       },
     ],
-    customWysiwygToolbar: () => {},
+    customWysiwygToolbar: () => { },
     input: (value: string) => {
       emit('update:modelValue', value)
       emit('input')
