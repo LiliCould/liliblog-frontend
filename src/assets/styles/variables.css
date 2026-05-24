@@ -1,5 +1,6 @@
 :root,
 [data-theme="light"] {
+    color-scheme: light;
     --color-primary: #0284c7;
     --color-primary-rgb: 2, 132, 199;
     --color-primary-hover: #0369a1;
@@ -147,6 +148,7 @@
 }
 
 [data-theme="cyber-dark"] {
+    color-scheme: dark;
     --color-primary: #00f0ff;
     --color-primary-rgb: 0, 240, 255;
     --color-primary-hover: #33f3ff;
@@ -208,6 +210,7 @@
 }
 
 [data-theme="ocean"] {
+    color-scheme: dark;
     --color-primary: #38bdf8;
     --color-primary-rgb: 56, 189, 248;
     --color-primary-hover: #7dd3fc;
@@ -263,6 +266,7 @@
 }
 
 [data-theme="forest"] {
+    color-scheme: dark;
     --color-primary: #4ade80;
     --color-primary-rgb: 74, 222, 128;
     --color-primary-hover: #86efac;

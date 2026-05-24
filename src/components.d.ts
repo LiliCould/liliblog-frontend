@@ -19,6 +19,7 @@ declare module 'vue' {
     ChangePasswordModal: typeof import('./components/user/ChangePasswordModal.vue')['default']
     CommentItem: typeof import('./components/comment/CommentItem.vue')['default']
     CommentSection: typeof import('./components/comment/CommentSection.vue')['default']
+    CustomSelect: typeof import('./components/ui/CustomSelect.vue')['default']
     EmptyState: typeof import('./components/common/EmptyState.vue')['default']
     HeroCarousel: typeof import('./components/common/HeroCarousel.vue')['default']
     MarkdownEditor: typeof import('./components/article/MarkdownEditor.vue')['default']

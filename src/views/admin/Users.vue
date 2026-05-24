@@ -15,36 +15,26 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">关键词</label>
  <input v-model="filters.keyword" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="用户名 / 昵称 / 邮箱" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">角色</label>
- <select v-model="filters.role"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="undefined">全部角色</option>
- <option :value="0">管理员</option>
- <option :value="1">普通用户</option>
- </select>
+ <CustomSelect v-model="roleModel" :options="roleOptions" placeholder="全部角色" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">状态</label>
- <select v-model="filters.status"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="undefined">全部状态</option>
- <option :value="1">启用</option>
- <option :value="0">禁用</option>
- </select>
+ <CustomSelect v-model="statusModel" :options="statusOptions" placeholder="全部状态" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">注册时间起</label>
  <input v-model="filters.createTimeStart" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">注册时间止</label>
  <input v-model="filters.createTimeEnd" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
  </div>
  <div class="flex items-center gap-2">
  <button
@@ -175,11 +165,7 @@
  <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
- <select :value="pageSize"
- class="px-2 py-1 rounded bg-t-bg border border-t-border text-t-body text-xs outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
- @change="onPageSizeChange">
- <option v-for="s in [5, 10, 15, 20, 50]" :key="s" :value="s">{{ s }} 条</option>
- </select>
+ <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
  </div>
  <div class="flex items-center gap-1">
  <button
@@ -242,54 +228,46 @@
  <div>
  <label class="block text-sm text-t-body mb-1.5">用户名</label>
  <input v-model="form.username" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请输入用户名" />
  </div>
  <div>
  <label class="block text-sm text-t-body mb-1.5">昵称</label>
  <input v-model="form.nickname" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请输入昵称" />
  </div>
  <div>
  <label class="block text-sm text-t-body mb-1.5">邮箱</label>
  <input v-model="form.email" type="email"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请输入邮箱" />
  </div>
  <div v-if="!isEditing">
  <label class="block text-sm text-t-body mb-1.5">密码</label>
  <input v-model="form.password" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请输入密码" />
  </div>
  <div v-if="!isEditing">
  <label class="block text-sm text-t-body mb-1.5">确认密码</label>
  <input v-model="form.confirmPassword" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请再次输入密码" />
  </div>
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">重置密码</label>
  <input v-model="form.newPassword" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="留空则不修改密码" />
  </div>
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">角色</label>
- <select v-model="form.role"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="0">管理员</option>
- <option :value="1">普通用户</option>
- </select>
+ <CustomSelect v-model="form.role" :options="formRoleOptions" button-class="py-2" />
  </div>
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">状态</label>
- <select v-model="form.status"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="1">启用</option>
- <option :value="0">禁用</option>
- </select>
+ <CustomSelect v-model="form.status" :options="formStatusOptions" button-class="py-2" />
  </div>
  </div>
 
@@ -359,6 +337,7 @@ import { uploadFile } from '@/api/file'
 import { resolveAvatar, handleAvatarError, formatRelativeTime } from '@/utils/format'
 import type { AdminUser, AdminUserQuery, AdminUserCreateDTO, AdminUserUpdateDTO } from '@/types/admin'
 import type { ApiResponse } from '@/types/api'
+import CustomSelect from '@/components/ui/CustomSelect.vue'
 
 const toast = useToast()
 
@@ -395,6 +374,46 @@ const filters = reactive<{
  createTimeEnd?: string
 }>({})
 
+const roleOptions = [
+ { label: '全部角色', value: '' },
+ { label: '管理员', value: 0 },
+ { label: '普通用户', value: 1 },
+]
+
+const statusOptions = [
+ { label: '全部状态', value: '' },
+ { label: '启用', value: 1 },
+ { label: '禁用', value: 0 },
+]
+
+const formRoleOptions = [
+ { label: '管理员', value: 0 },
+ { label: '普通用户', value: 1 },
+]
+
+const formStatusOptions = [
+ { label: '启用', value: 1 },
+ { label: '禁用', value: 0 },
+]
+
+const pageSizeOptions = [
+ { label: '5 条', value: 5 },
+ { label: '10 条', value: 10 },
+ { label: '15 条', value: 15 },
+ { label: '20 条', value: 20 },
+ { label: '50 条', value: 50 },
+]
+
+const roleModel = computed({
+ get: () => filters.role ?? '',
+ set: (val: string | number) => { filters.role = val === '' ? undefined : val as number },
+})
+
+const statusModel = computed({
+ get: () => filters.status ?? '',
+ set: (val: string | number) => { filters.status = val === '' ? undefined : val as number },
+})
+
 const hasActiveFilters = computed(() => {
  return !!filters.keyword || filters.role !== undefined || filters.status !== undefined || !!filters.createTimeStart || !!filters.createTimeEnd
 })
@@ -423,13 +442,6 @@ function resetFilters() {
  filters.status = undefined
  filters.createTimeStart = undefined
  filters.createTimeEnd = undefined
- loadUsers(1)
-}
-
-function onPageSizeChange(e: Event) {
- const val = Number((e.target as HTMLSelectElement).value)
- pageSize.value = val
- current.value = 1
  loadUsers(1)
 }
 
@@ -473,6 +485,11 @@ watch(
  debouncedApplyFilters()
  },
 )
+
+watch(pageSize, () => {
+ current.value = 1
+ loadUsers(1)
+})
 
 onUnmounted(() => {
  if (debounceTimer) {

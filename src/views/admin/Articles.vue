@@ -17,36 +17,26 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">标题</label>
  <input v-model="filters.title" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="搜索文章标题" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">分类</label>
- <select v-model="filters.categoryId"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="undefined">全部分类</option>
- <option v-for="cat in appStore.categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
- </select>
+ <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">状态</label>
- <select v-model="filters.status"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
- <option :value="undefined">全部状态</option>
- <option :value="0">审核中</option>
- <option :value="1">已发布</option>
- <option :value="2">草稿</option>
- </select>
+ <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">创建时间起</label>
  <input v-model="filters.startTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">创建时间止</label>
  <input v-model="filters.endTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
  </div>
  <div class="flex items-center gap-2">
  <button
@@ -168,11 +158,7 @@
  <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
- <select :value="pageSize"
- class="px-2 py-1 rounded bg-t-bg border border-t-border text-t-body text-xs outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
- @change="onPageSizeChange">
- <option v-for="s in [5, 10, 15, 20, 50]" :key="s" :value="s">{{ s }} 条</option>
- </select>
+ <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
  </div>
  <div class="flex items-center gap-1">
  <button
@@ -309,6 +295,7 @@ import { useAppStore } from '@/stores/app'
 import { getAdminArticles, getAdminArticleById, deleteAdminArticle, batchDeleteAdminArticles, reviewAdminArticle } from '@/api/admin/article'
 import { formatDate } from '@/utils/format'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
+import CustomSelect from '@/components/ui/CustomSelect.vue'
 import type { AdminArticle, AdminArticleQuery } from '@/types/admin'
 
 const toast = useToast()
@@ -348,6 +335,36 @@ const filters = reactive<{
  startTime?: string
  endTime?: string
 }>({})
+
+const articleStatusOptions = [
+ { label: '全部状态', value: '' },
+ { label: '审核中', value: 0 },
+ { label: '已发布', value: 1 },
+ { label: '草稿', value: 2 },
+]
+
+const pageSizeOptions = [
+ { label: '5 条', value: 5 },
+ { label: '10 条', value: 10 },
+ { label: '15 条', value: 15 },
+ { label: '20 条', value: 20 },
+ { label: '50 条', value: 50 },
+]
+
+const categoryOptions = computed(() => [
+ { label: '全部分类', value: '' },
+ ...appStore.categories.map(cat => ({ label: cat.name, value: cat.id })),
+])
+
+const categoryIdModel = computed({
+ get: () => filters.categoryId ?? '',
+ set: (val: string | number) => { filters.categoryId = val === '' ? undefined : val as number },
+})
+
+const statusModel = computed({
+ get: () => filters.status ?? '',
+ set: (val: string | number) => { filters.status = val === '' ? undefined : val as number },
+})
 
 const hasActiveFilters = computed(() => {
  return !!filters.title || filters.categoryId !== undefined || filters.status !== undefined || !!filters.startTime || !!filters.endTime
@@ -402,13 +419,6 @@ function resetFilters() {
  loadArticles(1)
 }
 
-function onPageSizeChange(e: Event) {
- const val = Number((e.target as HTMLSelectElement).value)
- pageSize.value = val
- current.value = 1
- loadArticles(1)
-}
-
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function debouncedApplyFilters() {
@@ -420,6 +430,11 @@ watch(
  () => [filters.title, filters.categoryId, filters.status, filters.startTime, filters.endTime],
  () => debouncedApplyFilters(),
 )
+
+watch(pageSize, () => {
+ current.value = 1
+ loadArticles(1)
+})
 
 onUnmounted(() => {
  if (debounceTimer) clearTimeout(debounceTimer)

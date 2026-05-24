@@ -2,22 +2,19 @@
   <div class="flex items-center justify-between gap-4">
     <div class="flex items-center gap-2">
       <span class="text-xs text-t-muted">每页</span>
-      <select :value="pageSize"
-        class="px-2 py-1 rounded bg-t-bg border border-t-border text-t-body text-xs outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
-        @change="onPageSizeChange">
-        <option v-for="s in pageSizeOptions" :key="s" :value="s">{{ s }} 条</option>
-      </select>
+      <CustomSelect :modelValue="pageSize" @update:modelValue="onPageSizeChange"
+        :options="pageSizeSelectOptions" button-class="px-2 py-1 text-xs" />
     </div>
     <div class="flex items-center gap-1">
       <button
-        class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex items-center justify-center w-8 h-8 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="current <= 1" @click="emit('update:current', current - 1)">
         <ChevronLeft class="w-4 h-4" />
       </button>
 
       <template v-for="page in displayedPages" :key="page">
         <span v-if="page === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
-        <button v-else class="w-8 h-8 rounded text-xs font-medium transition-all duration-200"
+        <button v-else class="w-8 h-8 text-xs font-medium transition-all duration-200"
           :class="page === current
             ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary'
             : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'" @click="emit('update:current', page as number)">
@@ -26,7 +23,7 @@
       </template>
 
       <button
-        class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex items-center justify-center w-8 h-8 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="current >= totalPages" @click="emit('update:current', current + 1)">
         <ChevronRight class="w-4 h-4" />
       </button>
@@ -38,8 +35,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import CustomSelect from '@/components/ui/CustomSelect.vue'
 
 const pageSizeOptions = [5, 10, 15, 20, 50]
+const pageSizeSelectOptions = pageSizeOptions.map(s => ({ label: `${s} 条`, value: s }))
 
 const props = defineProps<{
   current: number
@@ -52,9 +51,8 @@ const emit = defineEmits<{
   (e: 'update:pageSize', size: number): void
 }>()
 
-function onPageSizeChange(e: Event) {
-  const val = Number((e.target as HTMLSelectElement).value)
-  emit('update:pageSize', val)
+function onPageSizeChange(val: string | number) {
+  emit('update:pageSize', Number(val))
 }
 
 const totalPages = computed(() => Math.ceil(props.total / props.pageSize))

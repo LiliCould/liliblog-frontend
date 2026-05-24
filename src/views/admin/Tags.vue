@@ -23,7 +23,7 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">标签名称</label>
  <input v-model="filters.name" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="搜索标签名称" />
  </div>
  <div class="flex items-center gap-2">
@@ -112,11 +112,7 @@
  <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
- <select :value="pageSize"
- class="px-2 py-1 rounded bg-t-bg border border-t-border text-t-body text-xs outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
- @change="onPageSizeChange">
- <option v-for="s in [5, 10, 15, 20, 50]" :key="s" :value="s">{{ s }} 条</option>
- </select>
+ <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
  </div>
  <div class="flex items-center gap-1">
  <button
@@ -159,7 +155,7 @@
  <div>
  <label class="block text-xs text-t-muted mb-1">标签名称 <span class="text-[#f43f5e]">*</span></label>
  <input v-model="form.name" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="请输入标签名称" />
  </div>
  <div>
@@ -168,7 +164,7 @@
  <input v-model="form.color" type="color"
  class="w-10 h-10 border border-t-border cursor-pointer p-0.5 bg-t-bg" />
  <input v-model="form.color" type="text"
- class="flex-1 px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm font-mono outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
+ class="flex-1 px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm font-mono outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="#000000" />
  </div>
  </div>
@@ -235,6 +231,7 @@ import { useToast } from '@/composables/useToast'
 import { getAdminTags, createAdminTag, updateAdminTag, deleteAdminTag, batchDeleteAdminTags } from '@/api/admin/tag'
 import { formatDate } from '@/utils/format'
 import type { AdminTag, AdminTagQuery, AdminTagCreateDTO, AdminTagUpdateDTO } from '@/types/admin'
+import CustomSelect from '@/components/ui/CustomSelect.vue'
 
 const toast = useToast()
 
@@ -244,6 +241,14 @@ const current = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const selectedIds = ref<number[]>([])
+
+const pageSizeOptions = [
+ { label: '5 条', value: 5 },
+ { label: '10 条', value: 10 },
+ { label: '15 条', value: 15 },
+ { label: '20 条', value: 20 },
+ { label: '50 条', value: 50 },
+]
 
 const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
 
@@ -298,13 +303,6 @@ function resetFilters() {
  loadTags(1)
 }
 
-function onPageSizeChange(e: Event) {
- const val = Number((e.target as HTMLSelectElement).value)
- pageSize.value = val
- current.value = 1
- loadTags(1)
-}
-
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function debouncedApplyFilters() {
@@ -316,6 +314,11 @@ watch(
  () => filters.name,
  () => debouncedApplyFilters(),
 )
+
+watch(pageSize, () => {
+ current.value = 1
+ loadTags(1)
+})
 
 onUnmounted(() => {
  if (debounceTimer) clearTimeout(debounceTimer)
