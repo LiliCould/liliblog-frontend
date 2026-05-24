@@ -135,3 +135,56 @@ export interface AdminCommentQuery extends PageParams {
     startTime?: string
     endTime?: string
 }
+
+export interface AdminCategory {
+    id: number
+    name: string
+    slug: string
+    description: string
+    sortOrder: number
+    articleCount: number
+    createTime: string
+    updateTime: string
+}
+
+export interface AdminCategoryQuery extends PageParams {
+    name?: string
+    slug?: string
+}
+
+export interface AdminCategoryCreateDTO {
+    name: string
+    slug: string
+    description?: string
+    sortOrder?: number
+}
+
+export interface AdminCategoryUpdateDTO {
+    name?: string
+    slug?: string
+    description?: string
+    sortOrder?: number
+}
+
+export interface AdminTag {
+    id: number
+    name: string
+    color: string
+    articleCount: number
+    createTime: string
+    updateTime: string
+}
+
+export interface AdminTagQuery extends PageParams {
+    name?: string
+}
+
+export interface AdminTagCreateDTO {
+    name: string
+    color: string
+}
+
+export interface AdminTagUpdateDTO {
+    name?: string
+    color?: string
+}
