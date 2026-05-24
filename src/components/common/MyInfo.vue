@@ -1,12 +1,12 @@
 <template>
   <div
-    class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg overflow-hidden transition-all duration-250 relative hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+    class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg transition-all duration-250 relative hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
     style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
     <div
       class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-400 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full">
     </div>
 
-    <div class="relative">
+    <div class="relative overflow-hidden rounded-t-lg">
       <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" />
       <div
         class="absolute top-3 right-3 bg-[rgba(var(--color-primary-rgb),0.85)] text-white px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
@@ -40,17 +40,29 @@
       </div>
 
       <div class="space-y-1">
-        <a v-for="link in infoLinks" :key="link.text" :href="link.url"
-          class="flex items-center justify-between px-3 py-3 rounded-md text-sm text-t-body no-underline transition-all duration-200 relative hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/link">
-          <span
-            class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-t-primary to-t-secondary rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/link:h-3/5"></span>
-          <span class="flex items-center gap-2">
-            {{ link.text }}
-            <span>{{ link.emoji }}</span>
-          </span>
-          <ChevronRight
-            class="w-4 h-4 text-t-muted opacity-0 -translate-x-1 transition-all duration-250 group-hover/link:opacity-100 group-hover/link:translate-x-0" />
-        </a>
+        <div v-for="link in infoLinks" :key="link.text" class="group/link">
+          <div
+            class="relative flex items-center justify-between px-3 py-3 rounded-md text-sm text-t-body transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] cursor-pointer">
+            <span
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-t-primary to-t-secondary rounded-full transition-[height] duration-250 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/link:h-3/5"></span>
+            <span class="flex items-center gap-2">
+              {{ link.text }}
+              <span>{{ link.emoji }}</span>
+            </span>
+            <ChevronDown class="w-4 h-4 text-t-muted transition-transform duration-250 group-hover/link:rotate-180" />
+          </div>
+          <div
+            class="grid grid-rows-[0fr] opacity-0 transition-all duration-300 group-hover/link:grid-rows-[1fr] group-hover/link:opacity-100">
+            <div class="overflow-hidden">
+              <div class="px-3 pt-1 pb-3 text-xs text-t-body leading-relaxed">
+                <template v-for="(item, idx) in link.items" :key="item">
+                  <span class="text-t-primary font-medium">{{ item }}</span>
+                  <span v-if="idx < link.items.length - 1" class="text-t-muted mx-1">·</span>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -58,7 +70,7 @@
 
 <script setup lang="ts">
 import { h } from 'vue'
-import { Tv, Music, Mail, ChevronRight } from 'lucide-vue-next'
+import { Tv, Music, Mail, ChevronDown } from 'lucide-vue-next'
 
 const GithubIcon = {
   name: 'GithubIcon',
@@ -80,7 +92,7 @@ const GithubIcon = {
 const userInfo = {
   avatar: new URL('@/assets/my.png', import.meta.url).href,
   nickname: '立里可',
-  signature: '一个没有追求但不想摆烂的人',
+  signature: '热爱技术，追求卓越',
   badge: '关于作者'
 }
 
@@ -112,8 +124,8 @@ const socialLinks = [
 ]
 
 const infoLinks = [
-  { text: '最喜欢的动漫', emoji: '📺', url: '/favorite/anime' },
-  { text: '最喜欢的美食', emoji: '🍦', url: '/favorite/delivery' },
-  { text: '最喜欢玩的游戏', emoji: '🎮', url: '/favorite/games' }
+  { text: '喜欢的动漫', emoji: '📺', items: ['海贼王', '鬼灭之刃', '凡人修仙传', '剑来', '间谍过家家', '龙与虎'] },
+  { text: '喜欢的美食', emoji: '🍦', items: ['菠萝', '炒粉', '酸菜鱼', '臭豆腐', '烤面筋'] },
+  { text: '喜欢的游戏', emoji: '🎮', items: ['Minecraft', '星露谷物语', '荒野大镖客2', '巫师3', 'GTA5'] }
 ]
 </script>
