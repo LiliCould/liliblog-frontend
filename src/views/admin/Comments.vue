@@ -17,19 +17,19 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">评论内容</label>
  <input v-model="filters.content" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="搜索评论内容" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">文章ID</label>
  <input v-model.number="filters.articleId" type="number"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="文章ID" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">状态</label>
  <select v-model="filters.status"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="undefined">全部状态</option>
  <option :value="0">审核中</option>
  <option :value="1">已发布</option>
@@ -38,12 +38,12 @@
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">发布时间起</label>
  <input v-model="filters.startTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">发布时间止</label>
  <input v-model="filters.endTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="flex items-center gap-2">
  <button
@@ -346,7 +346,7 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function debouncedApplyFilters() {
  if (debounceTimer) clearTimeout(debounceTimer)
- debounceTimer = setTimeout(() => loadComments(1), 1000)
+ debounceTimer = setTimeout(() => loadComments(1), 500)
 }
 
 watch(

@@ -17,13 +17,13 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">标题</label>
  <input v-model="filters.title" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="搜索文章标题" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">分类</label>
  <select v-model="filters.categoryId"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="undefined">全部分类</option>
  <option v-for="cat in appStore.categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
  </select>
@@ -31,7 +31,7 @@
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">状态</label>
  <select v-model="filters.status"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="undefined">全部状态</option>
  <option :value="0">审核中</option>
  <option :value="1">已发布</option>
@@ -41,12 +41,12 @@
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">创建时间起</label>
  <input v-model="filters.startTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">创建时间止</label>
  <input v-model="filters.endTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="flex items-center gap-2">
  <button
@@ -413,7 +413,7 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function debouncedApplyFilters() {
  if (debounceTimer) clearTimeout(debounceTimer)
- debounceTimer = setTimeout(() => loadArticles(1), 1000)
+ debounceTimer = setTimeout(() => loadArticles(1), 500)
 }
 
 watch(

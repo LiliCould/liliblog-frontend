@@ -4,7 +4,7 @@
       class="hidden md:flex flex-col w-60 bg-t-surface border-r border-t-border flex-shrink-0 sticky top-0 h-screen">
       <div class="px-5 py-5 border-b border-t-border">
         <router-link to="/" class="flex items-center gap-2.5 no-underline group">
-          <img src="@/assets/logo.svg" alt="LiliBlog" class="h-10 w-auto" />
+          <img src="@/assets/logo.svg" alt="LiliBlog" class="h-[52px] w-auto" />
         </router-link>
       </div>
 
@@ -71,7 +71,7 @@
           class="fixed top-0 left-0 bottom-0 w-60 z-[70] bg-t-surface border-r border-t-border flex flex-col md:hidden">
           <div class="px-5 py-5 border-b border-t-border flex items-center justify-between">
             <router-link to="/" class="flex items-center gap-2.5 no-underline" @click="sidebarOpen = false">
-              <img src="@/assets/logo.svg" alt="LiliBlog" class="h-10 w-auto" />
+              <img src="@/assets/logo.svg" alt="LiliBlog" class="h-[52px] w-auto" />
             </router-link>
             <button
               class="flex items-center justify-center w-8 h-8 text-t-muted cursor-pointer transition-colors duration-200 hover:text-t-primary"

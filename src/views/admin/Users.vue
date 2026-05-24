@@ -15,13 +15,13 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">关键词</label>
  <input v-model="filters.keyword" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="用户名 / 昵称 / 邮箱" />
  </div>
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">角色</label>
  <select v-model="filters.role"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="undefined">全部角色</option>
  <option :value="0">管理员</option>
  <option :value="1">普通用户</option>
@@ -30,7 +30,7 @@
  <div class="min-w-[120px]">
  <label class="block text-xs text-t-muted mb-1">状态</label>
  <select v-model="filters.status"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="undefined">全部状态</option>
  <option :value="1">启用</option>
  <option :value="0">禁用</option>
@@ -39,12 +39,12 @@
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">注册时间起</label>
  <input v-model="filters.createTimeStart" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="min-w-[150px]">
  <label class="block text-xs text-t-muted mb-1">注册时间止</label>
  <input v-model="filters.createTimeEnd" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer" />
  </div>
  <div class="flex items-center gap-2">
  <button
@@ -242,43 +242,43 @@
  <div>
  <label class="block text-sm text-t-body mb-1.5">用户名</label>
  <input v-model="form.username" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入用户名" />
  </div>
  <div>
  <label class="block text-sm text-t-body mb-1.5">昵称</label>
  <input v-model="form.nickname" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入昵称" />
  </div>
  <div>
  <label class="block text-sm text-t-body mb-1.5">邮箱</label>
  <input v-model="form.email" type="email"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入邮箱" />
  </div>
  <div v-if="!isEditing">
  <label class="block text-sm text-t-body mb-1.5">密码</label>
  <input v-model="form.password" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入密码" />
  </div>
  <div v-if="!isEditing">
  <label class="block text-sm text-t-body mb-1.5">确认密码</label>
  <input v-model="form.confirmPassword" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请再次输入密码" />
  </div>
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">重置密码</label>
  <input v-model="form.newPassword" type="password"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="留空则不修改密码" />
  </div>
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">角色</label>
  <select v-model="form.role"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="0">管理员</option>
  <option :value="1">普通用户</option>
  </select>
@@ -286,7 +286,7 @@
  <div v-if="isEditing">
  <label class="block text-sm text-t-body mb-1.5">状态</label>
  <select v-model="form.status"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary">
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer">
  <option :value="1">启用</option>
  <option :value="0">禁用</option>
  </select>
@@ -464,7 +464,7 @@ function debouncedApplyFilters() {
  }
  debounceTimer = setTimeout(() => {
  loadUsers(1)
- }, 1000)
+ }, 500)
 }
 
 watch(

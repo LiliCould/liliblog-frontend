@@ -10,9 +10,9 @@
  批量删除 ({{ selectedIds.length }})
  </button>
  <button
- class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+ class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
  @click="openAddDialog">
- <Plus class="w-4 h-4" />
+ <Plus class="w-3.5 h-3.5" />
  添加分类
  </button>
  </div>
@@ -23,13 +23,13 @@
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">分类名称</label>
  <input v-model="filters.name" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="搜索分类名称" />
  </div>
  <div class="flex-1 min-w-[180px]">
  <label class="block text-xs text-t-muted mb-1">Slug</label>
  <input v-model="filters.slug" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="搜索 Slug" />
  </div>
  <div class="flex items-center gap-2">
@@ -171,13 +171,13 @@
  <div>
  <label class="block text-xs text-t-muted mb-1">分类名称 <span class="text-[#f43f5e]">*</span></label>
  <input v-model="form.name" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入分类名称" />
  </div>
  <div>
  <label class="block text-xs text-t-muted mb-1">Slug <span class="text-[#f43f5e]">*</span></label>
  <input v-model="form.slug" type="text"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="请输入 Slug" />
  </div>
  <div>
@@ -189,7 +189,7 @@
  <div>
  <label class="block text-xs text-t-muted mb-1">排序</label>
  <input v-model.number="form.sortOrder" type="number"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer"
  placeholder="0" />
  </div>
  </div>
@@ -332,7 +332,7 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function debouncedApplyFilters() {
  if (debounceTimer) clearTimeout(debounceTimer)
- debounceTimer = setTimeout(() => loadCategories(1), 1000)
+ debounceTimer = setTimeout(() => loadCategories(1), 500)
 }
 
 watch(
