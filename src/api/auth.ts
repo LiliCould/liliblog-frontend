@@ -19,5 +19,5 @@ export function logout() {
 }
 
 export function getCaptcha(email: string) {
-    return request.get<ApiResponse<null>>('/auth/captcha', { params: { email } })
+    return request.get<ApiResponse<null>>('/auth/login/email/code', { params: { email } })
 }

@@ -16,6 +16,7 @@ declare module 'vue' {
     ArticleCard: typeof import('./components/common/ArticleCard.vue')['default']
     ArticleList: typeof import('./components/article/ArticleList.vue')['default']
     ArticleToc: typeof import('./components/article/ArticleToc.vue')['default']
+    AuthModal: typeof import('./components/auth/AuthModal.vue')['default']
     ChangePasswordModal: typeof import('./components/user/ChangePasswordModal.vue')['default']
     CommentItem: typeof import('./components/comment/CommentItem.vue')['default']
     CommentSection: typeof import('./components/comment/CommentSection.vue')['default']

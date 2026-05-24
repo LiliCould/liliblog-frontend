@@ -140,12 +140,48 @@
 
     <ChangePasswordModal v-if="showPasswordModal" @close="showPasswordModal = false" />
   </AppLayout>
+
+  <Teleport to="body">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 z-[1200] flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click.stop></div>
+      <div class="relative bg-t-surface border border-t-border rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
+        <button
+          class="absolute top-4 right-4 w-7 h-7 rounded flex items-center justify-center text-t-muted hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[background-color] duration-200"
+          @click="showDeleteConfirm = false; deleteTarget = null">
+          <X class="w-4 h-4" />
+        </button>
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-full bg-[rgba(244,63,94,0.1)] flex items-center justify-center flex-shrink-0">
+            <AlertTriangle class="w-5 h-5 text-[#f43f5e]" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base font-semibold text-t-title">确认删除</h3>
+            <p class="mt-2 text-sm text-t-muted">
+              确定要删除文章「<span class="text-t-body font-medium">{{ deleteTarget?.title }}</span>」吗？此操作不可恢复。
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 mt-6">
+          <button
+            class="px-4 py-2 rounded-lg text-sm font-medium text-t-muted border border-t-border hover:text-t-body transition-[color] duration-200"
+            @click="showDeleteConfirm = false; deleteTarget = null">
+            取消
+          </button>
+          <button
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-[#f43f5e] text-white hover:opacity-90 transition-[opacity] duration-200"
+            @click="doDelete">
+            确认删除
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Plus, Edit, Trash2, Eye, Clock, FolderOpen, FileText, PenLine, Lock, Mail } from 'lucide-vue-next'
+import { Plus, Edit, Trash2, Eye, Clock, FolderOpen, FileText, PenLine, Lock, Mail, AlertTriangle, X } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { getUserById } from '@/api/user'
 import { getArticles, deleteArticle } from '@/api/article'
@@ -174,6 +210,8 @@ const pageSize = ref(10)
 const loading = ref(false)
 const activeTab = ref<string>('all')
 const showPasswordModal = ref(false)
+const showDeleteConfirm = ref(false)
+const deleteTarget = ref<Article | null>(null)
 
 const isSelf = computed(() => {
   const routeId = route.params.id
@@ -273,14 +311,20 @@ function handlePageSizeChange(size: number) {
   fetchArticles()
 }
 
-async function confirmDelete(article: Article) {
-  if (!confirm(`确定要删除文章「${article.title}」吗？此操作不可恢复。`)) return
+function confirmDelete(article: Article) {
+  deleteTarget.value = article
+  showDeleteConfirm.value = true
+}
+
+async function doDelete() {
+  if (!deleteTarget.value) return
   try {
-    await deleteArticle(article.id)
+    await deleteArticle(deleteTarget.value.id)
     toast.success('文章已删除')
     fetchArticles()
-  } catch {
-  }
+  } catch {}
+  showDeleteConfirm.value = false
+  deleteTarget.value = null
 }
 
 watch(() => route.params.id, () => {

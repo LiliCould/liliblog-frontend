@@ -7,7 +7,7 @@ export interface LoginByPwdDTO {
 export interface LoginByEmailDTO {
     loginType: string
     email: string
-    code: string
+    code: string | number
 }
 
 export interface RegisterDTO {

@@ -92,14 +92,16 @@
         </template>
 
         <template v-else>
-          <router-link to="/login"
-            class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-t-primary border-[1.5px] border-[rgba(var(--color-primary-rgb),0.4)] rounded-md no-underline transition-all duration-200 hover:text-white hover:border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] hover:-translate-y-px [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.15)]">
+          <button
+            class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-t-primary border-[1.5px] border-[rgba(var(--color-primary-rgb),0.4)] rounded-md transition-all duration-200 hover:text-white hover:border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] hover:-translate-y-px [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.15)] cursor-pointer"
+            @click="authModal.open('login')">
             登录
-          </router-link>
-          <router-link to="/register"
-            class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-white bg-t-primary rounded-md no-underline transition-all duration-200 hover:-translate-y-0.5 [box-shadow:0_4px_12px_rgba(var(--color-primary-rgb),0.25)] hover:[box-shadow:0_6px_20px_rgba(var(--color-primary-rgb),0.35),0_0_12px_rgba(var(--color-primary-rgb),0.2)]">
+          </button>
+          <button
+            class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-white bg-t-primary rounded-md transition-all duration-200 hover:-translate-y-0.5 [box-shadow:0_4px_12px_rgba(var(--color-primary-rgb),0.25)] hover:[box-shadow:0_6px_20px_rgba(var(--color-primary-rgb),0.35),0_0_12px_rgba(var(--color-primary-rgb),0.2)] cursor-pointer"
+            @click="authModal.open('register')">
             注册
-          </router-link>
+          </button>
         </template>
 
         <button
@@ -119,6 +121,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
+import { useAuthModal } from '@/composables/useAuthModal'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search, MessageCircle, Palette } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
@@ -128,6 +131,7 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const appStore = useAppStore()
+const authModal = useAuthModal()
 
 const isScrolled = ref(false)
 const showDropdown = ref(false)

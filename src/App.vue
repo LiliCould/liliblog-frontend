@@ -29,6 +29,7 @@
       <MobileNav />
     </template>
     <ToastContainer />
+    <AuthModal />
   </div>
 </template>
 
@@ -40,6 +41,7 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 import MobileNav from '@/components/layout/MobileNav.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
+import AuthModal from '@/components/auth/AuthModal.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useTokenRefresh } from '@/composables/useTokenRefresh'
 

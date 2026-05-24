@@ -2,7 +2,6 @@ import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { getToken, setToken, setTokenExpires, clearAuth } from '@/utils/storage'
 import type { ApiResponse } from '@/types/api'
-import router from '@/router/index'
 import { useToast } from '@/composables/useToast'
 
 const LOG_PREFIX = '[认证]'
@@ -54,7 +53,10 @@ function handleRefreshTokenExpired() {
     console.warn(`${LOG_PREFIX} 刷新令牌已过期，清除登录状态`)
     clearAuth()
     showToast('error', '登录已过期，请重新登录')
-    router.push('/login')
+    import('@/composables/useAuthModal').then(({ useAuthModal }) => {
+        const { open } = useAuthModal()
+        open('login')
+    })
 }
 
 service.interceptors.request.use(
