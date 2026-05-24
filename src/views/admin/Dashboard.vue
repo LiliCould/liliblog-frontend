@@ -78,12 +78,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { FileText, FolderOpen, Tag, MessageSquare } from 'lucide-vue-next'
-import { getArticles } from '@/api/article'
-import { getCategories } from '@/api/category'
-import { getTags } from '@/api/tag'
-import type { Article } from '@/types/article'
-import type { Category } from '@/types/category'
-import type { Tag as TagType } from '@/types/tag'
+import { getAdminArticles } from '@/api/admin/article'
+import { getAdminCategories } from '@/api/admin/category'
+import { getAdminTags } from '@/api/admin/tag'
+import { getAdminComments } from '@/api/admin/comment'
+import type { AdminArticle } from '@/types/admin'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 import { formatRelativeTime } from '@/utils/format'
@@ -96,7 +95,7 @@ const stats = reactive({
   commentCount: 0,
 })
 
-const recentArticles = ref<Article[]>([])
+const recentArticles = ref<AdminArticle[]>([])
 const loadingArticles = ref(false)
 
 function statusText(status: number) {
@@ -107,14 +106,16 @@ function statusText(status: number) {
 async function fetchStats() {
   loadingArticles.value = true
   try {
-    const [articleRes, categoryRes, tagRes] = await Promise.all([
-      getArticles({ current: 1, size: 10 }) as unknown as ApiResponse<PageResult<Article>>,
-      getCategories({ size: 1 }) as unknown as ApiResponse<PageResult<Category>>,
-      getTags({ size: 1 }) as unknown as ApiResponse<PageResult<TagType>>,
+    const [articleRes, categoryRes, tagRes, commentRes] = await Promise.all([
+      getAdminArticles({ current: 1, size: 10 }) as unknown as ApiResponse<PageResult<AdminArticle>>,
+      getAdminCategories({ current: 1, size: 1 }) as unknown as ApiResponse<PageResult<any>>,
+      getAdminTags({ current: 1, size: 1 }) as unknown as ApiResponse<PageResult<any>>,
+      getAdminComments({ current: 1, size: 1 }) as unknown as ApiResponse<PageResult<any>>,
     ])
     stats.articleCount = articleRes.data?.total || 0
     stats.categoryCount = categoryRes.data?.total || 0
     stats.tagCount = tagRes.data?.total || 0
+    stats.commentCount = commentRes.data?.total || 0
     recentArticles.value = articleRes.data?.records || []
   } finally {
     loadingArticles.value = false
