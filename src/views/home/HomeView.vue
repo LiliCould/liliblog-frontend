@@ -9,8 +9,8 @@
     </div>
 
     <ArticleList v-else-if="articleStore.publicList.length > 0" :articles="articleStore.publicList"
-      :total="articleStore.total" :current="currentPage" :page-size="pageSize"
-      @page-change="handlePageChange" @page-size-change="handlePageSizeChange" />
+      :total="articleStore.total" :current="currentPage" :page-size="pageSize" @page-change="handlePageChange"
+      @page-size-change="handlePageSizeChange" />
 
     <EmptyState v-else message="暂无文章" />
   </AppLayout>
@@ -26,7 +26,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 
 const articleStore = useArticleStore()
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(5)
 
 onMounted(() => {
   articleStore.fetchPublicArticles({ status: 1, current: currentPage.value, size: pageSize.value })

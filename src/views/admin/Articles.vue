@@ -81,7 +81,7 @@
  </div>
  </div>
 
- <div class="bg-t-surface border border-t-border overflow-hidden">
+ <div class="bg-t-surface border border-t-border">
  <div class="overflow-x-auto">
  <table class="w-full text-sm">
  <thead>
@@ -154,8 +154,9 @@
  <div v-if="articles.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
  暂无文章
  </div>
+ </div>
 
- <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 border-t border-t-border">
+ <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
  <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
@@ -182,7 +183,6 @@
  </button>
  </div>
  <span class="text-xs text-t-muted">共 {{ total }} 条</span>
- </div>
  </div>
 
  <Teleport to="body">

@@ -65,8 +65,15 @@ function calcDirection() {
   if (!selectRef.value) return
   const rect = selectRef.value.getBoundingClientRect()
   const spaceBelow = window.innerHeight - rect.bottom
+  const spaceAbove = rect.top
   const dropdownHeight = Math.min(props.options.length * 36, 240)
-  openUp.value = spaceBelow < dropdownHeight && rect.top > spaceBelow
+  if (spaceBelow >= dropdownHeight) {
+    openUp.value = false
+  } else if (spaceAbove >= dropdownHeight) {
+    openUp.value = true
+  } else {
+    openUp.value = spaceAbove > spaceBelow
+  }
 }
 
 function toggle() {
