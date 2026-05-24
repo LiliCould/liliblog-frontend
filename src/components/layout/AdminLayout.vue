@@ -2,14 +2,9 @@
   <div class="min-h-screen bg-t-bg flex">
     <aside
       class="hidden md:flex flex-col w-60 bg-t-surface border-r border-t-border flex-shrink-0 sticky top-0 h-screen">
-      <div class="px-5 py-6 border-b border-t-border">
+      <div class="px-5 py-5 border-b border-t-border">
         <router-link to="/" class="flex items-center gap-2.5 no-underline group">
-          <div
-            class="w-8 h-8 rounded-sm bg-t-primary flex items-center justify-center text-white font-bold text-sm [box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
-            L
-          </div>
-          <span
-            class="text-lg font-bold bg-gradient-to-r from-t-primary to-t-secondary bg-clip-text [-webkit-text-fill-color:transparent]">LiliBlog</span>
+          <img src="@/assets/logo.svg" alt="LiliBlog" class="h-10 w-auto" />
         </router-link>
       </div>
 
@@ -18,7 +13,7 @@
           <span class="text-[11px] font-semibold text-t-muted uppercase tracking-wider px-3">管理</span>
         </div>
         <router-link v-for="item in navItems" :key="item.path" :to="item.path"
-          class="flex items-center gap-3 mx-3 px-3 py-2.5 rounded-sm text-sm font-medium no-underline transition-all duration-200"
+          class="flex items-center gap-3 mx-3 px-3 py-2 text-sm font-medium no-underline transition-all duration-200"
           :class="isActive(item.path) ? 'text-t-primary bg-[rgba(var(--color-primary-rgb),0.1)] [box-shadow:inset_2px_0_0_var(--color-primary)]' : 'text-t-body hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]'">
           <component :is="item.icon" class="w-[18px] h-[18px]" />
           <span>{{ item.label }}</span>
@@ -27,7 +22,7 @@
 
       <div class="px-3 py-4 border-t border-t-border">
         <router-link to="/"
-          class="flex items-center gap-3 mx-3 px-3 py-2.5 rounded-sm text-sm font-medium text-t-muted no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]">
+          class="flex items-center gap-3 mx-3 px-3 py-2 text-sm font-medium text-t-muted no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]">
           <ArrowLeft class="w-[18px] h-[18px]" />
           <span>返回前台</span>
         </router-link>
@@ -40,7 +35,7 @@
         style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
         <div class="flex items-center gap-3">
           <button
-            class="md:hidden flex items-center justify-center w-9 h-9 text-t-body rounded-sm transition-colors duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] cursor-pointer"
+            class="md:hidden flex items-center justify-center w-9 h-9 text-t-body transition-colors duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] cursor-pointer"
             @click="sidebarOpen = !sidebarOpen">
             <Menu class="w-5 h-5" />
           </button>
@@ -74,13 +69,9 @@
         leave-from-class="translate-x-0" leave-to-class="-translate-x-full">
         <div v-if="sidebarOpen"
           class="fixed top-0 left-0 bottom-0 w-60 z-[70] bg-t-surface border-r border-t-border flex flex-col md:hidden">
-          <div class="px-5 py-6 border-b border-t-border flex items-center justify-between">
+          <div class="px-5 py-5 border-b border-t-border flex items-center justify-between">
             <router-link to="/" class="flex items-center gap-2.5 no-underline" @click="sidebarOpen = false">
-              <div
-                class="w-8 h-8 rounded-sm bg-t-primary flex items-center justify-center text-white font-bold text-sm">
-                L</div>
-              <span
-                class="text-lg font-bold bg-gradient-to-r from-t-primary to-t-secondary bg-clip-text [-webkit-text-fill-color:transparent]">LiliBlog</span>
+              <img src="@/assets/logo.svg" alt="LiliBlog" class="h-10 w-auto" />
             </router-link>
             <button
               class="flex items-center justify-center w-8 h-8 text-t-muted cursor-pointer transition-colors duration-200 hover:text-t-primary"
@@ -94,7 +85,7 @@
               <span class="text-[11px] font-semibold text-t-muted uppercase tracking-wider px-3">管理</span>
             </div>
             <router-link v-for="item in navItems" :key="item.path" :to="item.path"
-              class="flex items-center gap-3 mx-3 px-3 py-2.5 rounded-sm text-sm font-medium no-underline transition-all duration-200"
+              class="flex items-center gap-3 mx-3 px-3 py-2 text-sm font-medium no-underline transition-all duration-200"
               :class="isActive(item.path) ? 'text-t-primary bg-[rgba(var(--color-primary-rgb),0.1)] [box-shadow:inset_2px_0_0_var(--color-primary)]' : 'text-t-body hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]'"
               @click="sidebarOpen = false">
               <component :is="item.icon" class="w-[18px] h-[18px]" />
@@ -104,7 +95,7 @@
 
           <div class="px-3 py-4 border-t border-t-border">
             <router-link to="/"
-              class="flex items-center gap-3 mx-3 px-3 py-2.5 rounded-sm text-sm font-medium text-t-muted no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]"
+              class="flex items-center gap-3 mx-3 px-3 py-2 text-sm font-medium text-t-muted no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)]"
               @click="sidebarOpen = false">
               <ArrowLeft class="w-[18px] h-[18px]" />
               <span>返回前台</span>
