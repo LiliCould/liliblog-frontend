@@ -18,7 +18,9 @@
           {{ article.title }}
         </h2>
 
-        <p v-if="article.summary" class="text-sm text-t-body leading-relaxed mb-4 line-clamp-2 flex-grow">
+        <p v-if="article.summary" ref="summaryRef"
+          class="text-sm text-t-body leading-relaxed mb-4 line-clamp-2"
+          @mouseenter="checkTruncation" @mouseleave="onSummaryLeave">
           {{ article.summary }}
         </p>
 
@@ -91,10 +93,23 @@
       </div>
     </div>
   </article>
+
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="showTooltip"
+        class="fixed z-tooltip pointer-events-none max-w-[320px]"
+        :style="tooltipStyle">
+        <div
+          class="bg-[rgba(var(--color-surface-rgb),0.95)] border border-[rgba(var(--color-primary-rgb),0.2)] rounded-lg px-3 py-2 shadow-lg backdrop-blur-sm text-xs text-t-body leading-relaxed">
+          {{ article.summary }}
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
 import { Eye, MessageSquare, Heart, Clock, Calendar, FolderOpen } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
@@ -107,6 +122,9 @@ const props = defineProps<{
 
 const router = useRouter()
 const cardRef = ref<HTMLElement | null>(null)
+const summaryRef = ref<HTMLElement | null>(null)
+const showTooltip = ref(false)
+const tooltipStyle = ref<CSSProperties>({})
 const MAX_TAGS = 10
 
 const displayTags = computed(() => {
@@ -121,6 +139,24 @@ const hiddenTagsCount = computed(() => {
 
 function goDetail() {
   router.push(`/article/${props.article.id}`)
+}
+
+function checkTruncation() {
+  if (!summaryRef.value) return
+  const el = summaryRef.value
+  if (el.scrollHeight > el.clientHeight) {
+    const rect = el.getBoundingClientRect()
+    tooltipStyle.value = {
+      left: `${rect.left}px`,
+      top: `${rect.top - 8}px`,
+      transform: 'translateY(-100%)',
+    }
+    showTooltip.value = true
+  }
+}
+
+function onSummaryLeave() {
+  showTooltip.value = false
 }
 
 onMounted(() => {
