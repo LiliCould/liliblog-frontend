@@ -188,3 +188,30 @@ export interface AdminTagUpdateDTO {
     name?: string
     color?: string
 }
+
+export interface AdminAuditLog {
+    id: number
+    username: string
+    module: string
+    operation: string
+    target: string
+    targetType: string
+    description: string
+    requestMethod: string
+    requestUri: string
+    ipAddress: string
+    userAgent: string
+    executionTime: number
+    status: number
+    errorMessage: string
+    createTime: string
+}
+
+export interface AdminAuditLogQuery extends PageParams {
+    username?: string
+    module?: string
+    operation?: string
+    status?: number
+    startTime?: string
+    endTime?: string
+}
