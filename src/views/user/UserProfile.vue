@@ -1,4 +1,5 @@
 <template>
+  <div>
   <AppLayout :show-hero="false">
     <div class="max-w-4xl mx-auto">
       <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden mb-8">
@@ -176,6 +177,7 @@
       </div>
     </div>
   </Teleport>
+  </div>
 </template>
 
 <script setup lang="ts">

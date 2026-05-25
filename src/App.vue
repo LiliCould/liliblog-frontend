@@ -1,17 +1,17 @@
 <template>
   <div class="app-wrapper min-h-screen bg-t-bg text-t-body">
     <template v-if="layout === 'blank'">
-      <router-view v-slot="{ Component }">
+      <router-view v-slot="{ Component, route: viewRoute }">
         <transition name="fade" mode="out-in">
-          <component :is="Component" />
+          <component :is="Component" :key="viewRoute.path" />
         </transition>
       </router-view>
     </template>
     <template v-else-if="layout === 'admin'">
       <AdminLayout>
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route: viewRoute }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="viewRoute.path" />
           </transition>
         </router-view>
       </AdminLayout>
@@ -19,9 +19,9 @@
     <template v-else>
       <AppHeader />
       <main class="main-content pt-16 min-h-screen bg-t-bg">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route: viewRoute }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="viewRoute.path" />
           </transition>
         </router-view>
       </main>
@@ -58,15 +58,3 @@ const layout = computed(() => {
 onMounted(initTheme)
 onUnmounted(destroyTheme)
 </script>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
