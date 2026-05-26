@@ -143,7 +143,7 @@ const showThemePanel = ref(false)
 const navItems = [
   { path: '/', label: '首页', icon: Home },
   { path: '/about', label: '关于', icon: Info },
-  { path: '/article/2', label: '交流', icon: MessageCircle },
+  { path: '/article/id/2', label: '交流', icon: MessageCircle },
 ]
 
 const handleScroll = () => {

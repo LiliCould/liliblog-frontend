@@ -76,7 +76,7 @@
             <div class="flex items-center gap-2">
               <h3
                 class="text-sm font-semibold text-t-body truncate cursor-pointer transition-[color] duration-200 hover:text-t-primary"
-                @click="router.push(`/article/${article.id}`)">
+                @click="router.push(`/article/${article.slug}`)">
                 {{ article.title }}
               </h3>
               <span v-if="isSelf" class="inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0"

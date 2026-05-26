@@ -53,7 +53,7 @@
               <span>关于</span>
             </a>
             <a class="flex items-center gap-3 px-5 py-3 text-sm text-t-body cursor-pointer transition-all duration-200 relative hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-0 before:bg-t-primary before:rounded-full before:transition-[height] before:duration-200 before:[box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] hover:before:h-3/5"
-              @click="navigate('/article/2')">
+              @click="navigate('/article/id/2')">
               <MessageCircle class="w-[18px] h-[18px]" />
               <span>交流</span>
             </a>

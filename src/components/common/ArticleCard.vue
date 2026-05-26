@@ -138,7 +138,7 @@ const hiddenTagsCount = computed(() => {
 })
 
 function goDetail() {
-  router.push(`/article/${props.article.id}`)
+  router.push(`/article/${props.article.slug}`)
 }
 
 function checkTruncation() {

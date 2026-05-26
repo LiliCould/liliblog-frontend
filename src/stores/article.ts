@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getArticles, getArticleById } from '@/api/article'
+import { getArticles, getArticleById, getArticleBySlug } from '@/api/article'
 import type { Article, ArticleDetail } from '@/types/article'
 import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
@@ -52,6 +52,17 @@ export const useArticleStore = defineStore('article', () => {
         }
     }
 
+    async function fetchArticleBySlug(slug: string) {
+        loading.value = true
+        try {
+            const res = await getArticleBySlug(slug) as unknown as ApiResponse<ArticleDetail>
+            currentArticle.value = res.data
+            return res.data
+        } finally {
+            loading.value = false
+        }
+    }
+
     function clearCurrentArticle() {
         currentArticle.value = null
     }
@@ -65,6 +76,7 @@ export const useArticleStore = defineStore('article', () => {
         fetchPublicArticles,
         fetchMyArticles,
         fetchArticleDetail,
+        fetchArticleBySlug,
         clearCurrentArticle,
     }
 })

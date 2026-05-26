@@ -18,7 +18,7 @@
       </div>
 
       <div v-else class="flex flex-col gap-1">
-        <router-link v-for="article in articles" :key="article.id" :to="`/article/${article.id}`"
+        <router-link v-for="article in articles" :key="article.id" :to="`/article/${article.slug}`"
           class="flex items-start gap-2 px-3 py-2.5 rounded-md text-sm text-t-body no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/article">
           <ChevronRight
             class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-t-muted transition-colors duration-200 group-hover/article:text-t-primary" />

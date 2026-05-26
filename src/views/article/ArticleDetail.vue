@@ -121,16 +121,34 @@ function setPageTitle(title: string) {
 async function loadArticle() {
   loading.value = true
   try {
-    const id = Number(route.params.id)
-    article.value = (await articleStore.fetchArticleDetail(id)) || null
+    const slugParam = route.params.slug as string
+    const idParam = route.params.id as string
+
+    if (idParam) {
+      const id = Number(idParam)
+      article.value = (await articleStore.fetchArticleDetail(id)) || null
+      if (article.value) {
+        try {
+          const res = await getArticleLikeStatus(id) as any
+          isLiked.value = res.data === true
+        } catch {
+          isLiked.value = false
+        }
+      }
+    } else if (slugParam) {
+      article.value = (await articleStore.fetchArticleBySlug(slugParam)) || null
+      if (article.value) {
+        try {
+          const res = await getArticleLikeStatus(article.value.id) as any
+          isLiked.value = res.data === true
+        } catch {
+          isLiked.value = false
+        }
+      }
+    }
+
     if (article.value) {
       setPageTitle(article.value.title)
-      try {
-        const res = await getArticleLikeStatus(id) as any
-        isLiked.value = res.data === true
-      } catch {
-        isLiked.value = false
-      }
     } else {
       setPageTitle('文章不存在 - 立里博客')
     }
@@ -161,7 +179,7 @@ async function toggleLike() {
 }
 
 onMounted(loadArticle)
-watch(() => route.params.id, loadArticle)
+watch(() => [route.params.slug, route.params.id], loadArticle)
 
 onUnmounted(() => {
   document.title = defaultTitle

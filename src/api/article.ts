@@ -10,6 +10,10 @@ export function getArticleById(id: number) {
     return request.get<ApiResponse<Article>>(`/api/article/${id}`)
 }
 
+export function getArticleBySlug(slug: string) {
+    return request.get<ApiResponse<Article>>(`/api/article/slug/${slug}`)
+}
+
 export function createArticle(data: ArticleCreateDTO) {
     return request.post<ApiResponse<number>>('/api/article', data)
 }

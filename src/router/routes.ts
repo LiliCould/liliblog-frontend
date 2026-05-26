@@ -8,8 +8,14 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '首页' },
     },
     {
-        path: '/article/:id(\\d+)',
+        path: '/article/:slug',
         name: 'ArticleDetail',
+        component: () => import('@/views/article/ArticleDetail.vue'),
+        meta: { title: '文章详情' },
+    },
+    {
+        path: '/article/id/:id(\\d+)',
+        name: 'ArticleDetailById',
         component: () => import('@/views/article/ArticleDetail.vue'),
         meta: { title: '文章详情' },
     },
