@@ -6,6 +6,10 @@ export function getArticles(params?: Record<string, any>) {
     return request.get<ApiResponse<Article[]>>('/api/article', { params })
 }
 
+export function searchArticles(params?: Record<string, any>) {
+    return request.get<ApiResponse<Article[]>>('/api/article/search', { params })
+}
+
 export function getArticleById(id: number) {
     return request.get<ApiResponse<Article>>(`/api/article/${id}`)
 }

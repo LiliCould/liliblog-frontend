@@ -12,11 +12,23 @@
 
         <div class="bg-t-surface border border-t-border p-4">
             <div class="flex flex-wrap items-end gap-3">
-                <div class="flex-1 min-w-[180px]">
-                    <label class="block text-xs text-t-muted mb-1">关键词</label>
-                    <input v-model="filters.keyword" type="text"
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-xs text-t-muted mb-1">用户名</label>
+                    <input v-model="filters.username" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                        placeholder="用户名 / 昵称 / 邮箱" />
+                        placeholder="搜索用户名" />
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-xs text-t-muted mb-1">昵称</label>
+                    <input v-model="filters.nickname" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索昵称" />
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-xs text-t-muted mb-1">邮箱</label>
+                    <input v-model="filters.email" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索邮箱" />
                 </div>
                 <div class="min-w-[120px]">
                     <label class="block text-xs text-t-muted mb-1">角色</label>
@@ -51,10 +63,20 @@
             </div>
             <div v-if="hasActiveFilters" class="flex items-center gap-2 mt-3 pt-3 border-t border-t-border">
                 <span class="text-xs text-t-muted">当前筛选：</span>
-                <span v-if="filters.keyword"
+                <span v-if="filters.username"
                     class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
-                    关键词: {{ filters.keyword }}
-                    <button class="hover:opacity-70 cursor-pointer" @click="filters.keyword = undefined">×</button>
+                    用户名: {{ filters.username }}
+                    <button class="hover:opacity-70 cursor-pointer" @click="filters.username = undefined">×</button>
+                </span>
+                <span v-if="filters.nickname"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+                    昵称: {{ filters.nickname }}
+                    <button class="hover:opacity-70 cursor-pointer" @click="filters.nickname = undefined">×</button>
+                </span>
+                <span v-if="filters.email"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
+                    邮箱: {{ filters.email }}
+                    <button class="hover:opacity-70 cursor-pointer" @click="filters.email = undefined">×</button>
                 </span>
                 <span v-if="filters.role !== undefined"
                     class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary">
@@ -372,7 +394,9 @@ const displayPages = computed(() => {
 })
 
 const filters = reactive<{
-    keyword?: string
+    username?: string
+    nickname?: string
+    email?: string
     role?: number
     status?: number
     createTimeStart?: string
@@ -420,16 +444,14 @@ const statusModel = computed({
 })
 
 const hasActiveFilters = computed(() => {
-    return !!filters.keyword || filters.role !== undefined || filters.status !== undefined || !!filters.createTimeStart || !!filters.createTimeEnd
+    return !!filters.username || !!filters.nickname || !!filters.email || filters.role !== undefined || filters.status !== undefined || !!filters.createTimeStart || !!filters.createTimeEnd
 })
 
 function buildQueryParams(page: number): AdminUserQuery {
     const params: AdminUserQuery = { current: page, size: pageSize.value }
-    if (filters.keyword) {
-        params.username = filters.keyword
-        params.nickname = filters.keyword
-        params.email = filters.keyword
-    }
+    if (filters.username) params.username = filters.username
+    if (filters.nickname) params.nickname = filters.nickname
+    if (filters.email) params.email = filters.email
     if (filters.role !== undefined) params.role = filters.role
     if (filters.status !== undefined) params.status = filters.status
     if (filters.createTimeStart) params.createTimeStart = filters.createTimeStart + ' 00:00:00'
@@ -442,7 +464,9 @@ function applyFilters() {
 }
 
 function resetFilters() {
-    filters.keyword = undefined
+    filters.username = undefined
+    filters.nickname = undefined
+    filters.email = undefined
     filters.role = undefined
     filters.status = undefined
     filters.createTimeStart = undefined
@@ -485,7 +509,7 @@ function debouncedApplyFilters() {
 }
 
 watch(
-    () => [filters.keyword, filters.role, filters.status, filters.createTimeStart, filters.createTimeEnd],
+    () => [filters.username, filters.nickname, filters.email, filters.role, filters.status, filters.createTimeStart, filters.createTimeEnd],
     () => {
         debouncedApplyFilters()
     },
