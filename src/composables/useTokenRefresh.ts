@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
-import { getToken, isTokenExpiringSoon, getTokenExpires } from '@/utils/storage'
+import { getToken, isTokenExpiringSoon, isTokenExpired, getTokenExpires } from '@/utils/storage'
 import { proactiveRefresh } from '@/utils/request'
 import { useUserStore } from '@/stores/user'
 
@@ -17,6 +17,20 @@ export function useTokenRefresh() {
     async function checkAndRefresh() {
         if (!userStore.isLoggedIn) return
         if (!getToken()) return
+
+        if (isTokenExpired()) {
+            const now = Date.now()
+            if (now - lastRefreshTime.value < 30 * 1000) return
+            console.log(`${LOG_PREFIX} 访问令牌已过期，尝试使用刷新令牌续期`)
+            lastRefreshTime.value = now
+            const success = await proactiveRefresh()
+            if (success) {
+                console.log(`${LOG_PREFIX} 刷新令牌续期成功，下次过期时间: ${new Date(getTokenExpires()).toLocaleString()}`)
+            } else {
+                console.warn(`${LOG_PREFIX} 刷新令牌也已过期，需要重新登录`)
+            }
+            return
+        }
 
         if (isTokenExpiringSoon(REFRESH_THRESHOLD)) {
             const now = Date.now()

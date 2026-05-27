@@ -74,49 +74,27 @@
           </div>
 
           <div v-else-if="currentView === 'register'" key="register" class="px-6 py-5">
-            <form class="flex flex-col gap-2.5" @submit.prevent="handleRegister">
-              <div class="relative">
-                <User class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                <input v-model="regForm.username" type="text" placeholder="用户名"
-                  class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
+            <div class="flex flex-col items-center text-center py-4">
+              <div class="w-14 h-14 rounded-full bg-[rgba(var(--color-primary-rgb),0.1)] flex items-center justify-center mb-4">
+                <Lock class="w-7 h-7 text-t-primary" />
               </div>
-              <div class="relative">
-                <Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                <input v-model="regForm.email" type="email" placeholder="邮箱"
-                  class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
+              <h3 class="text-base font-semibold text-t-title mb-2">暂时关闭注册</h3>
+              <p class="text-sm text-t-muted leading-relaxed mb-4">
+                目前暂不开放新用户注册，<br />如需账号请联系管理员。
+              </p>
+              <div
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[rgba(var(--color-primary-rgb),0.06)] border border-[rgba(var(--color-primary-rgb),0.15)] cursor-pointer transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.12)]"
+                @click="copyEmail">
+                <Mail class="w-4 h-4 text-t-primary" />
+                <span class="text-sm text-t-primary font-medium">lilicould@qq.com</span>
+                <Copy class="w-3.5 h-3.5 text-t-muted" />
               </div>
-              <div class="flex gap-2">
-                <div class="relative flex-1">
-                  <KeyRound class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                  <input v-model="regForm.code" type="text" placeholder="验证码"
-                    class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
-                </div>
-                <button type="button" :disabled="countdown > 0 || captchaLoading"
-                  class="shrink-0 h-9 px-3 bg-[rgba(var(--color-primary-rgb),0.08)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary text-xs font-medium transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  @click="handleSendCaptcha(regForm.email)">
-                  {{ countdown > 0 ? `${countdown}s` : '获取验证码' }}
-                </button>
-              </div>
-              <div class="relative">
-                <PenLine class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                <input v-model="regForm.nickname" type="text" placeholder="昵称"
-                  class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
-              </div>
-              <div class="relative">
-                <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                <input v-model="regForm.password" type="password" placeholder="密码"
-                  class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
-              </div>
-              <div class="relative">
-                <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
-                <input v-model="regForm.confirmPassword" type="password" placeholder="确认密码"
-                  class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
-              </div>
-              <button type="submit" :disabled="loading"
-                class="w-full h-9 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-                {{ loading ? '注册中...' : '注册' }}
+              <button type="button"
+                class="w-full h-9 mt-6 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] cursor-pointer"
+                @click="switchView('login')">
+                返回登录
               </button>
-            </form>
+            </div>
           </div>
         </Transition>
 
@@ -141,9 +119,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, onUnmounted, watch } from 'vue'
-import { X, User, Lock, Mail, KeyRound, PenLine } from 'lucide-vue-next'
+import { X, User, Lock, Mail, KeyRound, Copy } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-import { register, getCaptcha } from '@/api/auth'
+import { getCaptcha } from '@/api/auth'
 import { useToast } from '@/composables/useToast'
 import { useAuthModal } from '@/composables/useAuthModal'
 
@@ -165,14 +143,6 @@ const loginTabs = [
 
 const pwdForm = reactive({ username: '', password: '' })
 const emailForm = reactive({ email: '', code: '' })
-const regForm = reactive({
-  username: '',
-  email: '',
-  code: '',
-  nickname: '',
-  password: '',
-  confirmPassword: '',
-})
 
 watch(initialView, (val) => {
   currentView.value = val
@@ -227,23 +197,12 @@ async function handleEmailLogin() {
   }
 }
 
-async function handleRegister() {
-  if (!regForm.username.trim() || !regForm.email.trim() || !regForm.code.trim() || !regForm.nickname.trim() || !regForm.password.trim()) return
-  if (regForm.password !== regForm.confirmPassword) return
-  loading.value = true
-  try {
-    await register({
-      username: regForm.username,
-      email: regForm.email,
-      password: regForm.password,
-      confirmPassword: regForm.confirmPassword,
-      nickname: regForm.nickname,
-    })
-    toast.success('注册成功，请登录')
-    switchView('login')
-  } catch { } finally {
-    loading.value = false
-  }
+function copyEmail() {
+  navigator.clipboard.writeText('lilicould@qq.com').then(() => {
+    toast.success('邮箱已复制')
+  }).catch(() => {
+    toast.success('lilicould@qq.com')
+  })
 }
 
 onUnmounted(() => {

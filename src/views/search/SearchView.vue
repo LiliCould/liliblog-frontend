@@ -39,10 +39,9 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { Search } from 'lucide-vue-next'
 import { searchArticles } from '@/api/article'
-import { useArticleStore } from '@/stores/article'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ArticleCard from '@/components/common/ArticleCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
@@ -51,8 +50,6 @@ import type { ApiResponse } from '@/types/api'
 import type { PageResult } from '@/types/common'
 
 const route = useRoute()
-const router = useRouter()
-const articleStore = useArticleStore()
 
 const keyword = ref('')
 const articles = ref<Article[]>([])

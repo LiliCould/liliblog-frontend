@@ -13,6 +13,7 @@ const service: AxiosInstance = axios.create({
 })
 
 let isRefreshing = false
+let hasNotifiedExpired = false
 let pendingRequests: Array<(token: string) => void> = []
 
 const ERROR_CODE_MAP: Record<number, string> = {
@@ -52,11 +53,15 @@ function showToast(type: 'error' | 'success', message: string) {
 function handleRefreshTokenExpired() {
     console.warn(`${LOG_PREFIX} 刷新令牌已过期，清除登录状态`)
     clearAuth()
-    showToast('error', '登录已过期，请重新登录')
-    import('@/composables/useAuthModal').then(({ useAuthModal }) => {
-        const { open } = useAuthModal()
-        open('login')
-    })
+    if (!hasNotifiedExpired) {
+        hasNotifiedExpired = true
+        showToast('error', '登录已过期，请重新登录')
+        import('@/composables/useAuthModal').then(({ useAuthModal }) => {
+            const { open } = useAuthModal()
+            open('login')
+        })
+        setTimeout(() => { hasNotifiedExpired = false }, 5000)
+    }
 }
 
 service.interceptors.request.use(
