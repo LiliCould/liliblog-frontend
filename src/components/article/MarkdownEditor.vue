@@ -354,6 +354,24 @@ onUnmounted(() => {
 }
 
 .vditor-reset hr {
-  border-color: rgba(var(--color-primary-rgb), 0.2) !important;
+    border-color: rgba(var(--color-primary-rgb), 0.2) !important;
+}
+
+.vditor-reset ol {
+    list-style-type: decimal !important;
+    padding-left: 24px !important;
+}
+
+.vditor-reset ul {
+    list-style-type: disc !important;
+    padding-left: 24px !important;
+}
+
+.vditor-reset ol li::marker {
+    color: var(--color-primary) !important;
+}
+
+.vditor-reset ul li::marker {
+    color: var(--color-primary) !important;
 }
 </style>
