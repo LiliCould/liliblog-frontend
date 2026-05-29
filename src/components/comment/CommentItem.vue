@@ -75,6 +75,11 @@
                     class="text-xs font-semibold text-t-primary no-underline transition-colors duration-300 hover:text-t-primary/80">{{
                       child.creator.nickname || '匿名' }}</router-link>
                   <span v-else class="text-xs font-semibold text-t-primary">匿名</span>
+                  <span v-if="child.ipAddressLocation"
+                    class="inline-flex items-center gap-0.5 text-[10px] text-t-muted bg-[rgba(var(--color-primary-rgb),0.06)] px-1 py-0.5 rounded">
+                    <MapPin class="w-2.5 h-2.5" />
+                    {{ child.ipAddressLocation }}
+                  </span>
                   <span class="text-[10px] text-t-muted">{{ formatRelativeTime(child.createTime) }}</span>
                 </div>
                 <p class="text-xs text-t-body leading-relaxed break-words">{{ child.content }}</p>
