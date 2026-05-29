@@ -69,6 +69,7 @@
                                 <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </th>
+                            <th class="text-left px-5 py-3.5 text-t-muted font-medium">ID</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">分类名称</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">Slug</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">描述</th>
@@ -84,6 +85,7 @@
                                 <input type="checkbox" :value="category.id" v-model="selectedIds"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </td>
+                            <td class="px-5 py-3.5 text-t-muted text-xs font-mono">{{ category.id }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-2">
                                     <FolderOpen class="w-4 h-4 text-t-muted flex-shrink-0" />

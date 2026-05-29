@@ -108,6 +108,7 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-t-border">
+                            <th class="text-left px-5 py-3.5 text-t-muted font-medium">ID</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">用户</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">邮箱</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">角色</th>
@@ -119,6 +120,7 @@
                     <tbody>
                         <tr v-for="user in users" :key="user.id"
                             class="border-b border-[rgba(var(--color-primary-rgb),0.08)] transition-colors duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.03)]">
+                            <td class="px-5 py-3.5 text-t-muted text-xs font-mono">{{ user.id }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
                                     <div

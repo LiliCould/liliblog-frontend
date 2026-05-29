@@ -103,6 +103,7 @@
                                 <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </th>
+                            <th class="text-left px-5 py-3.5 text-t-muted font-medium">ID</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">操作用户</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">模块</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">操作</th>
@@ -121,6 +122,7 @@
                                 <input type="checkbox" :value="log.id" v-model="selectedIds"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </td>
+                            <td class="px-5 py-3.5 text-t-muted text-xs font-mono">{{ log.id }}</td>
                             <td class="px-5 py-3.5 text-t-body">{{ log.username }}</td>
                             <td class="px-5 py-3.5 text-t-body">{{ log.module }}</td>
                             <td class="px-5 py-3.5">

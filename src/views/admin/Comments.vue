@@ -92,6 +92,7 @@
                                 <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </th>
+                            <th class="text-left px-5 py-3.5 text-t-muted font-medium">ID</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">评论内容</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">评论者</th>
                             <th class="text-left px-5 py-3.5 text-t-muted font-medium">文章ID</th>
@@ -107,6 +108,7 @@
                                 <input type="checkbox" :value="comment.id" v-model="selectedIds"
                                     class="rounded border-t-border text-t-primary cursor-pointer" />
                             </td>
+                            <td class="px-5 py-3.5 text-t-muted text-xs font-mono">{{ comment.id }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="max-w-[300px]">
                                     <p class="text-t-body line-clamp-2">{{ comment.content }}</p>
