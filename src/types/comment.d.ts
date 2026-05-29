@@ -7,6 +7,7 @@ export interface Comment {
     parentId: number
     rootId: number
     ipAddress: string
+    ipAddressLocation: string
     createTime: string
     creator: CreatorBrief
     level: number

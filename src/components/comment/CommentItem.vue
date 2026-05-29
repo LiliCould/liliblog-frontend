@@ -16,6 +16,11 @@
             class="text-sm font-semibold text-t-primary no-underline transition-colors duration-300 hover:text-t-primary/80">{{
               comment.creator.nickname || '匿名' }}</router-link>
           <span v-else class="text-sm font-semibold text-t-primary">匿名</span>
+          <span v-if="comment.ipAddressLocation"
+            class="inline-flex items-center gap-0.5 text-[11px] text-t-muted bg-[rgba(var(--color-primary-rgb),0.06)] px-1.5 py-0.5 rounded">
+            <MapPin class="w-3 h-3" />
+            {{ comment.ipAddressLocation }}
+          </span>
           <span class="text-xs text-t-muted">{{ formatRelativeTime(comment.createTime) }}</span>
         </div>
 
@@ -113,7 +118,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, h } from 'vue'
-import { Heart, MessageSquare, ChevronDown, ChevronUp } from 'lucide-vue-next'
+import { Heart, MessageSquare, ChevronDown, ChevronUp, MapPin } from 'lucide-vue-next'
 import type { Comment } from '@/types/comment.d'
 import { getChildComments, likeComment, unlikeComment, getCommentLikeStatus } from '@/api/comment'
 import { useUserStore } from '@/stores/user'

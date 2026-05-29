@@ -122,6 +122,7 @@ export interface AdminComment {
     articleId: number
     parentId: number
     ipAddress: string
+    ipAddressLocation: string
     status: number
     createTime: string
     creator: AdminCommentCreator

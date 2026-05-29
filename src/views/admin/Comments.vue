@@ -115,6 +115,11 @@
                                     <div class="flex items-center gap-3 mt-1">
                                         <span v-if="comment.ipAddress" class="text-xs text-t-muted">IP: {{
                                             comment.ipAddress }}</span>
+                                        <span v-if="comment.ipAddressLocation"
+                                            class="inline-flex items-center gap-0.5 text-xs text-t-muted">
+                                            <MapPin class="w-3 h-3" />
+                                            {{ comment.ipAddressLocation }}
+                                        </span>
                                         <span v-if="comment.level === 1" class="text-xs text-t-muted">回复评论</span>
                                     </div>
                                 </div>
@@ -242,7 +247,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
-import { Trash2, CheckCircle, XCircle, X, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Trash2, CheckCircle, XCircle, X, AlertTriangle, ChevronLeft, ChevronRight, MapPin } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { getAdminComments, deleteAdminComment, batchDeleteAdminComments, reviewAdminComment } from '@/api/admin/comment'
 import { formatDate, resolveAvatar, handleAvatarError } from '@/utils/format'
