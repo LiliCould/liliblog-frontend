@@ -57,6 +57,7 @@ onMounted(() => {
   if (!editorContainer.value) return
 
   const vditorTheme = getVditorTheme()
+  const isMobile = window.innerWidth < 768
 
   vditorInstance = new Vditor(editorContainer.value, {
     height: '100%',
@@ -70,17 +71,17 @@ onMounted(() => {
       enable: false,
     },
     tab: '\t',
-    typewriterMode: true,
+    typewriterMode: !isMobile,
     undoDelay: 800,
     outline: {
-      enable: true,
+      enable: !isMobile,
       position: 'left',
     },
     toolbarConfig: {
       pin: true,
     },
     preview: {
-      mode: 'both',
+      mode: isMobile ? 'editor' : 'both',
       maxWidth: 768,
       theme: {
         current: vditorTheme,
@@ -118,23 +119,25 @@ onMounted(() => {
         'octocat': '/vditor/dist/images/emoji/octocat.png',
       },
     },
-    toolbar: [
-      'headings', 'bold', 'italic', 'strike', '|',
-      'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', '|',
-      'code', 'inline-code', 'link', 'upload', 'table', 'emoji', '|',
-      'undo', 'redo', '|',
-      'outline', 'fullscreen', 'edit-mode',
-      {
-        name: 'more',
-        toolbar: [
-          'both',
-          'code-theme',
-          'content-theme',
-          'export',
-          'preview',
+    toolbar: isMobile
+      ? ['headings', 'bold', 'italic', '|', 'quote', 'list', 'ordered-list', '|', 'code', 'inline-code', 'link', 'upload', '|', 'undo', 'redo']
+      : [
+          'headings', 'bold', 'italic', 'strike', '|',
+          'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', '|',
+          'code', 'inline-code', 'link', 'upload', 'table', 'emoji', '|',
+          'undo', 'redo', '|',
+          'outline', 'fullscreen', 'edit-mode',
+          {
+            name: 'more',
+            toolbar: [
+              'both',
+              'code-theme',
+              'content-theme',
+              'export',
+              'preview',
+            ],
+          },
         ],
-      },
-    ],
     customWysiwygToolbar: () => { },
     input: (value: string) => {
       emit('update:modelValue', value)

@@ -13,29 +13,35 @@
         </div>
 
         <div class="bg-t-surface border border-t-border p-4">
-            <div class="flex flex-wrap items-end gap-3">
-                <div class="flex-1 min-w-[180px]">
+            <!-- 移动端筛选切换按钮 -->
+            <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                筛选
+                <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="flex flex-wrap items-end gap-3 max-md:hidden">
+                <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">评论内容</label>
                     <input v-model="filters.content" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                         placeholder="搜索评论内容" />
                 </div>
-                <div class="min-w-[120px]">
+                <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">文章ID</label>
                     <input v-model.number="filters.articleId" type="number"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                         placeholder="文章ID" />
                 </div>
-                <div class="min-w-[120px]">
+                <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">状态</label>
                     <CustomSelect v-model="statusModel" :options="statusOptions" placeholder="全部状态" />
                 </div>
-                <div class="min-w-[150px]">
+                <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">发布时间起</label>
                     <input v-model="filters.startTime" type="date"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
                 </div>
-                <div class="min-w-[150px]">
+                <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">发布时间止</label>
                     <input v-model="filters.endTime" type="date"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
@@ -48,6 +54,47 @@
                     </button>
                     <button
                         class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+                        @click="resetFilters">
+                        重置
+                    </button>
+                </div>
+            </div>
+            <!-- 移动端筛选区域 -->
+            <div v-if="showFilter" class="md:hidden flex flex-wrap items-end gap-3">
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">评论内容</label>
+                    <input v-model="filters.content" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索评论内容" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">文章ID</label>
+                    <input v-model.number="filters.articleId" type="number"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="文章ID" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">状态</label>
+                    <CustomSelect v-model="statusModel" :options="statusOptions" placeholder="全部状态" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">发布时间起</label>
+                    <input v-model="filters.startTime" type="date"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">发布时间止</label>
+                    <input v-model="filters.endTime" type="date"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+                </div>
+                <div class="flex items-center gap-2 w-full">
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        @click="applyFilters">
+                        查询
+                    </button>
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
                         @click="resetFilters">
                         重置
                     </button>
@@ -83,7 +130,7 @@
             </div>
         </div>
 
-        <div class="bg-t-surface border border-t-border">
+        <div class="bg-t-surface border border-t-border hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -169,6 +216,47 @@
                 </table>
             </div>
 
+            <div v-if="comments.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
+                暂无评论
+            </div>
+        </div>
+
+        <!-- 移动端卡片视图 -->
+        <div class="md:hidden space-y-3">
+            <div v-for="comment in comments" :key="comment.id"
+                class="bg-t-surface border border-t-border p-4 space-y-2">
+                <p class="text-t-body text-sm line-clamp-2">{{ comment.content }}</p>
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-t-elevated border border-t-border flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img :src="resolveAvatar(comment.creator?.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
+                    </div>
+                    <span class="text-xs text-t-body">{{ comment.creator?.nickname || '匿名' }}</span>
+                    <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium"
+                        :class="statusClass(comment.status)">
+                        {{ statusText(comment.status) }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-t-muted">{{ formatDate(comment.createTime) }}</span>
+                    <div class="flex items-center gap-1">
+                        <button v-if="comment.status === 0"
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#4ade80] hover:bg-[rgba(74,222,128,0.1)] cursor-pointer"
+                            title="审核通过" @click="handleApprove(comment)">
+                            <CheckCircle class="w-4 h-4" />
+                        </button>
+                        <button v-if="comment.status === 0"
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                            title="审核不通过" @click="handleReject(comment)">
+                            <XCircle class="w-4 h-4" />
+                        </button>
+                        <button
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                            title="删除" @click="handleDelete(comment)">
+                            <Trash2 class="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div v-if="comments.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
                 暂无评论
             </div>
@@ -262,6 +350,7 @@ const current = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const selectedIds = ref<number[]>([])
+const showFilter = ref(false)
 
 const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
 

@@ -7,7 +7,7 @@
     </div>
 
     <div v-else-if="article">
-      <article class="rounded-xl bg-t-surface border border-t-border p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+      <article class="rounded-xl bg-t-surface border border-t-border p-4 md:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
         <header class="mb-8">
           <h1 class="text-2xl md:text-3xl font-bold text-t-title leading-snug mb-4"
             style="text-shadow:0 0 20px rgba(0,240,255,0.15)">
@@ -60,13 +60,13 @@
 
         <div v-if="article.coverImage"
           class="mb-8 rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)]">
-          <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[400px] object-cover" />
+          <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[200px] md:max-h-[400px] object-cover" />
         </div>
 
         <MarkdownViewer :content-html="article.contentHtml || ''" />
 
         <div class="flex items-center gap-4 mt-10 pt-6 border-t border-t-border">
-          <button class="flex items-center gap-1.5 text-sm transition-all duration-300" :class="isLiked
+          <button class="flex items-center gap-1.5 text-sm transition-all duration-300 px-2 py-1 md:px-0 md:py-0" :class="isLiked
             ? 'text-t-secondary hover:text-t-secondary/80'
             : 'text-t-muted hover:text-t-secondary'" @click="toggleLike">
             <Heart class="w-4 h-4 transition-transform duration-200"
@@ -89,6 +89,8 @@
       <ArticleToc :html-content="article.contentHtml || ''" />
     </template>
 
+    <MobileTocPanel v-if="article" :html-content="article.contentHtml || ''" />
+
     <EmptyState v-if="!loading && !article" message="文章不存在" type="notfound" />
   </AppLayout>
 </template>
@@ -103,6 +105,7 @@ import { formatDateTime, resolveAvatar, handleAvatarError } from '@/utils/format
 import AppLayout from '@/components/layout/AppLayout.vue'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 import ArticleToc from '@/components/article/ArticleToc.vue'
+import MobileTocPanel from '@/components/article/MobileTocPanel.vue'
 import CommentSection from '@/components/comment/CommentSection.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import type { ArticleDetail } from '@/types/article'

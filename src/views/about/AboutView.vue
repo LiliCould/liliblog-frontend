@@ -6,7 +6,7 @@
         关于我
       </h1>
       <p class="text-sm text-t-muted mt-1">热爱技术，追求卓越</p>
-      <div class="absolute bottom-0 left-0 w-28 h-0.5 bg-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.4)]">
+      <div class="absolute bottom-0 left-0 w-16 md:w-28 h-0.5 bg-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.4)]">
       </div>
     </div>
 
@@ -16,7 +16,7 @@
     </div>
 
     <div v-else-if="articleData"
-      class="rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+      class="rounded-xl bg-t-surface border border-t-border p-4 md:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
       <MarkdownViewer :content-html="articleData.contentHtml || ''" />
     </div>
 

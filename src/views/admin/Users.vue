@@ -11,39 +11,45 @@
         </div>
 
         <div class="bg-t-surface border border-t-border p-4">
-            <div class="flex flex-wrap items-end gap-3">
-                <div class="flex-1 min-w-[150px]">
+            <!-- 移动端筛选切换按钮 -->
+            <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                筛选
+                <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="flex flex-wrap items-end gap-3 max-md:hidden">
+                <div class="flex-1 min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">用户名</label>
                     <input v-model="filters.username" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                         placeholder="搜索用户名" />
                 </div>
-                <div class="flex-1 min-w-[150px]">
+                <div class="flex-1 min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">昵称</label>
                     <input v-model="filters.nickname" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                         placeholder="搜索昵称" />
                 </div>
-                <div class="flex-1 min-w-[150px]">
+                <div class="flex-1 min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">邮箱</label>
                     <input v-model="filters.email" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
                         placeholder="搜索邮箱" />
                 </div>
-                <div class="min-w-[120px]">
+                <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">角色</label>
                     <CustomSelect v-model="roleModel" :options="roleOptions" placeholder="全部角色" />
                 </div>
-                <div class="min-w-[120px]">
+                <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">状态</label>
                     <CustomSelect v-model="statusModel" :options="statusOptions" placeholder="全部状态" />
                 </div>
-                <div class="min-w-[150px]">
+                <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">注册时间起</label>
                     <input v-model="filters.createTimeStart" type="date"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
                 </div>
-                <div class="min-w-[150px]">
+                <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">注册时间止</label>
                     <input v-model="filters.createTimeEnd" type="date"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
@@ -56,6 +62,57 @@
                     </button>
                     <button
                         class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+                        @click="resetFilters">
+                        重置
+                    </button>
+                </div>
+            </div>
+            <!-- 移动端筛选区域 -->
+            <div v-if="showFilter" class="md:hidden flex flex-wrap items-end gap-3">
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">用户名</label>
+                    <input v-model="filters.username" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索用户名" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">昵称</label>
+                    <input v-model="filters.nickname" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索昵称" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">邮箱</label>
+                    <input v-model="filters.email" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索邮箱" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">角色</label>
+                    <CustomSelect v-model="roleModel" :options="roleOptions" placeholder="全部角色" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">状态</label>
+                    <CustomSelect v-model="statusModel" :options="statusOptions" placeholder="全部状态" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">注册时间起</label>
+                    <input v-model="filters.createTimeStart" type="date"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+                </div>
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">注册时间止</label>
+                    <input v-model="filters.createTimeEnd" type="date"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+                </div>
+                <div class="flex items-center gap-2 w-full">
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        @click="applyFilters">
+                        查询
+                    </button>
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
                         @click="resetFilters">
                         重置
                     </button>
@@ -103,7 +160,7 @@
             </div>
         </div>
 
-        <div class="bg-t-surface border border-t-border">
+        <div class="bg-t-surface border border-t-border hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -191,6 +248,61 @@
             </div>
         </div>
 
+        <!-- 移动端卡片视图 -->
+        <div class="md:hidden space-y-3">
+            <div v-for="user in users" :key="user.id"
+                class="bg-t-surface border border-t-border p-4 space-y-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-t-elevated border border-t-border flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img :src="resolveAvatar(user.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-t-body font-medium text-sm">{{ user.nickname }}</p>
+                        <p class="text-xs text-t-muted">@{{ user.username }}</p>
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium flex-shrink-0" :class="user.role === 0
+                        ? 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
+                        : 'bg-t-elevated text-t-muted border border-t-border'">
+                        {{ user.role === 0 ? '管理员' : '用户' }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="relative w-9 h-5 rounded-full transition-colors duration-300 cursor-pointer focus:outline-none"
+                            :class="toggleLoadingMap[user.id] ? 'opacity-60 cursor-wait' : ''" :style="{
+                                backgroundColor: user.status === 1 ? 'var(--color-primary)' : 'var(--color-border-solid)',
+                            }" :disabled="toggleLoadingMap[user.id]"
+                            @click="toggleUserStatus(user)">
+                            <span
+                                class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300"
+                                :style="{
+                                    left: user.status === 1 ? '18px' : '2px',
+                                }"></span>
+                        </button>
+                        <span class="text-xs font-medium" :class="user.status === 1 ? 'text-[#4ade80]' : 'text-[#f43f5e]'">
+                            {{ user.status === 1 ? '启用' : '禁用' }}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] cursor-pointer"
+                            title="编辑" @click="openEditDialog(user)">
+                            <Pencil class="w-4 h-4" />
+                        </button>
+                        <button
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                            title="删除" @click="handleDelete(user)">
+                            <Trash2 class="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div v-if="users.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
+                暂无用户
+            </div>
+        </div>
+
         <div v-if="total > 0"
             class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
             <div class="flex items-center gap-2">
@@ -226,7 +338,7 @@
             <div v-if="showDialog" class="fixed inset-0 z-[1200] flex items-center justify-center">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
                 <div
-                    class="relative w-full max-w-md mx-4 bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
+                    class="relative w-full max-w-md mx-4 bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] max-md:overflow-y-auto">
                     <div class="flex items-center justify-between mb-5">
                         <h3 class="text-base font-semibold text-t-title">{{ isEditing ? '编辑用户' : '添加用户' }}</h3>
                         <button
@@ -375,6 +487,7 @@ const loading = ref(false)
 const current = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const showFilter = ref(false)
 const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
 
 const displayPages = computed(() => {

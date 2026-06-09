@@ -18,7 +18,7 @@
     </template>
     <template v-else>
       <AppHeader />
-      <main class="main-content pt-16 min-h-screen bg-t-bg">
+      <main class="main-content pt-16 min-h-screen bg-t-bg pb-14 md:pb-0">
         <router-view v-slot="{ Component, route: viewRoute }">
           <transition name="fade" mode="out-in">
             <component :is="Component" :key="viewRoute.path" />
@@ -27,6 +27,7 @@
       </main>
       <AppFooter />
       <MobileNav />
+      <MobileBottomNav />
     </template>
     <ToastContainer />
     <AuthModal />
@@ -39,13 +40,16 @@ import { useRoute } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import MobileNav from '@/components/layout/MobileNav.vue'
+import MobileBottomNav from '@/components/layout/MobileBottomNav.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 import AuthModal from '@/components/auth/AuthModal.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useTokenRefresh } from '@/composables/useTokenRefresh'
+import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
+const appStore = useAppStore()
 const { initTheme, destroyTheme } = useTheme()
 useTokenRefresh()
 
@@ -55,6 +59,13 @@ const layout = computed(() => {
   return 'default'
 })
 
-onMounted(initTheme)
-onUnmounted(destroyTheme)
+onMounted(() => {
+  initTheme()
+  appStore.initResizeListener()
+})
+
+onUnmounted(() => {
+  destroyTheme()
+  appStore.destroyResizeListener()
+})
 </script>

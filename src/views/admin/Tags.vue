@@ -19,8 +19,14 @@
         </div>
 
         <div class="bg-t-surface border border-t-border p-4">
-            <div class="flex flex-wrap items-end gap-3">
-                <div class="flex-1 min-w-[180px]">
+            <!-- 移动端筛选切换按钮 -->
+            <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                筛选
+                <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="flex flex-wrap items-end gap-3 max-md:hidden">
+                <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">标签名称</label>
                     <input v-model="filters.name" type="text"
                         class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
@@ -39,6 +45,27 @@
                     </button>
                 </div>
             </div>
+            <!-- 移动端筛选区域 -->
+            <div v-if="showFilter" class="md:hidden flex flex-wrap items-end gap-3">
+                <div class="w-full">
+                    <label class="block text-xs text-t-muted mb-1">标签名称</label>
+                    <input v-model="filters.name" type="text"
+                        class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+                        placeholder="搜索标签名称" />
+                </div>
+                <div class="flex items-center gap-2 w-full">
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        @click="applyFilters">
+                        查询
+                    </button>
+                    <button
+                        class="flex-1 px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+                        @click="resetFilters">
+                        重置
+                    </button>
+                </div>
+            </div>
             <div v-if="hasActiveFilters" class="flex items-center gap-2 mt-3 pt-3 border-t border-t-border">
                 <span class="text-xs text-t-muted">当前筛选：</span>
                 <span v-if="filters.name"
@@ -49,7 +76,7 @@
             </div>
         </div>
 
-        <div class="bg-t-surface border border-t-border">
+        <div class="bg-t-surface border border-t-border hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -111,6 +138,39 @@
             </div>
         </div>
 
+        <!-- 移动端卡片视图 -->
+        <div class="md:hidden space-y-3">
+            <div v-for="tag in tags" :key="tag.id"
+                class="bg-t-surface border border-t-border p-4 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full border border-t-border flex-shrink-0"
+                            :style="{ backgroundColor: tag.color }"></span>
+                        <span class="text-t-body font-medium">{{ tag.name }}</span>
+                    </div>
+                    <span class="text-xs text-t-muted font-mono">{{ tag.color }}</span>
+                </div>
+                <div class="text-xs text-t-muted">
+                    {{ formatDate(tag.createTime) }}
+                </div>
+                <div class="flex items-center justify-end gap-1 pt-1 border-t border-t-border">
+                    <button
+                        class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] cursor-pointer"
+                        title="编辑" @click="openEditDialog(tag)">
+                        <Edit3 class="w-4 h-4" />
+                    </button>
+                    <button
+                        class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                        title="删除" @click="handleDelete(tag)">
+                        <Trash2 class="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+            <div v-if="tags.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
+                暂无标签
+            </div>
+        </div>
+
         <div v-if="total > 0"
             class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
             <div class="flex items-center gap-2">
@@ -145,7 +205,7 @@
         <Teleport to="body">
             <div v-if="showDialog" class="fixed inset-0 z-[1200] flex items-center justify-center">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeDialog"></div>
-                <div class="relative w-full max-w-md mx-4 p-6 border border-t-border bg-t-surface">
+                <div class="relative w-full max-w-md mx-4 p-6 border border-t-border bg-t-surface max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] max-md:overflow-y-auto">
                     <div class="flex items-center justify-between mb-5">
                         <h3 class="text-base font-semibold text-t-title m-0">{{ isEdit ? '编辑标签' : '添加标签' }}</h3>
                         <button
@@ -247,6 +307,7 @@ const current = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const selectedIds = ref<number[]>([])
+const showFilter = ref(false)
 
 const pageSizeOptions = [
     { label: '5 条', value: 5 },

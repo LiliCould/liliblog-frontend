@@ -47,7 +47,7 @@
             <time :datetime="article.createTime">{{ formatRelativeTime(article.createTime) }}</time>
           </span>
           <span
-            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
+            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary max-md:hidden">
             <Clock
               class="w-3.5 h-3.5 text-t-primary opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             <time :datetime="article.updateTime">{{ formatRelativeTime(article.updateTime) }}</time>
@@ -59,13 +59,13 @@
             {{ formatNumber(article.viewCount) }}
           </span>
           <span
-            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
+            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary max-md:hidden">
             <MessageSquare
               class="w-3.5 h-3.5 text-t-primary opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             {{ article.commentCount }}
           </span>
           <span
-            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary">
+            class="flex items-center gap-1.5 text-xs text-t-muted transition-colors duration-500 group-hover:text-t-primary max-md:hidden">
             <Heart
               class="w-3.5 h-3.5 text-t-primary opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
             {{ article.likeCount }}

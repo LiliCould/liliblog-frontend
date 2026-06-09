@@ -57,16 +57,16 @@
                 <div v-for="article in recentArticles" :key="article.id"
                     class="flex items-center justify-between px-4 py-3 bg-t-bg border border-[rgba(var(--color-primary-rgb),0.08)] transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)]">
                     <div class="flex items-center gap-3 min-w-0 flex-1">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-medium" :class="article.status === 1
+                        <span class="px-2 py-0.5 rounded text-[11px] font-medium max-md:text-[10px]" :class="article.status === 1
                             ? 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
                             : article.status === 0
                                 ? 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
                                 : 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'">
                             {{ statusText(article.status) }}
                         </span>
-                        <span class="text-sm text-t-body truncate">{{ article.title }}</span>
+                        <span class="text-sm text-t-body truncate max-md:text-xs">{{ article.title }}</span>
                     </div>
-                    <span class="text-xs text-t-muted ml-4 flex-shrink-0">{{ formatRelativeTime(article.createTime)
+                    <span class="text-xs text-t-muted ml-4 flex-shrink-0 max-md:text-[10px]">{{ formatRelativeTime(article.createTime)
                         }}</span>
                 </div>
             </div>

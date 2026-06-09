@@ -153,4 +153,20 @@ h1, h2, h3, h4, h5, h6 {
     html {
         font-size: 14px;
     }
+
+    /* 移动端触摸反馈 */
+    button:active,
+    a:active {
+        opacity: 0.7;
+    }
+
+    /* 移动端隐藏滚动条但保留滚动功能 */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 }

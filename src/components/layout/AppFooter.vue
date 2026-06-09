@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-auto bg-t-bg relative border-t border-t-border">
+  <footer class="mt-auto bg-t-bg relative border-t border-t-border max-md:hidden">
     <div
       class="absolute -top-px left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-t-primary to-transparent opacity-60">
     </div>

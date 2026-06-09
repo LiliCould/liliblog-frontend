@@ -13,27 +13,33 @@
  </div>
 
  <div class="bg-t-surface border border-t-border p-4">
- <div class="flex flex-wrap items-end gap-3">
- <div class="flex-1 min-w-[180px]">
+ <!-- 移动端筛选切换按钮 -->
+ <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+ 筛选
+ <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+ </button>
+ <div class="flex flex-wrap items-end gap-3 max-md:hidden">
+ <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">标题</label>
  <input v-model="filters.title" type="text"
  class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
  placeholder="搜索文章标题" />
  </div>
- <div class="min-w-[120px]">
+ <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">分类</label>
  <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" />
  </div>
- <div class="min-w-[120px]">
+ <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">状态</label>
  <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" />
  </div>
- <div class="min-w-[150px]">
+ <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间起</label>
  <input v-model="filters.startTime" type="date"
  class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
  </div>
- <div class="min-w-[150px]">
+ <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间止</label>
  <input v-model="filters.endTime" type="date"
  class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
@@ -46,6 +52,45 @@
  </button>
  <button
  class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+ @click="resetFilters">
+ 重置
+ </button>
+ </div>
+ </div>
+ <!-- 移动端筛选区域 -->
+ <div v-if="showFilter" class="md:hidden flex flex-wrap items-end gap-3">
+ <div class="w-full">
+ <label class="block text-xs text-t-muted mb-1">标题</label>
+ <input v-model="filters.title" type="text"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ placeholder="搜索文章标题" />
+ </div>
+ <div class="w-full">
+ <label class="block text-xs text-t-muted mb-1">分类</label>
+ <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" />
+ </div>
+ <div class="w-full">
+ <label class="block text-xs text-t-muted mb-1">状态</label>
+ <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" />
+ </div>
+ <div class="w-full">
+ <label class="block text-xs text-t-muted mb-1">创建时间起</label>
+ <input v-model="filters.startTime" type="date"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ </div>
+ <div class="w-full">
+ <label class="block text-xs text-t-muted mb-1">创建时间止</label>
+ <input v-model="filters.endTime" type="date"
+ class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ </div>
+ <div class="flex items-center gap-2 w-full">
+ <button
+ class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+ @click="applyFilters">
+ 查询
+ </button>
+ <button
+ class="flex-1 px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
  @click="resetFilters">
  重置
  </button>
@@ -81,7 +126,7 @@
  </div>
  </div>
 
- <div class="bg-t-surface border border-t-border">
+ <div class="bg-t-surface border border-t-border hidden md:block">
  <div class="overflow-x-auto">
  <table class="w-full text-sm">
  <thead>
@@ -158,6 +203,50 @@
  </div>
  </div>
 
+ <!-- 移动端卡片视图 -->
+ <div class="md:hidden space-y-3">
+ <div v-for="article in articles" :key="article.id"
+ class="bg-t-surface border border-t-border p-4 space-y-2">
+ <div class="flex items-start justify-between gap-2">
+ <span class="text-t-body font-medium text-sm line-clamp-2 flex-1">{{ article.title }}</span>
+ <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium flex-shrink-0"
+ :class="statusClass(article.status)">
+ {{ statusText(article.status) }}
+ </span>
+ </div>
+ <div class="flex items-center gap-2 text-xs text-t-muted">
+ <span>{{ article.category?.name || '未分类' }}</span>
+ <span>·</span>
+ <span>{{ formatDate(article.createTime) }}</span>
+ </div>
+ <div class="flex items-center justify-end gap-1 pt-1 border-t border-t-border">
+ <button v-if="article.status === 0"
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#4ade80] hover:bg-[rgba(74,222,128,0.1)] cursor-pointer"
+ title="审核通过" @click="handleApprove(article)">
+ <CheckCircle class="w-4 h-4" />
+ </button>
+ <button v-if="article.status === 0"
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ title="审核不通过" @click="openRejectDialog(article)">
+ <XCircle class="w-4 h-4" />
+ </button>
+ <button
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.1)] cursor-pointer"
+ title="预览" @click="openPreview(article)">
+ <Eye class="w-4 h-4" />
+ </button>
+ <button
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ title="删除" @click="handleDelete(article)">
+ <Trash2 class="w-4 h-4" />
+ </button>
+ </div>
+ </div>
+ <div v-if="articles.length === 0 && !loading" class="text-center py-12 text-t-muted text-sm">
+ 暂无文章
+ </div>
+ </div>
+
  <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
@@ -191,7 +280,7 @@
  <div v-if="showPreview" class="fixed inset-0 z-[1200] flex items-center justify-center">
  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showPreview = false"></div>
  <div
- class="relative w-full max-w-3xl mx-4 max-h-[85vh] bg-t-surface border border-t-border shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] flex flex-col">
+ class="relative w-full max-w-3xl mx-4 max-h-[85vh] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] bg-t-surface border border-t-border shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] flex flex-col">
  <div class="flex items-center justify-between px-6 py-4 border-b border-t-border flex-shrink-0">
  <h3 class="text-base font-semibold text-t-title">{{ previewArticle?.title }}</h3>
  <button
@@ -309,6 +398,7 @@ const current = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const selectedIds = ref<number[]>([])
+const showFilter = ref(false)
 
 const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
 

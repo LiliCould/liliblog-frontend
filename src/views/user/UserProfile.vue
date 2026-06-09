@@ -3,20 +3,20 @@
   <AppLayout :show-hero="false">
     <div class="max-w-4xl mx-auto">
       <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden mb-8">
-        <div class="h-32 relative">
+        <div class="h-24 md:h-32 relative">
           <img :src="heroBg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" />
           <div class="absolute inset-0 bg-gradient-to-b from-transparent to-t-surface"></div>
         </div>
-        <div class="px-6 pb-6 -mt-12 relative z-10">
-          <div class="flex items-end gap-5">
+        <div class="px-4 md:px-6 pb-6 -mt-10 md:-mt-12 relative z-10">
+          <div class="flex items-end gap-3 md:gap-5 max-md:flex-col max-md:items-start">
             <div
-              class="w-24 h-24 rounded-2xl bg-t-surface border-2 border-t-primary flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(var(--color-surface-rgb),0.95)] flex-shrink-0">
+              class="w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-t-surface border-2 border-t-primary flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(var(--color-surface-rgb),0.95)] flex-shrink-0">
               <img :src="resolveAvatar(targetUser?.avatar)" alt="" class="w-full h-full object-cover"
                 @error="handleAvatarError" />
             </div>
             <div class="flex-1 min-w-0 pb-1">
               <div class="flex items-center gap-3 flex-wrap">
-                <h1 class="text-2xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
                 <span class="text-sm text-t-muted">@{{ targetUser?.username }}</span>
               </div>
               <div v-if="targetUser?.email" class="flex items-center gap-1.5 mt-1.5">
@@ -24,15 +24,15 @@
                 <span class="text-sm text-t-muted">{{ targetUser.email }}</span>
               </div>
             </div>
-            <div v-if="isSelf" class="flex items-center gap-2 flex-shrink-0 pb-1">
+            <div v-if="isSelf" class="flex items-center gap-2 flex-shrink-0 pb-1 max-md:w-full max-md:mt-2">
               <button
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.18)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.12)]"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.18)] hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.12)] max-md:flex-1"
                 @click="router.push('/profile/edit')">
                 <PenLine class="w-3 h-3" />
                 编辑资料
               </button>
               <button
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-secondary-rgb),0.08)] border border-[rgba(var(--color-secondary-rgb),0.2)] text-t-secondary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-secondary-rgb),0.15)] hover:shadow-[0_0_8px_rgba(var(--color-secondary-rgb),0.12)]"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(var(--color-secondary-rgb),0.08)] border border-[rgba(var(--color-secondary-rgb),0.2)] text-t-secondary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-secondary-rgb),0.15)] hover:shadow-[0_0_8px_rgba(var(--color-secondary-rgb),0.12)] max-md:flex-1"
                 @click="showPasswordModal = true">
                 <Lock class="w-3 h-3" />
                 修改密码
@@ -55,9 +55,9 @@
         </button>
       </div>
 
-      <div v-if="isSelf" class="flex gap-2 mb-6">
+      <div v-if="isSelf" class="flex gap-2 mb-6 overflow-x-auto scrollbar-hide flex-nowrap">
         <button v-for="tab in statusTabs" :key="tab.value"
-          class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-[background-color,border-color,color,box-shadow] duration-200"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-[background-color,border-color,color,box-shadow] duration-200 shrink-0"
           :class="activeTab === tab.value
             ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]'
             : 'border border-t-border text-t-muted hover:text-t-body hover:border-[rgba(var(--color-primary-rgb),0.3)]'" @click="handleTabChange(tab.value)">
@@ -111,16 +111,16 @@
           </div>
           <div v-if="isSelf" class="flex items-center gap-1 shrink-0">
             <button
-              class="w-7 h-7 rounded flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[color,background-color] duration-200"
+              class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[color,background-color] duration-200"
               aria-label="编辑文章"
               @click="router.push(`/write/${article.id}`)">
-              <Edit class="w-3.5 h-3.5" />
+              <Edit class="w-4 h-4" />
             </button>
             <button
-              class="w-7 h-7 rounded flex items-center justify-center text-t-muted hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)] transition-[color,background-color] duration-200"
+              class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)] transition-[color,background-color] duration-200"
               aria-label="删除文章"
               @click="confirmDelete(article)">
-              <Trash2 class="w-3.5 h-3.5" />
+              <Trash2 class="w-4 h-4" />
             </button>
           </div>
         </div>

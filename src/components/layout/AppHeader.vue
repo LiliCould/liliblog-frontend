@@ -2,11 +2,11 @@
   <header class="fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300 border-b border-t-border"
     :class="isScrolled ? 'bg-[rgba(var(--color-bg-rgb),0.95)] shadow-[0_2px_20px_rgba(var(--color-primary-rgb),0.08)]' : 'bg-[rgba(var(--color-bg-rgb),0.85)]'"
     style="backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
-    <div class="h-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-10 flex items-center">
+    <div class="h-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-10 flex items-center">
       <router-link to="/"
-        class="flex items-center gap-2.5 no-underline transition-transform duration-200 hover:scale-[1.02] group shrink-0">
+        class="flex items-center gap-2.5 no-underline transition-transform duration-200 hover:scale-[1.02] group shrink-0 max-md:mx-auto">
         <img :src="logoSvg" alt="LiliBlog"
-          class="w-[120px] h-auto object-contain transition-[filter] duration-400 group-hover:[filter:drop-shadow(0_0_8px_rgba(var(--color-primary-rgb),0.6))_drop-shadow(0_0_16px_rgba(var(--color-primary-rgb),0.3))]" />
+          class="w-[100px] md:w-[120px] h-auto object-contain transition-[filter] duration-400 group-hover:[filter:drop-shadow(0_0_8px_rgba(var(--color-primary-rgb),0.6))_drop-shadow(0_0_16px_rgba(var(--color-primary-rgb),0.3))]" />
       </router-link>
 
       <nav class="hidden md:flex items-center gap-1.5 ml-6 shrink-0">
@@ -105,7 +105,7 @@
         </template>
 
         <button
-          class="md:hidden flex items-center justify-center w-10 h-10 text-t-title rounded-md transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.08)] hover:text-t-primary cursor-pointer"
+          class="md:hidden flex items-center justify-center w-10 h-10 text-t-title rounded-md transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.08)] hover:text-t-primary cursor-pointer max-md:hidden"
           @click="appStore.toggleMobileNav()" aria-label="菜单">
           <Menu class="w-5.5 h-5.5" />
         </button>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { getCategories as getCategoriesApi } from '@/api/category'
 import { getTags as getTagsApi } from '@/api/tag'
 import type { Category } from '@/types/category'
@@ -12,6 +12,21 @@ export const useAppStore = defineStore('app', () => {
     const tags = ref<Tag[]>([])
     const globalLoading = ref(false)
     const isMobileNavOpen = ref(false)
+
+    const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+    const isMobile = computed(() => windowWidth.value < 768)
+
+    function _updateWidth() {
+        windowWidth.value = window.innerWidth
+    }
+
+    function initResizeListener() {
+        window.addEventListener('resize', _updateWidth)
+    }
+
+    function destroyResizeListener() {
+        window.removeEventListener('resize', _updateWidth)
+    }
 
     async function fetchCategories() {
         const res = await getCategoriesApi({ size: 100 }) as unknown as ApiResponse<PageResult<Category>>
@@ -40,10 +55,14 @@ export const useAppStore = defineStore('app', () => {
         tags,
         globalLoading,
         isMobileNavOpen,
+        isMobile,
+        windowWidth,
         fetchCategories,
         fetchTags,
         initAppData,
         toggleMobileNav,
         closeMobileNav,
+        initResizeListener,
+        destroyResizeListener,
     }
 })

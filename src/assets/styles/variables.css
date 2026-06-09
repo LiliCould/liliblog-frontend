@@ -104,6 +104,7 @@
     --header-height: 64px;
     --content-max-width: 1100px;
     --sidebar-width: 320px;
+    --mobile-bottom-nav-height: 56px;
 
     --z-base: 1;
     --z-dropdown: 100;

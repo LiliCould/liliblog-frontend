@@ -1,20 +1,23 @@
 <template>
-  <div class="flex items-center justify-between gap-4">
-    <div class="flex items-center gap-2">
-      <span class="text-xs text-t-muted">每页</span>
-      <CustomSelect :modelValue="pageSize" @update:modelValue="onPageSizeChange"
-        :options="pageSizeSelectOptions" button-class="px-2 py-1 text-xs" />
+  <div class="flex items-center justify-between gap-4 max-md:flex-col max-md:gap-3">
+    <div class="flex items-center gap-2 max-md:w-full max-md:justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-t-muted">每页</span>
+        <CustomSelect :modelValue="pageSize" @update:modelValue="onPageSizeChange"
+          :options="pageSizeSelectOptions" button-class="px-2 py-1 text-xs" />
+      </div>
+      <span class="text-xs text-t-muted md:hidden">共 {{ total }} 条</span>
     </div>
     <div class="flex items-center gap-1">
       <button
-        class="flex items-center justify-center w-8 h-8 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex items-center justify-center w-8 h-8 max-md:w-10 max-md:h-10 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="current <= 1" @click="emit('update:current', current - 1)">
         <ChevronLeft class="w-4 h-4" />
       </button>
 
       <template v-for="page in displayedPages" :key="page">
-        <span v-if="page === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
-        <button v-else class="w-8 h-8 text-xs font-medium transition-all duration-200"
+        <span v-if="page === '...'" class="w-8 h-8 max-md:w-10 max-md:h-10 flex items-center justify-center text-t-muted text-xs">...</span>
+        <button v-else class="w-8 h-8 max-md:w-10 max-md:h-10 text-xs font-medium transition-all duration-200"
           :class="page === current
             ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary'
             : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'" @click="emit('update:current', page as number)">
@@ -23,12 +26,12 @@
       </template>
 
       <button
-        class="flex items-center justify-center w-8 h-8 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex items-center justify-center w-8 h-8 max-md:w-10 max-md:h-10 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="current >= totalPages" @click="emit('update:current', current + 1)">
         <ChevronRight class="w-4 h-4" />
       </button>
     </div>
-    <span class="text-xs text-t-muted">共 {{ total }} 条</span>
+    <span class="text-xs text-t-muted max-md:hidden">共 {{ total }} 条</span>
   </div>
 </template>
 
