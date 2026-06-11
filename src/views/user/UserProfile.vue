@@ -84,18 +84,18 @@
                 {{ articleStatusText(article.status) }}
               </span>
             </div>
-            <div class="flex items-center gap-3 mt-1.5 text-xs text-t-muted">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-1.5 text-xs text-t-muted">
               <span class="flex items-center gap-1">
                 <FolderOpen class="w-3 h-3" />
                 {{ article.category?.name || '未分类' }}
               </span>
               <template v-if="article.tags?.length">
                 <span v-for="tag in article.tags.slice(0, 3)" :key="tag.id"
-                  class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                  class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0"
                   :style="{ backgroundColor: tag.color ? `${tag.color}18` : 'rgba(0,240,255,0.08)', color: tag.color || '#00f0ff' }">
                   #{{ tag.name }}
                 </span>
-                <span v-if="article.tags.length > 3" class="text-[10px] text-t-muted">
+                <span v-if="article.tags.length > 3" class="text-[10px] text-t-muted shrink-0">
                   +{{ article.tags.length - 3 }}
                 </span>
               </template>

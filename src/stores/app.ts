@@ -29,7 +29,7 @@ export const useAppStore = defineStore('app', () => {
     }
 
     async function fetchCategories() {
-        const res = await getCategoriesApi({ size: 100 }) as unknown as ApiResponse<PageResult<Category>>
+        const res = await getCategoriesApi({ size: 100, status: 1 }) as unknown as ApiResponse<PageResult<Category>>
         categories.value = res.data?.records || []
     }
 

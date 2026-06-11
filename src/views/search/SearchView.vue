@@ -11,6 +11,18 @@
                 </p>
             </div>
 
+            <!-- 移动端搜索框 - 始终显示 -->
+            <div class="md:hidden mb-6 flex gap-2">
+                <input v-model="inputValue" type="text" placeholder="搜索文章..."
+                    class="flex-1 h-10 px-4 rounded-lg bg-[rgba(var(--color-surface-rgb),0.6)] border border-[rgba(var(--color-primary-rgb),0.12)] text-t-body placeholder-[#6b7280] text-sm outline-none focus:border-[rgba(var(--color-primary-rgb),0.4)]"
+                    @keyup.enter="doSearch(1)" />
+                <button
+                    class="h-10 px-4 rounded-lg text-sm font-medium text-white bg-t-primary transition-all duration-200 hover:-translate-y-px cursor-pointer"
+                    @click="doSearch(1)">
+                    搜索
+                </button>
+            </div>
+
             <div v-if="loading" class="flex flex-col gap-4">
                 <div v-for="i in 3" :key="i" class="h-28 rounded-xl bg-t-surface animate-pulse"></div>
             </div>
@@ -32,16 +44,6 @@
                 <Search class="w-16 h-16 text-t-muted mx-auto mb-4 opacity-30" />
                 <p class="text-t-muted text-lg mb-2">输入关键词开始搜索</p>
                 <p class="text-t-muted text-sm max-md:hidden">在顶部搜索框输入关键词后按回车</p>
-                <div class="md:hidden mt-4 max-w-sm mx-auto flex gap-2 px-4">
-                    <input v-model="keyword" type="text" placeholder="搜索文章..."
-                        class="flex-1 h-10 px-4 rounded-lg bg-[rgba(var(--color-surface-rgb),0.6)] border border-[rgba(var(--color-primary-rgb),0.12)] text-t-body placeholder-[#6b7280] text-sm outline-none focus:border-[rgba(var(--color-primary-rgb),0.4)]"
-                        @keyup.enter="doSearch(1)" />
-                    <button
-                        class="h-10 px-4 rounded-lg text-sm font-medium text-white bg-t-primary transition-all duration-200 hover:-translate-y-px cursor-pointer"
-                        @click="doSearch(1)">
-                        搜索
-                    </button>
-                </div>
             </div>
         </div>
     </AppLayout>
@@ -62,6 +64,7 @@ import type { PageResult } from '@/types/common'
 const route = useRoute()
 
 const keyword = ref('')
+const inputValue = ref('')
 const articles = ref<Article[]>([])
 const loading = ref(false)
 const current = ref(1)
@@ -69,16 +72,19 @@ const pageSize = ref(10)
 const total = ref(0)
 
 async function doSearch(page = 1) {
-    if (!keyword.value.trim()) {
+    const kw = inputValue.value.trim()
+    if (!kw) {
+        keyword.value = ''
         articles.value = []
         total.value = 0
         return
     }
 
+    keyword.value = kw
     loading.value = true
     try {
         const res = await searchArticles({
-            keyword: keyword.value.trim(),
+            keyword: kw,
             current: page,
             size: pageSize.value,
         }) as unknown as ApiResponse<PageResult<Article>>
@@ -106,7 +112,8 @@ function onPageSizeChange(size: number) {
 
 function syncFromRoute() {
     const q = route.query.q as string
-    if (q && q !== keyword.value) {
+    if (q) {
+        inputValue.value = q
         keyword.value = q
         current.value = 1
         doSearch(1)

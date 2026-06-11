@@ -31,12 +31,26 @@
         <ChevronRight class="w-4 h-4" />
       </button>
     </div>
-    <span class="text-xs text-t-muted max-md:hidden">共 {{ total }} 条</span>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-t-muted max-md:hidden">共 {{ total }} 条</span>
+      <div v-if="totalPages > 1" class="flex items-center gap-1.5 ml-2">
+        <span class="text-xs text-t-muted max-md:hidden">跳至</span>
+        <input v-model="jumpInput" type="number" :min="1" :max="totalPages"
+          class="w-12 h-7 text-center text-xs rounded border border-t-border bg-[rgba(var(--color-surface-rgb),0.6)] text-t-body outline-none focus:border-t-primary transition-colors duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          @keyup.enter="handleJump" />
+        <span class="text-xs text-t-muted max-md:hidden">页</span>
+        <button
+          class="h-7 px-2 text-xs rounded border border-t-border text-t-muted hover:text-t-primary hover:border-t-primary transition-colors duration-200"
+          @click="handleJump">
+          跳转
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import CustomSelect from '@/components/ui/CustomSelect.vue'
 
@@ -53,6 +67,8 @@ const emit = defineEmits<{
   (e: 'update:current', page: number): void
   (e: 'update:pageSize', size: number): void
 }>()
+
+const jumpInput = ref('')
 
 function onPageSizeChange(val: string | number) {
   emit('update:pageSize', Number(val))
@@ -71,7 +87,7 @@ const displayedPages = computed(() => {
     }
   } else {
     pages.push(1)
-    if (current > 3) {
+    if (current > 4) {
       pages.push('...')
     }
     const start = Math.max(2, current - 1)
@@ -79,7 +95,7 @@ const displayedPages = computed(() => {
     for (let i = start; i <= end; i++) {
       pages.push(i)
     }
-    if (current < total - 2) {
+    if (current < total - 3) {
       pages.push('...')
     }
     pages.push(total)
@@ -87,4 +103,12 @@ const displayedPages = computed(() => {
 
   return pages
 })
+
+function handleJump() {
+  const page = parseInt(jumpInput.value)
+  if (!isNaN(page) && page >= 1 && page <= totalPages.value) {
+    emit('update:current', page)
+    jumpInput.value = ''
+  }
+}
 </script>

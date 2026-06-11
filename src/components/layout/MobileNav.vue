@@ -72,6 +72,11 @@
                 <UserIcon class="w-[18px] h-[18px]" />
                 <span>我的主页</span>
               </a>
+              <a v-if="userStore.isAdmin" class="flex items-center gap-3 px-5 py-3.5 text-sm text-t-body cursor-pointer transition-all duration-200 relative hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary active:bg-[rgba(var(--color-primary-rgb),0.1)] before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-0 before:bg-t-primary before:rounded-full before:transition-[height] before:duration-200 before:[box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] hover:before:h-3/5"
+                @click="navigate('/admin')">
+                <Shield class="w-[18px] h-[18px]" />
+                <span>管理后台</span>
+              </a>
               <div
                 class="h-px bg-[rgba(var(--color-primary-rgb),0.15)] my-2 mx-5 relative after:content-[''] after:absolute after:top-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(var(--color-primary-rgb),0.2)] after:to-transparent">
               </div>
@@ -109,7 +114,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { X, Home, Info, PenSquare, User as UserIcon, LogOut, UserPlus, MessageCircle } from 'lucide-vue-next'
+import { X, Home, Info, PenSquare, User as UserIcon, LogOut, UserPlus, MessageCircle, Shield } from 'lucide-vue-next'
 
 const router = useRouter()
 const userStore = useUserStore()

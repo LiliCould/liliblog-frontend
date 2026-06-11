@@ -4,6 +4,7 @@ import 'nprogress/nprogress.css'
 import routes from './routes'
 import { getToken } from '@/utils/storage'
 import { useUserStore } from '@/stores/user'
+import { useToast } from '@/composables/useToast'
 
 NProgress.configure({ showSpinner: false })
 
@@ -30,7 +31,7 @@ router.beforeEach(async (to, _from, next) => {
     if (to.meta.requiresAdmin) {
         const userStore = useUserStore()
         if (!userStore.isAdmin) {
-            next('/')
+            next({ path: '/', query: { admin_denied: '1' } })
             return
         }
     }
@@ -43,8 +44,12 @@ router.beforeEach(async (to, _from, next) => {
     next()
 })
 
-router.afterEach(() => {
+router.afterEach((to) => {
     NProgress.done()
+    if (to.query.admin_denied === '1') {
+        useToast().warning('仅管理员可访问后台')
+        router.replace({ query: { ...to.query, admin_denied: undefined } })
+    }
 })
 
 export default router

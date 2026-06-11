@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 import type { ApiResponse } from '@/types/api'
+import type { PageResult } from '@/types/common'
 import type { Category } from '@/types/category'
 
 export function getCategories(params?: Record<string, any>) {
-    return request.get<ApiResponse<Category[]>>('/api/category', { params })
+    return request.get<ApiResponse<PageResult<Category>>>('/api/category', { params })
 }
 
 export function getCategoryById(id: number) {

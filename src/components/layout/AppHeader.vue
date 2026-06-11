@@ -79,6 +79,12 @@
                   <User class="w-4 h-4" />
                   <span>我的主页</span>
                 </button>
+                <button v-if="userStore.isAdmin"
+                  class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-t-body hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] transition-colors duration-200 cursor-pointer"
+                  @click="handleCommand('admin')">
+                  <Shield class="w-4 h-4" />
+                  <span>管理后台</span>
+                </button>
                 <div class="h-px bg-[rgba(var(--color-primary-rgb),0.1)]"></div>
                 <button
                   class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-t-secondary hover:bg-[rgba(var(--color-secondary-rgb),0.06)] transition-colors duration-200 cursor-pointer"
@@ -123,7 +129,7 @@ import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { useAuthModal } from '@/composables/useAuthModal'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
-import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search, MessageCircle, Palette } from 'lucide-vue-next'
+import { Home, Info, PenSquare, User, LogOut, Menu, ChevronDown, Search, MessageCircle, Palette, Shield } from 'lucide-vue-next'
 import logoSvg from '@/assets/logo.svg'
 import ThemePanel from '@/components/common/ThemePanel.vue'
 
@@ -185,6 +191,9 @@ function handleCommand(command: string) {
       break
     case 'myHome':
       router.push('/user/me')
+      break
+    case 'admin':
+      router.push('/admin')
       break
     case 'logout':
       userStore.logout()
