@@ -87,11 +87,12 @@ async function submitComment() {
   if (!commentContent.value.trim() || submitting.value) return
   submitting.value = true
   try {
+    const target = replyTarget.value
     const data: CommentCreateDTO = {
       articleId: props.articleId,
       content: commentContent.value.trim(),
-      parentId: replyTarget.value?.id || 0,
-      rootId: replyTarget.value?.id || 0,
+      parentId: target?.id || 0,
+      rootId: target?.rootId || target?.id || 0,
     }
     await createComment(data)
     commentContent.value = ''
