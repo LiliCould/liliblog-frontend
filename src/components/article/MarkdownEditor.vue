@@ -145,21 +145,24 @@ onMounted(() => {
     },
     upload: {
       handler: async (files: File[]) => {
-        const urls: string[] = []
+        const snippets: string[] = []
         for (const file of files) {
           try {
             const { uploadFile } = await import('@/api/file')
-            const res = await uploadFile(file, 'article') as any
+            const isImage = file.type.startsWith('image/')
+            const type = isImage ? 'image' : 'file'
+            const res = await uploadFile(file, type) as any
             const url = res.message?.trim() || res.data
             if (url) {
-              urls.push(url)
+              const name = file.name
+              snippets.push(isImage ? `![${name}](${url})` : `[${name}](${url})`)
             }
           } catch {
             // skip
           }
         }
-        if (urls.length > 0 && vditorInstance) {
-          vditorInstance.insertValue(urls.map(url => `![](${url})`).join('\n'))
+        if (snippets.length > 0 && vditorInstance) {
+          vditorInstance.insertValue(snippets.join('\n'))
         }
         return null
       },
