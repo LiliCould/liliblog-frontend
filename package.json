@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node -e \"require('fs').cpSync('node_modules/vditor/dist','public/vditor/dist',{recursive:true})\" && vite",
     "build": "vue-tsc -b && vite build && npm run copy:vditor",
-    "copy:vditor": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor',{recursive:true})\"",
+    "copy:vditor": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor/dist',{recursive:true})\"",
     "preview": "vite preview"
   },
   "dependencies": {
