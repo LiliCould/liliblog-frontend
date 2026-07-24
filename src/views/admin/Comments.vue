@@ -184,7 +184,12 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-5 py-3.5 text-t-muted">{{ comment.articleId }}</td>
+                            <td class="px-5 py-3.5">
+                                <button class="text-t-primary hover:underline cursor-pointer text-xs"
+                                    @click="openPreview(comment.articleId)">
+                                    {{ comment.articleId }}
+                                </button>
+                            </td>
                             <td class="px-5 py-3.5">
                                 <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium"
                                     :class="statusClass(comment.status)">
@@ -330,6 +335,36 @@
                 </div>
             </div>
         </Teleport>
+
+        <Teleport to="body">
+            <div v-if="showPreview" class="fixed inset-0 z-[1200] flex items-center justify-center">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showPreview = false"></div>
+                <div
+                    class="relative w-full max-w-3xl mx-4 max-h-[85vh] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] bg-t-surface border border-t-border shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] flex flex-col">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-t-border flex-shrink-0">
+                        <h3 class="text-base font-semibold text-t-title">{{ previewArticle?.title }}</h3>
+                        <button
+                            class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
+                            @click="showPreview = false">
+                            <X class="w-4 h-4" />
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-4 px-6 py-3 border-b border-t-border text-xs text-t-muted flex-shrink-0">
+                        <span>作者: {{ previewArticle?.creator?.nickname || '-' }}</span>
+                        <span>分类: {{ previewArticle?.category?.name || '未分类' }}</span>
+                        <span>创建: {{ formatDate(previewArticle?.createTime || '') }}</span>
+                        <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium"
+                            :class="articleStatusClass(previewArticle?.status ?? -1)">
+                            {{ articleStatusText(previewArticle?.status ?? -1) }}
+                        </span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto px-6 py-4">
+                        <div v-if="previewLoading" class="text-center py-12 text-t-muted text-sm">加载中...</div>
+                        <MarkdownViewer v-else :content-html="previewContentHtml" />
+                    </div>
+                </div>
+            </div>
+        </Teleport>
     </div>
 </template>
 
@@ -338,7 +373,9 @@ import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
 import { Trash2, CheckCircle, XCircle, X, AlertTriangle, ChevronLeft, ChevronRight, MapPin } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { getAdminComments, deleteAdminComment, batchDeleteAdminComments, reviewAdminComment } from '@/api/admin/comment'
+import { getAdminArticleById } from '@/api/admin/article'
 import { formatDate, resolveAvatar, handleAvatarError } from '@/utils/format'
+import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 import type { AdminComment, AdminCommentQuery } from '@/types/admin'
 import CustomSelect from '@/components/ui/CustomSelect.vue'
 
@@ -500,6 +537,38 @@ async function handleReject(comment: AdminComment) {
 const showDeleteConfirm = ref(false)
 const deleteTarget = ref<AdminComment | null>(null)
 const deleteIsBatch = ref(false)
+
+const showPreview = ref(false)
+const previewArticle = ref<any>(null)
+const previewContentHtml = ref('')
+const previewLoading = ref(false)
+
+async function openPreview(articleId: number) {
+    previewArticle.value = null
+    previewContentHtml.value = ''
+    previewLoading.value = true
+    showPreview.value = true
+    try {
+        const res = await getAdminArticleById(articleId) as any
+        previewArticle.value = res.data
+        previewContentHtml.value = res.data?.contentHtml || ''
+    } catch {
+        previewContentHtml.value = '<p style="color:#999">加载失败</p>'
+    } finally {
+        previewLoading.value = false
+    }
+}
+
+function articleStatusText(status: number) {
+    const map: Record<number, string> = { 0: '审核中', 1: '已发布', 2: '草稿' }
+    return map[status] || '未知'
+}
+
+function articleStatusClass(status: number) {
+    if (status === 1) return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
+    if (status === 0) return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
+    return 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'
+}
 
 function handleDelete(comment: AdminComment) {
     deleteTarget.value = comment

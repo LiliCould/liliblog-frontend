@@ -51,7 +51,6 @@ const emit = defineEmits<{
 }>()
 
 const selectRef = ref<HTMLElement | null>(null)
-const dropdownRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
 const openUp = ref(false)
 const highlightedIndex = ref(-1)
