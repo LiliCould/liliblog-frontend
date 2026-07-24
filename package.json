@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vite build && npm run copy:vditor",
+    "copy:vditor": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor',{recursive:true})\"",
     "preview": "vite preview"
   },
   "dependencies": {

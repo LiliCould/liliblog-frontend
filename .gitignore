@@ -23,6 +23,17 @@ dist-ssr
 *.sln
 *.sw?
 
+.vscode/
+
 trae
+.trae/
 
 .mimocode/
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
