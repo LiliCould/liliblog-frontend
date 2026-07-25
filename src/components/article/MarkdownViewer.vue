@@ -14,8 +14,108 @@ const props = defineProps<{
   contentHtml: string
 }>()
 
+const FILE_TYPES: Record<string, { color: string; bg: string; label: string }> = {
+  doc:  { color: '#2B579A', bg: '#E8F0FE', label: 'DOC' },
+  docx: { color: '#2B579A', bg: '#E8F0FE', label: 'DOC' },
+  xls:  { color: '#217346', bg: '#E6F4EA', label: 'XLS' },
+  xlsx: { color: '#217346', bg: '#E6F4EA', label: 'XLS' },
+  ppt:  { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
+  pptx: { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
+  pdf:  { color: '#E53935', bg: '#FFEBEE', label: 'PDF' },
+  zip:  { color: '#F57C00', bg: '#FFF3E0', label: 'ZIP' },
+  rar:  { color: '#F57C00', bg: '#FFF3E0', label: 'RAR' },
+  '7z':  { color: '#F57C00', bg: '#FFF3E0', label: '7Z' },
+  mp4:  { color: '#7B1FA2', bg: '#F3E5F5', label: 'MP4' },
+  avi:  { color: '#7B1FA2', bg: '#F3E5F5', label: 'AVI' },
+  mov:  { color: '#7B1FA2', bg: '#F3E5F5', label: 'MOV' },
+  mp3:  { color: '#E64A19', bg: '#FBE9E7', label: 'MP3' },
+  wav:  { color: '#E64A19', bg: '#FBE9E7', label: 'WAV' },
+  flac: { color: '#E64A19', bg: '#FBE9E7', label: 'FLAC' },
+  txt:  { color: '#616161', bg: '#F5F5F5', label: 'TXT' },
+  csv:  { color: '#217346', bg: '#E6F4EA', label: 'CSV' },
+  apk:  { color: '#3DDC84', bg: '#E8F5E9', label: 'APK' },
+}
+
+function getFileCardHtml(href: string, text: string): string {
+  const ext = href.split('.').pop()?.split('?')[0]?.toLowerCase() || ''
+  const fileType = FILE_TYPES[ext]
+  if (!fileType) return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
+
+  const displayName = text || href.split('/').pop() || '未知文件'
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="file-card">
+    <span class="file-card__icon" style="background:${fileType.bg};color:${fileType.color}">${fileType.label}</span>
+    <span class="file-card__name">${displayName}</span>
+    <svg class="file-card__download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  </a>`
+}
+
 const sanitizedHtml = computed(() => {
   if (!props.contentHtml) return ''
-  return DOMPurify.sanitize(props.contentHtml)
+  let html = DOMPurify.sanitize(props.contentHtml)
+  html = html.replace(
+    /<a\s+href="([^"]+)"[^>]*>([^<]+)<\/a>/gi,
+    (_match, href, text) => getFileCardHtml(href, text)
+  )
+  return html
 })
 </script>
+
+<style>
+.file-card {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none !important;
+  color: inherit !important;
+  font-weight: 400 !important;
+}
+
+.file-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.file-card__icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.file-card__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-card__download {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+}
+</style>

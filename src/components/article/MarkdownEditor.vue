@@ -151,11 +151,15 @@ onMounted(() => {
             const { uploadFile } = await import('@/api/file')
             const isImage = file.type.startsWith('image/')
             const type = isImage ? 'image' : 'file'
-            const res = await uploadFile(file, type) as any
+            const originalName = file.name
+            const cleanName = originalName.replace(/\s/g, '')
+            const uploadFileObj = cleanName !== originalName
+              ? new File([file], cleanName, { type: file.type })
+              : file
+            const res = await uploadFile(uploadFileObj, type) as any
             const url = res.message?.trim() || res.data
             if (url) {
-              const name = file.name
-              snippets.push(isImage ? `![${name}](${url})` : `[${name}](${url})`)
+              snippets.push(isImage ? `![${originalName}](${url})` : `[${originalName}](${url})`)
             }
           } catch {
             // skip
