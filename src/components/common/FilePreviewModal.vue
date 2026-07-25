@@ -12,17 +12,14 @@
             <X class="w-5 h-5" />
           </button>
         </div>
-        <div class="flex-1 overflow-auto p-4">
+        <div class="flex-1 overflow-hidden p-4">
           <div v-if="loading" class="flex items-center justify-center h-full">
             <div
               class="w-8 h-8 border-2 border-[rgba(var(--color-primary-rgb),0.3)] border-t-t-primary rounded-full animate-spin">
             </div>
           </div>
-          <div v-else-if="error" class="flex items-center justify-center h-full text-t-muted text-sm">
-            {{ error }}
-          </div>
-          <div v-show="!loading && !error && type === 'pdf'" ref="pdfContainer" class="w-full h-full"></div>
-          <MarkdownViewer v-if="!loading && !error && type === 'markdown'" :content-html="markdownHtml" />
+          <iframe v-else-if="type === 'pdf'" :src="url" class="w-full h-full border-0 rounded-lg"></iframe>
+          <MarkdownViewer v-else :content-html="markdownHtml" />
         </div>
       </div>
     </div>
@@ -30,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { X } from 'lucide-vue-next'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 
@@ -43,41 +40,7 @@ const props = defineProps<{
 defineEmits<{ close: [] }>()
 
 const loading = ref(true)
-const error = ref('')
 const markdownHtml = ref('')
-const pdfContainer = ref<HTMLElement | null>(null)
-
-async function loadPdf() {
-  if (!pdfContainer.value) {
-    console.warn('[PDF] container not ready')
-    return
-  }
-  try {
-    const pdfjsLib = await import('pdfjs-dist')
-    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.mjs',
-      import.meta.url
-    ).href
-
-    const pdf = await pdfjsLib.getDocument({ url: props.url }).promise
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i)
-      const scale = 1.5
-      const viewport = page.getViewport({ scale })
-      const canvas = document.createElement('canvas')
-      canvas.width = viewport.width
-      canvas.height = viewport.height
-      canvas.className = 'w-full h-auto mb-4 rounded-lg'
-      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise
-      pdfContainer.value.appendChild(canvas)
-    }
-  } catch (e) {
-    console.error('[PDF] error:', e)
-    error.value = 'PDF 加载失败'
-  } finally {
-    loading.value = false
-  }
-}
 
 async function loadMarkdown() {
   try {
@@ -86,7 +49,7 @@ async function loadMarkdown() {
     const { marked } = await import('marked')
     markdownHtml.value = marked.parse(text) as string
   } catch {
-    error.value = 'Markdown 加载失败'
+    // error state not critical, empty content shown
   } finally {
     loading.value = false
   }
@@ -94,15 +57,9 @@ async function loadMarkdown() {
 
 onMounted(() => {
   if (props.type === 'pdf') {
-    loadPdf()
+    loading.value = false
   } else {
     loadMarkdown()
-  }
-})
-
-onUnmounted(() => {
-  if (pdfContainer.value) {
-    pdfContainer.value.innerHTML = ''
   }
 })
 </script>
