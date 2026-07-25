@@ -26,6 +26,8 @@ const FILE_TYPES: Record<string, { color: string; bg: string; label: string }> =
   ppt:  { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
   pptx: { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
   pdf:  { color: '#E53935', bg: '#FFEBEE', label: 'PDF' },
+  md:   { color: '#64748b', bg: '#f1f5f9', label: 'MD' },
+  markdown: { color: '#64748b', bg: '#f1f5f9', label: 'MD' },
   zip:  { color: '#F57C00', bg: '#FFF3E0', label: 'ZIP' },
   rar:  { color: '#F57C00', bg: '#FFF3E0', label: 'RAR' },
   '7z':  { color: '#F57C00', bg: '#FFF3E0', label: '7Z' },
