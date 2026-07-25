@@ -19,6 +19,8 @@
             </div>
           </div>
           <iframe v-else-if="type === 'pdf'" :src="url" class="w-full h-full border-0 rounded-lg"></iframe>
+          <video v-else-if="type === 'video'" :src="url" controls
+            class="w-full h-full rounded-lg"></video>
           <MarkdownViewer v-else :content-html="markdownHtml" />
         </div>
       </div>
@@ -34,7 +36,7 @@ import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 const props = defineProps<{
   url: string
   fileName: string
-  type: 'pdf' | 'markdown'
+  type: 'pdf' | 'markdown' | 'video'
 }>()
 
 defineEmits<{ close: [] }>()
@@ -56,7 +58,7 @@ async function loadMarkdown() {
 }
 
 onMounted(() => {
-  if (props.type === 'pdf') {
+  if (props.type === 'pdf' || props.type === 'video') {
     loading.value = false
   } else {
     loadMarkdown()

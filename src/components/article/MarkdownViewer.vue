@@ -40,13 +40,13 @@ const FILE_TYPES: Record<string, { color: string; bg: string; label: string }> =
   apk:  { color: '#3DDC84', bg: '#E8F5E9', label: 'APK' },
 }
 
-const PREVIEWABLE_TYPES = new Set(['pdf', 'md', 'markdown'])
+const PREVIEWABLE_TYPES = new Set(['pdf', 'md', 'markdown', 'mp4', 'avi', 'mov'])
 
 const previewState = reactive({
   show: false,
   url: '',
   name: '',
-  type: 'pdf' as 'pdf' | 'markdown',
+  type: 'pdf' as 'pdf' | 'markdown' | 'video',
 })
 
 function getFileCardHtml(href: string, text: string): string {
@@ -56,7 +56,8 @@ function getFileCardHtml(href: string, text: string): string {
 
   const displayName = text || href.split('/').pop() || '未知文件'
   const canPreview = PREVIEWABLE_TYPES.has(ext)
-  const previewType = ext === 'pdf' ? 'pdf' : 'markdown'
+  const VIDEO_EXTS = new Set(['mp4', 'avi', 'mov'])
+  const previewType = VIDEO_EXTS.has(ext) ? 'video' : ext === 'pdf' ? 'pdf' : 'markdown'
 
   const eyeIcon = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
   const downloadIcon = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`
@@ -81,7 +82,7 @@ function handleClick(e: Event) {
   e.stopPropagation()
   previewState.url = btn.dataset.url || ''
   previewState.name = btn.dataset.name || ''
-  previewState.type = (btn.dataset.type as 'pdf' | 'markdown') || 'pdf'
+  previewState.type = (btn.dataset.type as 'pdf' | 'markdown' | 'video') || 'pdf'
   previewState.show = true
 }
 
