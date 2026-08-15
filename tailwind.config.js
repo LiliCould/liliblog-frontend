@@ -82,8 +82,7 @@ export default {
             },
             'pre': {
               borderRadius: '0px',
-              border: '2px solid var(--code-pre-border)',
-              padding: '1rem',
+              padding: '0',
             },
             'blockquote': {
               borderLeftWidth: '4px',
@@ -104,7 +103,8 @@ export default {
         dark: {
           css: {
             'pre': {
-              border: '2px solid #292524',
+              borderRadius: '0px',
+              padding: '0',
             },
           },
         },

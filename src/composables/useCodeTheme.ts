@@ -15,7 +15,6 @@ export interface CodeThemeInfo {
   name: string
   isDark: boolean
   preview: { bg: string; color: string }
-  border: string
   vditorStyle: string
 }
 
@@ -37,16 +36,16 @@ const cssMap: Record<string, string> = {
 }
 
 export const codeThemes: CodeThemeInfo[] = [
-  { id: 'github', name: 'GitHub', isDark: false, preview: { bg: '#f6f8fa', color: '#24292e' }, border: '#000000', vditorStyle: 'github' },
-  { id: 'atom-one-light', name: 'Atom Light', isDark: false, preview: { bg: '#fafafa', color: '#383a42' }, border: '#000000', vditorStyle: 'atom-one-light' },
-  { id: 'github-dark', name: 'GitHub Dark', isDark: true, preview: { bg: '#0d1117', color: '#c9d1d9' }, border: '#30363d', vditorStyle: 'github-dark' },
-  { id: 'atom-one-dark', name: 'Atom One Dark', isDark: true, preview: { bg: '#282c34', color: '#abb2bf' }, border: '#3e4451', vditorStyle: 'atom-one-dark' },
-  { id: 'dracula', name: 'Dracula', isDark: true, preview: { bg: '#282936', color: '#e9e9f4' }, border: '#4d4f68', vditorStyle: 'base16/dracula' },
-  { id: 'monokai-sublime', name: 'Monokai', isDark: true, preview: { bg: '#23241f', color: '#f8f8f2' }, border: '#49483e', vditorStyle: 'monokai-sublime' },
-  { id: 'vs2015', name: 'VS 2015', isDark: true, preview: { bg: '#1e1e1e', color: '#dcdcdc' }, border: '#3f3f46', vditorStyle: 'vs2015' },
-  { id: 'nord', name: 'Nord', isDark: true, preview: { bg: '#2e3440', color: '#d8dee9' }, border: '#434c5e', vditorStyle: 'nord' },
-  { id: 'tokyo-night-dark', name: 'Tokyo Night', isDark: true, preview: { bg: '#1a1b26', color: '#a9b1d6' }, border: '#292e42', vditorStyle: 'tokyo-night-dark' },
-  { id: 'night-owl', name: 'Night Owl', isDark: true, preview: { bg: '#011627', color: '#d6deeb' }, border: '#1d3b53', vditorStyle: 'night-owl' },
+  { id: 'github', name: 'GitHub', isDark: false, preview: { bg: '#f6f8fa', color: '#24292e' }, vditorStyle: 'github' },
+  { id: 'atom-one-light', name: 'Atom Light', isDark: false, preview: { bg: '#fafafa', color: '#383a42' }, vditorStyle: 'atom-one-light' },
+  { id: 'github-dark', name: 'GitHub Dark', isDark: true, preview: { bg: '#0d1117', color: '#c9d1d9' }, vditorStyle: 'github-dark' },
+  { id: 'atom-one-dark', name: 'Atom One Dark', isDark: true, preview: { bg: '#282c34', color: '#abb2bf' }, vditorStyle: 'atom-one-dark' },
+  { id: 'dracula', name: 'Dracula', isDark: true, preview: { bg: '#282936', color: '#e9e9f4' }, vditorStyle: 'base16/dracula' },
+  { id: 'monokai-sublime', name: 'Monokai', isDark: true, preview: { bg: '#23241f', color: '#f8f8f2' }, vditorStyle: 'monokai-sublime' },
+  { id: 'vs2015', name: 'VS 2015', isDark: true, preview: { bg: '#1e1e1e', color: '#dcdcdc' }, vditorStyle: 'vs2015' },
+  { id: 'nord', name: 'Nord', isDark: true, preview: { bg: '#2e3440', color: '#d8dee9' }, vditorStyle: 'nord' },
+  { id: 'tokyo-night-dark', name: 'Tokyo Night', isDark: true, preview: { bg: '#1a1b26', color: '#a9b1d6' }, vditorStyle: 'tokyo-night-dark' },
+  { id: 'night-owl', name: 'Night Owl', isDark: true, preview: { bg: '#011627', color: '#d6deeb' }, vditorStyle: 'night-owl' },
 ]
 
 const currentCodeTheme = ref<string>(localStorage.getItem(CODE_THEME_KEY) || DEFAULT_CODE_THEME)
@@ -62,7 +61,6 @@ function applyCodeTheme(themeId: string) {
   }
   styleEl.textContent = cssMap[themeId] ?? ''
   document.documentElement.setAttribute('data-code-theme', themeId)
-  document.documentElement.style.setProperty('--code-pre-border', theme.border)
   localStorage.setItem(CODE_THEME_KEY, themeId)
   currentCodeTheme.value = themeId
 }
