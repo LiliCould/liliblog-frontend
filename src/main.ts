@@ -3,9 +3,9 @@ import '@/assets/styles/tailwind.css'
 import '@/assets/styles/variables.css'
 import '@/assets/styles/reset.css'
 import '@/assets/styles/transitions.css'
-import '@/assets/styles/markdown.css'
 
 import { vLazy } from './directives/lazy'
+import { useCodeTheme } from '@/composables/useCodeTheme'
 
 import App from './App.vue'
 import router from './router'
@@ -25,5 +25,7 @@ userStore.init()
 
 const appStore = useAppStore()
 appStore.initAppData()
+
+useCodeTheme().initCodeTheme()
 
 app.mount('#app')

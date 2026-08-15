@@ -83,6 +83,28 @@
           <CommentSection :article-id="article.id" />
         </div>
       </article>
+
+      <div v-if="article" class="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[60]">
+        <div v-if="showCodeThemePanel" class="fixed inset-0 z-[59]" @click="showCodeThemePanel = false"></div>
+        <button
+          class="relative z-[61] w-11 h-11 rounded-full bg-t-surface border border-t-border shadow-[0_2px_12px_rgba(0,0,0,0.2)] flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.4)]"
+          title="代码主题" @click="showCodeThemePanel = !showCodeThemePanel">
+          <Palette class="w-5 h-5" />
+        </button>
+        <div v-if="showCodeThemePanel"
+          class="absolute bottom-14 right-0 z-[61] w-60 rounded-xl bg-t-surface border border-t-border p-2 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
+          <h4 class="text-xs font-semibold text-t-muted uppercase tracking-wider px-2 py-1.5">代码块主题</h4>
+          <button v-for="ct in codeThemes" :key="ct.id" @click="setCodeTheme(ct.id)"
+            class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-left transition-all duration-200 cursor-pointer"
+            :class="currentCodeTheme === ct.id ? 'bg-[rgba(var(--color-primary-rgb),0.08)]' : 'hover:bg-[rgba(var(--color-primary-rgb),0.05)]'">
+            <span class="w-4 h-4 rounded-sm border border-t-border flex-shrink-0"
+              :style="{ backgroundColor: ct.preview.bg }"></span>
+            <span class="text-sm flex-1"
+              :class="currentCodeTheme === ct.id ? 'text-t-primary font-medium' : 'text-t-body'">{{ ct.name }}</span>
+            <Check v-if="currentCodeTheme === ct.id" class="w-4 h-4 text-t-primary flex-shrink-0" />
+          </button>
+        </div>
+      </div>
     </div>
 
     <template v-if="article" #rightSidebarTop>
@@ -98,10 +120,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Heart, Eye, Clock, Calendar, FolderOpen } from 'lucide-vue-next'
+import { Heart, Eye, Clock, Calendar, FolderOpen, Palette, Check } from 'lucide-vue-next'
 import { useArticleStore } from '@/stores/article'
 import { getArticleLikeStatus, likeArticle, unlikeArticle } from '@/api/article'
 import { formatDateTime, resolveAvatar, handleAvatarError } from '@/utils/format'
+import { useCodeTheme, codeThemes } from '@/composables/useCodeTheme'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import MarkdownViewer from '@/components/article/MarkdownViewer.vue'
 import ArticleToc from '@/components/article/ArticleToc.vue'
@@ -112,9 +135,11 @@ import type { ArticleDetail } from '@/types/article'
 
 const route = useRoute()
 const articleStore = useArticleStore()
+const { currentCodeTheme, setCodeTheme } = useCodeTheme()
 const article = ref<ArticleDetail | null>(null)
 const loading = ref(true)
 const isLiked = ref(false)
+const showCodeThemePanel = ref(false)
 const defaultTitle = '立里博客 | LiliBlog - 立里可的技术与生活分享空间'
 
 function setPageTitle(title: string) {

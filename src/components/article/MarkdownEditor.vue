@@ -3,10 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { useTheme } from '@/composables/useTheme'
+import { useCodeTheme, codeThemes } from '@/composables/useCodeTheme'
 
 const props = defineProps<{
   modelValue: string
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const { currentTheme } = useTheme()
+const { currentCodeTheme } = useCodeTheme()
 const editorContainer = ref<HTMLElement | null>(null)
 let vditorInstance: Vditor | null = null
 
@@ -28,6 +30,10 @@ function isLightTheme(): boolean {
 function getVditorTheme(): 'classic' | 'dark' {
   return isLightTheme() ? 'classic' : 'dark'
 }
+
+const vditorCodeStyle = computed(() =>
+  codeThemes.find((t) => t.id === currentCodeTheme.value)?.vditorStyle || 'github'
+)
 
 function switchMode() {
   if (!vditorInstance || !editorContainer.value) return
@@ -45,7 +51,7 @@ function updateVditorTheme() {
   if (!vditorInstance) return
   const theme = getVditorTheme()
   try {
-    vditorInstance.setTheme(theme)
+    vditorInstance.setTheme(theme, undefined, vditorCodeStyle.value)
   } catch {
     // ignore if method not available
   }
@@ -88,7 +94,7 @@ onMounted(() => {
       },
       hljs: {
         enable: true,
-        style: isLightTheme() ? 'github' : 'dracula',
+        style: vditorCodeStyle.value,
         lineNumber: true,
       },
       markdown: {
@@ -185,6 +191,10 @@ onMounted(() => {
 })
 
 watch(currentTheme, () => {
+  updateVditorTheme()
+})
+
+watch(currentCodeTheme, () => {
   updateVditorTheme()
 })
 

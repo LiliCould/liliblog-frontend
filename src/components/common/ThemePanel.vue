@@ -71,6 +71,36 @@
 
                 <div class="h-px bg-t-border mb-6"></div>
 
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-t-body mb-3">代码块主题</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button v-for="ct in codeThemes" :key="ct.id"
+                            class="relative flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 cursor-pointer"
+                            :class="currentCodeTheme === ct.id
+                                ? 'border-t-primary bg-[rgba(var(--color-primary-rgb),0.08)] shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.15)]'
+                                : 'border-t-border hover:border-[rgba(var(--color-primary-rgb),0.3)]'"
+                            @click="setCodeTheme(ct.id)">
+                            <div class="flex gap-1 shrink-0">
+                                <span class="w-5 h-5 rounded border border-[rgba(var(--color-primary-rgb),0.2)]"
+                                    :style="{ backgroundColor: ct.preview.bg }"></span>
+                                <span class="w-5 h-5 rounded border border-[rgba(var(--color-primary-rgb),0.2)]"
+                                    :style="{ backgroundColor: ct.preview.color }"></span>
+                            </div>
+                            <div class="flex flex-col items-start">
+                                <span class="text-sm font-medium"
+                                    :class="currentCodeTheme === ct.id ? 'text-t-primary' : 'text-t-body'">{{ ct.name
+                                    }}</span>
+                                <span class="text-[10px] text-t-muted">
+                                    {{ ct.isDark ? '🌙 深色' : '☀ 浅色' }}
+                                </span>
+                            </div>
+                            <Check v-if="currentCodeTheme === ct.id" class="w-4 h-4 text-t-primary absolute right-3" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="h-px bg-t-border mb-6"></div>
+
                 <div :class="followSystem ? 'opacity-40 pointer-events-none' : ''">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-semibold text-t-body">自定义配色</h3>
@@ -335,10 +365,12 @@ import { reactive, watch, ref, computed } from 'vue'
 import { X, Check, Monitor, AlertTriangle } from 'lucide-vue-next'
 import { useTheme, themes } from '@/composables/useTheme'
 import type { CustomThemeOverrides } from '@/composables/useTheme'
+import { useCodeTheme, codeThemes } from '@/composables/useCodeTheme'
 
 defineEmits<{ close: [] }>()
 
 const { currentTheme, customOverrides, followSystem, setTheme, setCustom, resetCustom, enableFollowSystem, disableFollowSystem, getSystemTheme } = useTheme()
+const { currentCodeTheme, setCodeTheme } = useCodeTheme()
 
 const localOverrides = reactive<CustomThemeOverrides>({ ...customOverrides.value })
 const showConfirmDialog = ref(false)

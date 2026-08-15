@@ -82,7 +82,7 @@ export default {
             },
             'pre': {
               borderRadius: '0px',
-              border: '2px solid #000000',
+              border: '2px solid var(--code-pre-border)',
               padding: '1rem',
             },
             'blockquote': {

@@ -1,6 +1,7 @@
 <template>
   <div class="w-full min-h-full p-5 px-6 rounded-lg bg-t-bg transition-all duration-250 box-border">
     <div
+      ref="viewerEl"
       class="prose max-w-none prose-headings:text-t-title prose-p:text-t-body prose-a:text-t-primary prose-strong:text-t-title prose-code:text-t-primary prose-pre:bg-t-elevated prose-blockquote:border-t-primary prose-li:text-t-body"
       v-html="sanitizedHtml"
       @click="handleClick"></div>
@@ -10,13 +11,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref, watch, onMounted } from 'vue'
 import DOMPurify from 'dompurify'
 import FilePreviewModal from '@/components/common/FilePreviewModal.vue'
+import { highlightCodeBlocks } from '@/utils/highlight'
 
 const props = defineProps<{
   contentHtml: string
 }>()
+
+const viewerEl = ref<HTMLElement | null>(null)
+
+function highlight() {
+  if (viewerEl.value) highlightCodeBlocks(viewerEl.value)
+}
+
+onMounted(highlight)
+watch(() => props.contentHtml, highlight, { flush: 'post' })
 
 const FILE_TYPES: Record<string, { color: string; bg: string; label: string }> = {
   doc:  { color: '#2B579A', bg: '#E8F0FE', label: 'DOC' },
