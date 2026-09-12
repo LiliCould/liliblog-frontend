@@ -36,3 +36,5 @@ jobs:
           SOURCE: dist/
           TARGET: ${{ secrets.DEPLOY_PATH }}
           ARGS: "-rlgoDzvc --delete"
+          SCRIPT_BEFORE: |
+            sudo chown -R lilicould:lilicould /opt/1panel/www/sites/lilicould/index/
