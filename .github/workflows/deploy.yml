@@ -21,7 +21,7 @@ jobs:
         run: corepack enable && yarn set version berry
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       - name: Build
         run: yarn build
