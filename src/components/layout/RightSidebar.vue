@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores/app'
-import { getArticles } from '@/api/article'
+import { getRandomArticles } from '@/api/article'
 import { Shuffle, Tag as TagIcon, ChevronRight, FileText, AlertCircle } from 'lucide-vue-next'
 import type { Article } from '@/types/article.d'
 
@@ -76,8 +76,8 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const res = await getArticles({ size: 5, status: 1 }) as any
-    articles.value = res.data?.records || res.data || []
+    const res = await getRandomArticles(5) as any
+    articles.value = res.data || []
   } catch {
     articles.value = []
   } finally {

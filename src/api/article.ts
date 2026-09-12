@@ -41,3 +41,7 @@ export function likeArticle(id: number) {
 export function unlikeArticle(id: number) {
     return request.put<ApiResponse<null>>(`/api/article/${id}/unlike`)
 }
+
+export function getRandomArticles(num: number) {
+    return request.get<ApiResponse<Article[]>>('/api/article/random', { params: { num } })
+}
