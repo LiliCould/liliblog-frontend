@@ -49,7 +49,7 @@
         </div>
         <button v-if="isSelf"
           class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-[background-color,box-shadow] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)]"
-          @click="router.push('/write')">
+          @click="openWrite">
           <Plus class="w-3.5 h-3.5" />
           写文章
         </button>
@@ -113,7 +113,7 @@
             <button
               class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[color,background-color] duration-200"
               aria-label="编辑文章"
-              @click="router.push(`/write/${article.id}`)">
+              @click="openWriteEdit(article.id)">
               <Edit class="w-4 h-4" />
             </button>
             <button
@@ -132,7 +132,7 @@
       <EmptyState v-else :message="emptyMessage">
         <button v-if="isSelf"
           class="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary transition-[background-color] duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.2)]"
-          @click="router.push('/write')">
+          @click="openWrite">
           <Plus class="w-3.5 h-3.5" />
           开始写作
         </button>
@@ -203,6 +203,14 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const toast = useToast()
+
+function openWrite() {
+  window.open('/write', '_blank')
+}
+
+function openWriteEdit(id: number) {
+  window.open(`/write/${id}`, '_blank')
+}
 
 const targetUser = ref<User | null>(null)
 const articles = ref<Article[]>([])
