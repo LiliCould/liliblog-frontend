@@ -7,6 +7,33 @@
       @click="handleClick"></div>
     <FilePreviewModal v-if="previewState.show" :url="previewState.url" :file-name="previewState.name"
       :type="previewState.type" @close="previewState.show = false" />
+    <Teleport to="body">
+      <div v-if="externalLinkState.show" class="fixed inset-0 z-[1200] flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="externalLinkState.show = false"></div>
+        <div class="relative w-full max-w-md mx-4 rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-full bg-[rgba(var(--color-warning-rgb,217,119,6),0.1)] flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-[var(--color-warning,#d97706)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <path d="M12 9v4"/><path d="M12 17h.01"/>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-t-title">您即将离开本站</h2>
+          </div>
+          <div class="mb-6">
+            <p class="text-t-body mb-3">您正在访问的外部链接：</p>
+            <div class="px-3 py-2 rounded-lg bg-t-elevated border border-t-border">
+              <p class="text-sm text-t-muted break-all line-clamp-2">{{ externalLinkState.url }}</p>
+            </div>
+            <p class="text-t-body-secondary text-sm mt-3">本站不对第三方网站的内容、安全性或隐私保护措施负责。请确认您信任该网站后再继续访问。</p>
+          </div>
+          <div class="flex justify-end gap-3">
+            <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors rounded-lg" @click="externalLinkState.show = false">取消</button>
+            <button class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all rounded-lg" @click="openExternalLink">继续访问</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -62,7 +89,25 @@ const previewState = reactive({
   type: 'pdf' as 'pdf' | 'markdown' | 'video',
 })
 
+const externalLinkState = reactive({
+  show: false,
+  url: '',
+})
+
+function isLilicouldDomain(url: string): boolean {
+  try {
+    const { hostname } = new URL(url)
+    return hostname === 'lilicould.cn' || hostname.endsWith('.lilicould.cn')
+  } catch {
+    return false
+  }
+}
+
 function getFileCardHtml(href: string, text: string): string {
+  if (!isLilicouldDomain(href)) {
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" data-external="true" data-url="${href}">${text}</a>`
+  }
+
   const ext = href.split('.').pop()?.split('?')[0]?.toLowerCase() || ''
   const fileType = FILE_TYPES[ext]
   if (!fileType) return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
@@ -89,14 +134,30 @@ function getFileCardHtml(href: string, text: string): string {
 
 function handleClick(e: Event) {
   const target = e.target as HTMLElement
-  const btn = target.closest('[data-preview="true"]') as HTMLElement
-  if (!btn) return
-  e.preventDefault()
-  e.stopPropagation()
-  previewState.url = btn.dataset.url || ''
-  previewState.name = btn.dataset.name || ''
-  previewState.type = (btn.dataset.type as 'pdf' | 'markdown' | 'video') || 'pdf'
-  previewState.show = true
+
+  const previewBtn = target.closest('[data-preview="true"]') as HTMLElement
+  if (previewBtn) {
+    e.preventDefault()
+    e.stopPropagation()
+    previewState.url = previewBtn.dataset.url || ''
+    previewState.name = previewBtn.dataset.name || ''
+    previewState.type = (previewBtn.dataset.type as 'pdf' | 'markdown' | 'video') || 'pdf'
+    previewState.show = true
+    return
+  }
+
+  const externalLink = target.closest('[data-external="true"]') as HTMLElement
+  if (externalLink) {
+    e.preventDefault()
+    e.stopPropagation()
+    externalLinkState.url = externalLink.dataset.url || ''
+    externalLinkState.show = true
+  }
+}
+
+function openExternalLink() {
+  window.open(externalLinkState.url, '_blank', 'noopener,noreferrer')
+  externalLinkState.show = false
 }
 
 const sanitizedHtml = computed(() => {
