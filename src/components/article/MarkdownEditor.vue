@@ -1,5 +1,8 @@
 <template>
   <div class="w-full h-full" ref="editorContainer"></div>
+  <Teleport v-if="taskBarTarget" :to="taskBarTarget">
+    <UploadTaskList :tasks="tasks" />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -8,6 +11,9 @@ import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { useTheme } from '@/composables/useTheme'
 import { useCodeTheme, codeThemes } from '@/composables/useCodeTheme'
+import { uploadFile } from '@/api/file'
+import { useUploadTasks } from '@/composables/useUploadTasks'
+import UploadTaskList from '@/components/common/UploadTaskList.vue'
 
 const props = defineProps<{
   modelValue: string
@@ -20,8 +26,25 @@ const emit = defineEmits<{
 
 const { currentTheme } = useTheme()
 const { currentCodeTheme } = useCodeTheme()
+const { tasks, start, update, finish, fail, dispose } = useUploadTasks()
 const editorContainer = ref<HTMLElement | null>(null)
+const taskBarTarget = ref<HTMLElement | null>(null)
 let vditorInstance: Vditor | null = null
+
+/**
+ * 把上传任务条挂到 vditor 的工具栏与内容区之间。
+ * vditor 直接把 .vditor 类加在容器元素上，所以 editorContainer 本身就是那个
+ * flex column，工具栏/内容区都是它的子元素。
+ *
+ * 用 Teleport 而不是往 contenteditable 里插节点：见 upload-progress.css 的说明。
+ */
+function mountTaskBar(container: HTMLElement): HTMLElement | null {
+  const content = container.querySelector('.vditor-content')
+  if (!content) return null
+  const el = document.createElement('div')
+  content.parentElement?.insertBefore(el, content)
+  return el
+}
 
 function isLightTheme(): boolean {
   return currentTheme.value === 'light'
@@ -151,33 +174,40 @@ onMounted(() => {
     },
     upload: {
       handler: async (files: File[]) => {
-        const snippets: string[] = []
         for (const file of files) {
+          const isImage = file.type.startsWith('image/')
+          const type = isImage ? 'image' : 'file'
+          const originalName = file.name
+          const cleanName = originalName.replace(/\s/g, '')
+          const uploadFileObj = cleanName !== originalName
+            ? new File([file], cleanName, { type: file.type })
+            : file
+
+          // 进度只走编辑器上方的任务条，编辑器内容区里不插任何节点
+          const taskId = start(originalName)
+
           try {
-            const { uploadFile } = await import('@/api/file')
-            const isImage = file.type.startsWith('image/')
-            const type = isImage ? 'image' : 'file'
-            const originalName = file.name
-            const cleanName = originalName.replace(/\s/g, '')
-            const uploadFileObj = cleanName !== originalName
-              ? new File([file], cleanName, { type: file.type })
-              : file
-            const res = await uploadFile(uploadFileObj, type) as any
+            const res = await uploadFile(uploadFileObj, type, (e) => update(taskId, e)) as any
             const url = res.message?.trim() || res.data
-            if (url) {
-              snippets.push(isImage ? `![${originalName}](${url})` : `[${originalName}](${url})`)
+            if (!url) {
+              fail(taskId)
+              continue
             }
+            // 图片插到当前光标处
+            const markdown = isImage ? `![${originalName}](${url})` : `[${originalName}](${url})`
+            vditorInstance?.insertValue(markdown)
+            finish(taskId)
           } catch {
-            // skip
+            fail(taskId)
           }
-        }
-        if (snippets.length > 0 && vditorInstance) {
-          vditorInstance.insertValue(snippets.join('\n'))
         }
         return null
       },
     },
     after: () => {
+      if (editorContainer.value) {
+        taskBarTarget.value = mountTaskBar(editorContainer.value)
+      }
       if (vditorInstance && props.modelValue) {
         vditorInstance.setValue(props.modelValue)
       }
@@ -205,6 +235,7 @@ watch(() => props.modelValue, (val) => {
 })
 
 onUnmounted(() => {
+  dispose()
   if (vditorInstance) {
     vditorInstance.destroy()
     vditorInstance = null

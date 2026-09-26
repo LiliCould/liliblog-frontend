@@ -3,6 +3,7 @@ import '@/assets/styles/tailwind.css'
 import '@/assets/styles/variables.css'
 import '@/assets/styles/reset.css'
 import '@/assets/styles/transitions.css'
+import '@/assets/styles/upload-progress.css'
 
 import { vLazy } from './directives/lazy'
 import { useCodeTheme } from '@/composables/useCodeTheme'

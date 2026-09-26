@@ -37,5 +37,7 @@ declare module 'vue' {
     TagBadge: typeof import('./components/common/TagBadge.vue')['default']
     ThemePanel: typeof import('./components/common/ThemePanel.vue')['default']
     ToastContainer: typeof import('./components/common/ToastContainer.vue')['default']
+    UploadProgressOverlay: typeof import('./components/common/UploadProgressOverlay.vue')['default']
+    UploadTaskList: typeof import('./components/common/UploadTaskList.vue')['default']
   }
 }

@@ -61,11 +61,10 @@ import { useRouter } from 'vue-router'
 import { ArrowLeft, Camera, Save } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { updateUser } from '@/api/user'
-import { uploadFile } from '@/api/file'
+import { uploadWithProgress } from '@/composables/useUploadProgress'
 import { resolveAvatar, handleAvatarError } from '@/utils/format'
 import { useToast } from '@/composables/useToast'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import type { ApiResponse } from '@/types/api'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -91,7 +90,7 @@ async function saveProfile() {
     let avatarUrl = userStore.avatar
 
     if (avatarFile.value) {
-      const uploadRes = await uploadFile(avatarFile.value, 'avatar') as unknown as ApiResponse<string>
+      const uploadRes = await uploadWithProgress(avatarFile.value, 'avatar', avatarFile.value.name)
       avatarUrl = uploadRes.data
       data.avatar = avatarUrl
       userStore.updateAvatar(avatarUrl)

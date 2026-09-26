@@ -384,7 +384,7 @@ import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Save, Send, Image, FolderOpen, Tag as TagIcon, Link, FileText, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Type, AlignLeft, Upload, Check, X, Settings } from 'lucide-vue-next'
 import { createArticle, updateArticle, getArticleById } from '@/api/article'
-import { uploadFile } from '@/api/file'
+import { uploadWithProgress } from '@/composables/useUploadProgress'
 import { getCategories } from '@/api/category'
 import { getTags } from '@/api/tag'
 import { useAutoSave } from '@/composables/useAutoSave'
@@ -554,7 +554,7 @@ async function handleCoverUpload(e: Event) {
   const file = target.files?.[0]
   if (!file) return
   try {
-    const res = await uploadFile(file, 'cover') as any
+    const res = await uploadWithProgress(file, 'cover', file.name) as any
     form.coverImage = res.message?.trim() || res.data
     onContentChange()
     toast.success('封面上传成功')

@@ -474,10 +474,9 @@ import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
 import { Plus, Pencil, Trash2, AlertTriangle, X, Camera, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '@/api/admin/user'
-import { uploadFile } from '@/api/file'
+import { uploadWithProgress } from '@/composables/useUploadProgress'
 import { resolveAvatar, handleAvatarError, formatRelativeTime } from '@/utils/format'
 import type { AdminUser, AdminUserQuery, AdminUserCreateDTO, AdminUserUpdateDTO } from '@/types/admin'
-import type { ApiResponse } from '@/types/api'
 import CustomSelect from '@/components/ui/CustomSelect.vue'
 
 const toast = useToast()
@@ -727,7 +726,7 @@ async function handleSubmit() {
         try {
             if (avatarFile.value) {
                 uploadLoading.value = true
-                const uploadRes = await uploadFile(avatarFile.value, 'avatar') as unknown as ApiResponse<string>
+                const uploadRes = await uploadWithProgress(avatarFile.value, 'avatar', avatarFile.value.name)
                 data.avatar = uploadRes.data
                 uploadLoading.value = false
             }

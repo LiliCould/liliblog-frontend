@@ -31,6 +31,7 @@
     </template>
     <ToastContainer />
     <AuthModal />
+    <UploadProgressOverlay />
   </div>
 </template>
 
@@ -44,6 +45,7 @@ import MobileBottomNav from '@/components/layout/MobileBottomNav.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 import AuthModal from '@/components/auth/AuthModal.vue'
+import UploadProgressOverlay from '@/components/common/UploadProgressOverlay.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useTokenRefresh } from '@/composables/useTokenRefresh'
 import { useAppStore } from '@/stores/app'
