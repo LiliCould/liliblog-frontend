@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   css: [
+    '~/assets/styles/tailwind.css',
     '~/assets/styles/variables.css',
     '~/assets/styles/reset.css',
     '~/assets/styles/transitions.css',
@@ -17,8 +18,14 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@nuxtjs/tailwindcss',
   ],
+
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 
   imports: {
     dirs: ['stores'],
@@ -27,11 +34,6 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components', pathPrefix: false },
   ],
-
-  tailwindcss: {
-    cssPath: '~/assets/styles/tailwind.css',
-    configPath: 'tailwind.config.js',
-  },
 
   app: {
     head: {
