@@ -69,11 +69,12 @@ export function useUserProfileData(userId: Ref<number>, self: boolean) {
       }
 
       if (self) {
-        const response = await request.get('/api/article', { params }) as unknown as { data: PageResult<Article> }
+        const response = await request.get('/api/article', { params })
+          .catch(() => ({ data: emptyPage })) as unknown as { data: PageResult<Article> }
         return response.data
       }
 
-      return api.get<PageResult<Article>>('/api/article', params)
+      return api.get<PageResult<Article>>('/api/article', params).catch(() => emptyPage)
     },
     {
       watch: [userId, activeTab, currentPage, pageSize],

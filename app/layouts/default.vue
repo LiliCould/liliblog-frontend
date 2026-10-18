@@ -12,6 +12,7 @@
       <MobileNav />
     </ClientOnly>
     <MobileBottomNav />
+    <BackToTop />
 
     <ClientOnly>
       <Toaster

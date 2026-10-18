@@ -6,7 +6,7 @@
     <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
 
     <div class="relative overflow-hidden rounded-t-lg">
-      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" loading="lazy" />
+      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" width="640" height="351" loading="lazy" decoding="async" />
       <div class="absolute top-3 right-3 bg-[rgba(var(--color-primary-rgb),0.85)] text-white px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
         {{ userInfo.badge }}
       </div>
@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { h } from 'vue'
 import { ChevronDown, Mail, Music, Tv } from 'lucide-vue-next'
-import myAvatar from '../../../src/assets/my.png'
+import myAvatar from '~/assets/my-avatar.webp'
 
 const GithubIcon = {
   name: 'GithubIcon',

@@ -276,68 +276,31 @@
  <span class="text-xs text-t-muted">共 {{ total }} 条</span>
  </div>
 
- <Teleport to="body">
- <div v-if="showPreview" class="fixed inset-0 z-[1200] flex items-center justify-center">
- <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showPreview = false"></div>
- <div
- class="relative w-full max-w-3xl mx-4 max-h-[85vh] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] bg-t-surface border border-t-border shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] flex flex-col">
- <div class="flex items-center justify-between px-6 py-4 border-b border-t-border flex-shrink-0">
- <h3 class="text-base font-semibold text-t-title">{{ previewArticle?.title }}</h3>
- <button
- class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
- @click="showPreview = false">
- <X class="w-4 h-4" />
- </button>
- </div>
- <div class="flex items-center gap-4 px-6 py-3 border-b border-t-border text-xs text-t-muted flex-shrink-0">
- <span>作者: {{ previewArticle?.creator?.nickname || '-' }}</span>
- <span>分类: {{ previewArticle?.category?.name || '未分类' }}</span>
- <span>创建: {{ formatDate(previewArticle?.createTime || '') }}</span>
- <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium"
- :class="statusClass(previewArticle?.status ?? -1)">
- {{ statusText(previewArticle?.status ?? -1) }}
- </span>
- </div>
- <div class="flex-1 overflow-y-auto px-6 py-4">
- <div v-if="previewLoading" class="text-center py-12 text-t-muted text-sm">加载中...</div>
- <MarkdownViewer v-else :content-html="previewContentHtml" />
- </div>
- </div>
- </div>
- </Teleport>
 
- <Teleport to="body">
- <div v-if="showRejectDialog" class="fixed inset-0 z-[1300] flex items-center justify-center">
- <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
- <div
- class="relative w-full max-w-md mx-4 bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
- <div class="flex items-center justify-between mb-5">
- <h3 class="text-base font-semibold text-t-title">审核不通过</h3>
- <button
- class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
- @click="showRejectDialog = false">
- <X class="w-4 h-4" />
- </button>
- </div>
- <p class="text-sm text-t-body mb-3">文章「{{ rejectTarget?.title }}」审核不通过，请填写原因：</p>
- <textarea v-model="rejectReason"
- class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary resize-none"
- rows="4" placeholder="请输入不通过原因..."></textarea>
- <div class="flex justify-end gap-3 mt-5">
- <button
- class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
- @click="showRejectDialog = false">
- 取消
- </button>
- <button
- class="px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer"
- @click="handleReject">
- 确认不通过
- </button>
- </div>
- </div>
- </div>
- </Teleport>
+        <AppDialog v-model:open="showPreview" :title="previewArticle?.title || '文章预览'" max-width="max-w-3xl">
+            <div class="flex items-center gap-4 pb-3 mb-3 border-b border-t-border text-xs text-t-muted">
+                <span>作者: {{ previewArticle?.creator?.nickname || '-' }}</span>
+                <span>分类: {{ previewArticle?.category?.name || '未分类' }}</span>
+                <span>创建: {{ formatDate(previewArticle?.createTime || '') }}</span>
+                <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium" :class="statusClass(previewArticle?.status ?? -1)">{{ statusText(previewArticle?.status ?? -1) }}</span>
+            </div>
+            <div class="max-h-[65vh] overflow-y-auto">
+                <div v-if="previewLoading" class="text-center py-12 text-t-muted text-sm">加载中...</div>
+                <MarkdownViewer v-else :content-html="previewContentHtml" />
+            </div>
+        </AppDialog>
+
+
+
+        <AppDialog v-model:open="showRejectDialog" title="审核不通过">
+            <p class="text-sm text-t-body mb-3">文章「{{ rejectTarget?.title }}」审核不通过，请填写原因：</p>
+            <textarea v-model="rejectReason" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary resize-none" rows="4" placeholder="请输入不通过原因..." />
+            <div class="flex justify-end gap-3 mt-5">
+                <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showRejectDialog = false">取消</button>
+                <button class="px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer" @click="handleReject">确认不通过</button>
+            </div>
+        </AppDialog>
+
 
 
     <AppConfirmDialog
@@ -521,8 +484,10 @@ async function loadArticles(page = 1) {
  total.value = res.data?.total || 0
  current.value = res.data?.current || page
  selectedIds.value = []
+ } catch {
+   // 错误提示由 axios 拦截器统一处理
  } finally {
- loading.value = false
+   loading.value = false
  }
 }
 

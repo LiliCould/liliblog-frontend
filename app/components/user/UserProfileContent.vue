@@ -1,9 +1,10 @@
 <template>
+  <div>
   <AppLayout :show-hero="false">
     <div class="max-w-4xl mx-auto">
       <div class="rounded-xl bg-t-surface border border-t-border overflow-hidden mb-8">
         <div class="h-24 md:h-32 relative">
-          <img :src="heroBg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" />
+          <img :src="heroBg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" width="1600" height="877" loading="lazy" decoding="async" />
           <div class="absolute inset-0 bg-gradient-to-b from-transparent to-t-surface" />
         </div>
         <div class="px-4 md:px-6 pb-6 -mt-10 md:-mt-12 relative z-10">
@@ -130,6 +131,7 @@
     danger
     @confirm="doDelete"
   />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -138,7 +140,7 @@ import { Clock, Edit, Eye, FileText, FolderOpen, Lock, Mail, PenLine, Plus, Tras
 import type { Article, User } from '~/types'
 import { formatRelativeTime, handleAvatarError, resolveAvatar } from '~/utils/format'
 import request from '~/utils/request'
-import heroBg from '../../../src/assets/heros/hero-1.png'
+import heroBg from '~/assets/hero-bg.webp'
 
 const props = defineProps<{
   user: User | null

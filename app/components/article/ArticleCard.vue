@@ -78,7 +78,10 @@
           <img
             :src="article.coverImage"
             :alt="article.title"
+            width="200"
+            height="140"
             loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-[rgba(var(--color-primary-rgb),0.08)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

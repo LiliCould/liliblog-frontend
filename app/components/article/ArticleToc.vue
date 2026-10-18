@@ -16,7 +16,12 @@
         :key="item.id"
         :href="`#${item.id}`"
         class="block py-2 px-3 rounded-md text-sm text-t-body no-underline transition-all duration-200 relative hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:translate-x-1 group/toc"
-        :class="{ 'pl-4': item.level === 2, 'pl-7 text-xs': item.level === 3 }"
+        :class="{
+          'pl-4': item.level === 2,
+          'pl-7 text-xs': item.level === 3,
+          '!text-t-primary bg-[rgba(var(--color-primary-rgb),0.06)] font-medium': activeId === item.id,
+        }"
+        :aria-current="activeId === item.id ? 'true' : undefined"
         @click.prevent="scrollToHeading(item.id)"
       >
         <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-t-primary to-t-secondary rounded-full transition-[height] duration-200 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/toc:h-3/5" />
@@ -27,7 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import { useWindowScroll } from '@vueuse/core'
 import { List } from 'lucide-vue-next'
 import { extractTocItems } from '~/utils/toc'
 
@@ -36,6 +42,20 @@ const props = defineProps<{
 }>()
 
 const tocItems = computed(() => extractTocItems(props.htmlContent))
+const { y } = useWindowScroll()
+const activeId = ref('')
+
+watchEffect(() => {
+  if (!import.meta.client) return
+  // 依赖滚动位置与目录项，滚动时更新当前标题
+  void y.value
+  let current = ''
+  for (const item of tocItems.value) {
+    const el = document.getElementById(item.id)
+    if (el && el.getBoundingClientRect().top <= 120) current = item.id
+  }
+  activeId.value = current
+})
 
 function scrollToHeading(id: string): void {
   if (!import.meta.client) return

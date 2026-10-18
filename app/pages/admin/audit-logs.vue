@@ -295,60 +295,32 @@
             <span class="text-xs text-t-muted">共 {{ total }} 条</span>
         </div>
 
-        <Teleport to="body">
-            <div v-if="showDetailModal" class="fixed inset-0 z-[1200] flex items-center justify-center">
-                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showDetailModal = false"></div>
-                <div class="relative w-full max-w-lg mx-4 p-6 border border-[rgba(var(--color-primary-rgb),0.2)] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] max-md:overflow-y-auto"
-                    style="background:rgba(var(--color-surface-rgb),0.98)">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-base font-semibold text-t-title m-0">日志详情</h3>
-                        <button
-                            class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
-                            @click="showDetailModal = false">
-                            <X class="w-4 h-4" />
-                        </button>
-                    </div>
-                    <div v-if="detailLog" class="space-y-3">
-                        <div class="grid grid-cols-[80px_1fr] gap-y-2 text-sm">
-                            <span class="text-t-muted">操作用户</span>
-                            <span class="text-t-body">{{ detailLog.username }}</span>
-                            <span class="text-t-muted">模块</span>
-                            <span class="text-t-body">{{ detailLog.module }}</span>
-                            <span class="text-t-muted">操作</span>
-                            <span class="text-t-body">{{ detailLog.operation }}</span>
-                            <span class="text-t-muted">目标</span>
-                            <span class="text-t-body">{{ detailLog.target || '-' }}</span>
-                            <span class="text-t-muted">目标类型</span>
-                            <span class="text-t-body">{{ detailLog.targetType || '-' }}</span>
-                            <span class="text-t-muted">描述</span>
-                            <span class="text-t-body">{{ detailLog.description || '-' }}</span>
-                            <span class="text-t-muted">请求方法</span>
-                            <span class="inline-flex px-1.5 py-0.5 rounded text-[11px] font-mono font-medium w-fit"
-                                :class="methodClass(detailLog.requestMethod)">
-                                {{ detailLog.requestMethod }}
-                            </span>
-                            <span class="text-t-muted">请求路径</span>
-                            <span class="text-t-body font-mono text-xs break-all">{{ detailLog.requestUri }}</span>
-                            <span class="text-t-muted">IP地址</span>
-                            <span class="text-t-body font-mono text-xs">{{ detailLog.ipAddress }}</span>
-                            <span class="text-t-muted">User-Agent</span>
-                            <span class="text-t-body text-xs break-all">{{ detailLog.userAgent || '-' }}</span>
-                            <span class="text-t-muted">执行耗时</span>
-                            <span class="text-t-body" :class="detailLog.executionTime > 1000 ? 'text-[#f43f5e]' : ''">{{ detailLog.executionTime }}ms</span>
-                            <span class="text-t-muted">状态</span>
-                            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit"
-                                :class="statusClass(detailLog.status)">
-                                {{ statusText(detailLog.status) }}
-                            </span>
-                            <span v-if="detailLog.status !== 1 && detailLog.errorMessage" class="text-t-muted">错误信息</span>
-                            <span v-if="detailLog.status !== 1 && detailLog.errorMessage" class="text-[#f43f5e] text-xs break-all">{{ detailLog.errorMessage }}</span>
-                            <span class="text-t-muted">操作时间</span>
-                            <span class="text-t-body">{{ formatDate(detailLog.createTime) }}</span>
-                        </div>
-                    </div>
+
+        <AppDialog v-model:open="showDetailModal" title="日志详情" max-width="max-w-lg">
+            <div v-if="detailLog" class="space-y-3">
+                <div class="grid grid-cols-[80px_1fr] gap-y-2 text-sm">
+                    <span class="text-t-muted">操作用户</span><span class="text-t-body">{{ detailLog.username }}</span>
+                    <span class="text-t-muted">模块</span><span class="text-t-body">{{ detailLog.module }}</span>
+                    <span class="text-t-muted">操作</span><span class="text-t-body">{{ detailLog.operation }}</span>
+                    <span class="text-t-muted">目标</span><span class="text-t-body">{{ detailLog.target || '-' }}</span>
+                    <span class="text-t-muted">目标类型</span><span class="text-t-body">{{ detailLog.targetType || '-' }}</span>
+                    <span class="text-t-muted">描述</span><span class="text-t-body">{{ detailLog.description || '-' }}</span>
+                    <span class="text-t-muted">请求方法</span>
+                    <span class="inline-flex px-1.5 py-0.5 rounded text-[11px] font-mono font-medium w-fit" :class="methodClass(detailLog.requestMethod)">{{ detailLog.requestMethod }}</span>
+                    <span class="text-t-muted">请求路径</span><span class="text-t-body font-mono text-xs break-all">{{ detailLog.requestUri }}</span>
+                    <span class="text-t-muted">IP地址</span><span class="text-t-body font-mono text-xs">{{ detailLog.ipAddress }}</span>
+                    <span class="text-t-muted">User-Agent</span><span class="text-t-body text-xs break-all">{{ detailLog.userAgent || '-' }}</span>
+                    <span class="text-t-muted">执行耗时</span><span class="text-t-body" :class="detailLog.executionTime > 1000 ? 'text-[#f43f5e]' : ''">{{ detailLog.executionTime }}ms</span>
+                    <span class="text-t-muted">状态</span>
+                    <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" :class="statusClass(detailLog.status)">{{ statusText(detailLog.status) }}</span>
+                    <template v-if="detailLog.status !== 1 && detailLog.errorMessage">
+                        <span class="text-t-muted">错误信息</span><span class="text-[#f43f5e] text-xs break-all">{{ detailLog.errorMessage }}</span>
+                    </template>
+                    <span class="text-t-muted">操作时间</span><span class="text-t-body">{{ formatDate(detailLog.createTime) }}</span>
                 </div>
             </div>
-        </Teleport>
+        </AppDialog>
+
 
 
         <AppConfirmDialog
@@ -525,8 +497,10 @@ async function loadLogs(page = 1) {
         total.value = res.data?.total || 0
         current.value = res.data?.current || page
         selectedIds.value = []
+    } catch {
+      // 错误提示由 axios 拦截器统一处理
     } finally {
-        loading.value = false
+      loading.value = false
     }
 }
 

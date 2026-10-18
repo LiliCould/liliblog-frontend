@@ -15,10 +15,15 @@ const { initCodeTheme } = useCodeTheme()
 const { startAutoCheck, stopAutoCheck, checkAndRefresh } = useTokenRefresh()
 const userStore = useUserStore()
 
+function handleAuthExpired(): void {
+  userStore.clearSession()
+}
+
 onMounted(() => {
   initTheme()
   initCodeTheme()
   userStore.init()
+  window.addEventListener('liliblog:auth-expired', handleAuthExpired)
 
   if (userStore.isLoggedIn) {
     startAutoCheck()
@@ -38,5 +43,6 @@ watch(() => userStore.isLoggedIn, (loggedIn) => {
 
 onUnmounted(() => {
   stopAutoCheck()
+  window.removeEventListener('liliblog:auth-expired', handleAuthExpired)
 })
 </script>

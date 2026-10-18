@@ -10,7 +10,8 @@
         :src="slide.src"
         :alt="slide.alt"
         class="w-full h-full object-cover"
-        loading="lazy"
+        :loading="index === 0 ? 'eager' : 'lazy'"
+        decoding="async"
         :fetchpriority="index === 0 ? 'high' : 'low'"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-[rgba(10,10,15,0.3)] via-[rgba(10,10,15,0.5)] to-[rgba(10,10,15,0.85)]" />

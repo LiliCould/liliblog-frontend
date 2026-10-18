@@ -51,15 +51,19 @@ export const useUserStore = defineStore('user', () => {
     return handleLoginSuccess(response.data)
   }
 
+  function clearSession(): void {
+    token.value = null
+    userInfo.value = null
+    clearAuth()
+  }
+
   async function logout(): Promise<void> {
     try {
       await logoutApi()
     } catch {
       // 服务端登出失败也清理本地状态
     } finally {
-      token.value = null
-      userInfo.value = null
-      clearAuth()
+      clearSession()
       await navigateTo('/')
     }
   }
@@ -98,6 +102,7 @@ export const useUserStore = defineStore('user', () => {
     loginByPassword,
     loginByMail,
     logout,
+    clearSession,
     onTokenRefreshed,
     updateAvatar,
     updateNickname,

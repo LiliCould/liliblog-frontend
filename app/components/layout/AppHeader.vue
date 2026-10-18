@@ -45,6 +45,7 @@
             <input
               v-model="searchKeyword"
               type="text"
+              aria-label="搜索文章"
               placeholder="搜索文章..."
               class="w-full h-9 pl-9 pr-4 rounded-full bg-[rgba(var(--color-surface-rgb),0.6)] border border-[rgba(var(--color-primary-rgb),0.12)] text-t-body placeholder-[#6b7280] text-sm outline-none transition-all duration-300 focus:border-[rgba(var(--color-primary-rgb),0.4)] focus:shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.1)]"
               @keyup.enter="handleSearch"

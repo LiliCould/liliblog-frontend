@@ -1,4 +1,5 @@
 <template>
+  <div>
   <UserProfileContent
     v-if="userId"
     v-model:active-tab="activeTab"
@@ -16,6 +17,7 @@
       <div v-for="i in 3" :key="i" class="h-20 rounded-xl bg-t-surface animate-pulse" />
     </div>
   </AppLayout>
+  </div>
 </template>
 
 <script setup lang="ts">

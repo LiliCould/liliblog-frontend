@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 list-stagger">
     <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
 
     <Pagination

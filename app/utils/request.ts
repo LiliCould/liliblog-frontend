@@ -42,6 +42,8 @@ const BUSINESS_CODE_MAP: Record<number, string> = {
   40101: '认证失败',
 }
 
+const AUTH_EXPIRED_CODES = new Set([2005, 40101])
+
 function showToast(type: 'error' | 'success', message: string): void {
   const toast = useToast()
   if (type === 'error') toast.error(message)
@@ -51,6 +53,11 @@ function showToast(type: 'error' | 'success', message: string): void {
 function handleRefreshTokenExpired(): void {
   clearAuth()
   pendingRequests = []
+
+  if (import.meta.client) {
+    window.dispatchEvent(new Event('liliblog:auth-expired'))
+  }
+
   if (hasNotifiedExpired) return
 
   hasNotifiedExpired = true
@@ -128,6 +135,11 @@ service.interceptors.response.use(
   (response: AxiosResponse<ApiResponse<unknown>>) => {
     const res = response.data
     if (res.code === 0) return res as unknown as AxiosResponse
+
+    if (AUTH_EXPIRED_CODES.has(res.code)) {
+      handleRefreshTokenExpired()
+      return Promise.reject(new Error(res.msg || '登录已过期，请重新登录'))
+    }
 
     const message = BUSINESS_CODE_MAP[res.code] || res.msg || '操作失败'
     if (!SILENT_HTTP_CODES.has(res.code)) showToast('error', message)

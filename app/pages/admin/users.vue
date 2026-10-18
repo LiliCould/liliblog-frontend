@@ -334,100 +334,63 @@
             <span class="text-xs text-t-muted">共 {{ total }} 条</span>
         </div>
 
-        <Teleport to="body">
-            <div v-if="showDialog" class="fixed inset-0 z-[1200] flex items-center justify-center">
-                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-                <div
-                    class="relative w-full max-w-md mx-4 bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] max-md:inset-2 max-md:max-w-full max-md:max-h-[90dvh] max-md:overflow-y-auto">
-                    <div class="flex items-center justify-between mb-5">
-                        <h3 class="text-base font-semibold text-t-title">{{ isEditing ? '编辑用户' : '添加用户' }}</h3>
-                        <button
-                            class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer"
-                            @click="showDialog = false">
-                            <X class="w-4 h-4" />
-                        </button>
-                    </div>
 
-                    <div class="space-y-4">
-                        <div v-if="isEditing" class="flex items-center gap-4">
-                            <div class="relative group">
-                                <div
-                                    class="w-16 h-16 rounded-full bg-t-elevated border-2 border-[rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center overflow-hidden">
-                                    <img :src="resolveAvatar(avatarPreview)" alt="" class="w-full h-full object-cover"
-                                        @error="handleAvatarError" />
-                                </div>
-                                <label
-                                    class="absolute inset-0 rounded-full bg-[rgba(0,0,0,0.6)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                    <Camera class="w-5 h-5 text-white" />
-                                    <input type="file" accept="image/*" class="hidden" @change="handleAvatarChange" />
-                                </label>
-                            </div>
-                            <div>
-                                <p class="text-sm text-t-body">点击头像更换</p>
-                                <p class="text-xs text-t-muted mt-0.5">支持 JPG、PNG 格式</p>
-                            </div>
+        <AppDialog v-model:open="showDialog" :title="isEditing ? '编辑用户' : '添加用户'">
+            <div class="space-y-4">
+                <div v-if="isEditing" class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div class="w-16 h-16 rounded-full bg-t-elevated border-2 border-[rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center overflow-hidden">
+                            <img :src="resolveAvatar(avatarPreview)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
                         </div>
-                        <div>
-                            <label class="block text-sm text-t-body mb-1.5">用户名</label>
-                            <input v-model="form.username" type="text"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="请输入用户名" />
-                        </div>
-                        <div>
-                            <label class="block text-sm text-t-body mb-1.5">昵称</label>
-                            <input v-model="form.nickname" type="text"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="请输入昵称" />
-                        </div>
-                        <div>
-                            <label class="block text-sm text-t-body mb-1.5">邮箱</label>
-                            <input v-model="form.email" type="email"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="请输入邮箱" />
-                        </div>
-                        <div v-if="!isEditing">
-                            <label class="block text-sm text-t-body mb-1.5">密码</label>
-                            <input v-model="form.password" type="password"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="请输入密码" />
-                        </div>
-                        <div v-if="!isEditing">
-                            <label class="block text-sm text-t-body mb-1.5">确认密码</label>
-                            <input v-model="form.confirmPassword" type="password"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="请再次输入密码" />
-                        </div>
-                        <div v-if="isEditing">
-                            <label class="block text-sm text-t-body mb-1.5">重置密码</label>
-                            <input v-model="form.newPassword" type="password"
-                                class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
-                                placeholder="留空则不修改密码" />
-                        </div>
-                        <div v-if="isEditing">
-                            <label class="block text-sm text-t-body mb-1.5">角色</label>
-                            <CustomSelect v-model="form.role" :options="formRoleOptions" button-class="py-2" />
-                        </div>
-                        <div v-if="isEditing">
-                            <label class="block text-sm text-t-body mb-1.5">状态</label>
-                            <CustomSelect v-model="form.status" :options="formStatusOptions" button-class="py-2" />
-                        </div>
+                        <label class="absolute inset-0 rounded-full bg-[rgba(0,0,0,0.6)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <Camera class="w-5 h-5 text-white" />
+                            <input type="file" accept="image/*" class="hidden" @change="handleAvatarChange" />
+                        </label>
                     </div>
-
-                    <div class="flex justify-end gap-3 mt-6">
-                        <button
-                            class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
-                            @click="showDialog = false">
-                            取消
-                        </button>
-                        <button
-                            class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
-                            @click="handleSubmit">
-                            {{ isEditing ? '保存' : '添加' }}
-                        </button>
+                    <div>
+                        <p class="text-sm text-t-body">点击头像更换</p>
+                        <p class="text-xs text-t-muted mt-0.5">支持 JPG、PNG 格式</p>
                     </div>
                 </div>
+                <div>
+                    <label class="block text-sm text-t-body mb-1.5">用户名</label>
+                    <input v-model="form.username" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入用户名" />
+                </div>
+                <div>
+                    <label class="block text-sm text-t-body mb-1.5">昵称</label>
+                    <input v-model="form.nickname" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入昵称" />
+                </div>
+                <div>
+                    <label class="block text-sm text-t-body mb-1.5">邮箱</label>
+                    <input v-model="form.email" type="email" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入邮箱" />
+                </div>
+                <div v-if="!isEditing">
+                    <label class="block text-sm text-t-body mb-1.5">密码</label>
+                    <input v-model="form.password" type="password" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入密码" />
+                </div>
+                <div v-if="!isEditing">
+                    <label class="block text-sm text-t-body mb-1.5">确认密码</label>
+                    <input v-model="form.confirmPassword" type="password" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请再次输入密码" />
+                </div>
+                <div v-if="isEditing">
+                    <label class="block text-sm text-t-body mb-1.5">重置密码</label>
+                    <input v-model="form.newPassword" type="password" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="留空则不修改密码" />
+                </div>
+                <div v-if="isEditing">
+                    <label class="block text-sm text-t-body mb-1.5">角色</label>
+                    <CustomSelect v-model="form.role" :options="formRoleOptions" button-class="py-2" />
+                </div>
+                <div v-if="isEditing">
+                    <label class="block text-sm text-t-body mb-1.5">状态</label>
+                    <CustomSelect v-model="form.status" :options="formStatusOptions" button-class="py-2" />
+                </div>
             </div>
-        </Teleport>
+            <div class="flex justify-end gap-3 mt-6">
+                <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showDialog = false">取消</button>
+                <button class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEditing ? '保存' : '添加' }}</button>
+            </div>
+        </AppDialog>
+
 
 
         <AppConfirmDialog
@@ -626,8 +589,10 @@ async function loadUsers(page = 1) {
         users.value = res.data?.records || []
         total.value = res.data?.total || 0
         current.value = res.data?.current || page
+    } catch {
+      // 错误提示由 axios 拦截器统一处理
     } finally {
-        loading.value = false
+      loading.value = false
     }
 }
 

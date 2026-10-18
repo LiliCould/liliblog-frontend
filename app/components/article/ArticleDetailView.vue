@@ -1,6 +1,8 @@
 <template>
   <AppLayout :show-hero="false">
-    <article class="rounded-xl bg-t-surface border border-t-border p-4 md:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+    <ReadingProgress :target="articleRef" />
+
+    <article ref="articleRef" class="rounded-xl bg-t-surface border border-t-border p-4 md:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
       <header class="mb-8">
         <h1 class="text-2xl md:text-3xl font-bold text-t-title leading-snug mb-4" style="text-shadow:0 0 20px rgba(0,240,255,0.15)">
           {{ article.title }}
@@ -85,7 +87,7 @@
       </header>
 
       <div v-if="article.coverImage" class="mb-8 rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)]">
-        <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[200px] md:max-h-[400px] object-cover" loading="lazy" />
+        <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[200px] md:max-h-[400px] object-cover" loading="lazy" decoding="async" />
       </div>
 
       <MarkdownViewer :content-html="article.contentHtml || ''" />
@@ -134,6 +136,7 @@ const userStore = useUserStore()
 const toast = useToast()
 const { currentCodeTheme, codeThemes, setCodeTheme } = useCodeTheme()
 
+const articleRef = ref<HTMLElement | null>(null)
 const isLiked = ref(false)
 const likeCount = ref(props.article.likeCount)
 const showCodeThemeMenu = ref(false)

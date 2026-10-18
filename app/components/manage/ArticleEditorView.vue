@@ -309,73 +309,36 @@
       <Settings class="w-5 h-5" />
     </button>
 
-    <Teleport to="body">
-      <div v-if="showRestoreDialog" class="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(0,0,0,0.7)]"
-        style="backdrop-filter:blur(4px)">
-        <div class="rounded-xl p-6 max-w-md w-full mx-4 border border-[rgba(var(--color-primary-rgb),0.2)]"
-          style="background:rgba(var(--color-surface-rgb),0.95)">
-          <h3 class="text-lg font-semibold text-t-title mb-3">发现未保存的草稿</h3>
-          <p class="text-sm text-t-muted mb-5">检测到上次编辑的未保存内容，是否恢复？</p>
-          <div class="flex justify-end gap-3">
-            <button
-              class="px-4 py-2 rounded-lg text-sm text-t-muted border border-t-border hover:text-t-body transition-colors"
-              @click="discardRestore">放弃</button>
-            <button
-              class="px-4 py-2 rounded-lg text-sm font-semibold text-t-primary bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.2)] transition-all"
-              @click="confirmRestore">恢复草稿</button>
-          </div>
+
+    <AppDialog v-model:open="showRestoreDialog" title="发现未保存的草稿">
+      <p class="text-sm text-t-muted mb-5">检测到上次编辑的未保存内容，是否恢复？</p>
+      <div class="flex justify-end gap-3">
+        <button class="px-4 py-2 rounded-lg text-sm text-t-muted border border-t-border hover:text-t-body transition-colors" @click="discardRestore">放弃</button>
+        <button class="px-4 py-2 rounded-lg text-sm font-semibold text-t-primary bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.2)] transition-all" @click="confirmRestore">恢复草稿</button>
+      </div>
+    </AppDialog>
+
+    <AppDialog v-model:open="showCategoryModal" title="选择分类">
+      <div v-if="categoryLoading" class="p-2 space-y-3">
+        <div v-for="i in 4" :key="i" class="h-8 bg-[rgba(var(--color-primary-rgb),0.06)] rounded-lg animate-pulse" />
+      </div>
+      <div v-else class="max-h-[320px] overflow-y-auto p-1">
+        <button v-for="cat in categoryList" :key="cat.id" class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-200" :class="form.categoryId === cat.id ? 'text-t-primary bg-[rgba(var(--color-primary-rgb),0.1)] font-medium' : 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary'" @click="selectCategory(cat.id)">
+          <span>{{ cat.name }}</span>
+          <Check v-if="form.categoryId === cat.id" class="w-4 h-4 text-t-primary" />
+        </button>
+        <div v-if="categoryList.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm">
+          <FolderOpen class="w-8 h-8 opacity-40" />
+          <span>暂无分类</span>
         </div>
       </div>
-
-      <div v-if="showCategoryModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(0,0,0,0.6)]"
-        style="backdrop-filter:blur(4px)" @click.self="showCategoryModal = false">
-        <div class="rounded-xl w-full max-w-sm mx-4 border border-[rgba(var(--color-primary-rgb),0.2)] overflow-hidden"
-          style="background:rgba(var(--color-surface-rgb),0.98)">
-          <div class="flex items-center justify-between px-5 py-4 border-b border-t-border">
-            <h3 class="text-base font-semibold text-t-title m-0">选择分类</h3>
-            <button
-              class="w-7 h-7 flex items-center justify-center rounded-md text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-colors"
-              @click="showCategoryModal = false">
-              <X class="w-4 h-4" />
-            </button>
-          </div>
-
-          <div v-if="categoryLoading" class="p-5 space-y-3">
-            <div v-for="i in 4" :key="i" class="h-8 bg-[rgba(var(--color-primary-rgb),0.06)] rounded-lg animate-pulse">
-            </div>
-          </div>
-
-          <div v-else class="max-h-[320px] overflow-y-auto p-3">
-            <button v-for="cat in categoryList" :key="cat.id"
-              class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-200"
-              :class="form.categoryId === cat.id ? 'text-t-primary bg-[rgba(var(--color-primary-rgb),0.1)] font-medium' : 'text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary'"
-              @click="selectCategory(cat.id)">
-              <span>{{ cat.name }}</span>
-              <Check v-if="form.categoryId === cat.id" class="w-4 h-4 text-t-primary" />
-            </button>
-            <div v-if="categoryList.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm">
-              <FolderOpen class="w-8 h-8 opacity-40" />
-              <span>暂无分类</span>
-            </div>
-          </div>
-
-          <div v-if="categoryTotalPages > 1"
-            class="flex items-center justify-between px-5 py-3 border-t border-t-border">
-            <button
-              class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              :disabled="categoryCurrentPage <= 1" @click="loadCategories(categoryCurrentPage - 1)">
-              上一页
-            </button>
-            <span class="text-xs text-t-muted">{{ categoryCurrentPage }} / {{ categoryTotalPages }}</span>
-            <button
-              class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              :disabled="categoryCurrentPage >= categoryTotalPages" @click="loadCategories(categoryCurrentPage + 1)">
-              下一页
-            </button>
-          </div>
-        </div>
+      <div v-if="categoryTotalPages > 1" class="flex items-center justify-between pt-3 mt-2 border-t border-t-border">
+        <button class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed" :disabled="categoryCurrentPage <= 1" @click="loadCategories(categoryCurrentPage - 1)">上一页</button>
+        <span class="text-xs text-t-muted">{{ categoryCurrentPage }} / {{ categoryTotalPages }}</span>
+        <button class="px-3 py-1.5 rounded-md text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-[rgba(var(--color-primary-rgb),0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed" :disabled="categoryCurrentPage >= categoryTotalPages" @click="loadCategories(categoryCurrentPage + 1)">下一页</button>
       </div>
-    </Teleport>
+    </AppDialog>
+
   </div>
 </template>
 
