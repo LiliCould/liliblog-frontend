@@ -71,12 +71,11 @@
       </div>
 
       <div
-        v-if="article.coverImage"
         ref="coverRef"
         class="tilt-card relative aspect-[16/9] overflow-hidden rounded-xl bg-t-elevated md:aspect-[4/3]"
       >
         <img
-          :src="article.coverImage"
+          :src="coverSrc"
           :alt="article.title"
           loading="lazy"
           decoding="async"
@@ -84,20 +83,13 @@
         />
         <div class="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-
-      <div
-        v-else
-        class="hidden items-center justify-center rounded-xl border border-dashed border-[var(--glass-border)] text-t-muted md:flex"
-      >
-        <ImageIcon class="h-8 w-8 opacity-30" />
-      </div>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Calendar, ChevronRight, Eye, FolderOpen, Image as ImageIcon } from 'lucide-vue-next'
+import { Calendar, ChevronRight, Eye, FolderOpen } from 'lucide-vue-next'
 import type { Article } from '~/types'
 import { useCardTilt } from '~/composables/useCardTilt'
 import { formatNumber, formatRelativeTime, handleAvatarError, resolveAvatar } from '~/utils/format'
@@ -107,12 +99,14 @@ const props = defineProps<{
 }>()
 
 const MAX_TAGS = 3
+const FALLBACK_COVER = 'https://oss.lilicould.cn/file/hero-2.png'
 
 const cardRef = ref<HTMLElement | null>(null)
 const coverRef = ref<HTMLElement | null>(null)
 useCardTilt(cardRef, coverRef)
 
 const detailPath = computed(() => `/article/${encodeURIComponent(props.article.slug)}`)
+const coverSrc = computed(() => props.article.coverImage || FALLBACK_COVER)
 const displayTags = computed(() => (props.article.tags || []).slice(0, MAX_TAGS))
 const hiddenTagsCount = computed(() => Math.max(0, (props.article.tags || []).length - MAX_TAGS))
 </script>

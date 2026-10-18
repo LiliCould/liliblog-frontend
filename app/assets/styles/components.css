@@ -236,6 +236,12 @@
     will-change: transform;
 }
 
+/* ---------- Toast 必须在模态框之上 ---------- */
+.liliblog-toaster,
+[data-sonner-toaster].liliblog-toaster {
+    z-index: var(--z-toast) !important;
+}
+
 /* ---------- 骨架屏 ---------- */
 .skeleton {
     background: linear-gradient(

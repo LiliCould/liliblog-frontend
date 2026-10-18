@@ -1,6 +1,10 @@
 <template>
   <div
-    class="fixed top-16 left-0 right-0 z-[45] h-0.5 bg-[rgba(var(--color-primary-rgb),0.08)] pointer-events-none"
+    class="fixed left-0 right-0 z-[45] h-0.5 bg-[rgba(var(--color-primary-rgb),0.08)] pointer-events-none"
+    :style="{
+      top: headerHidden ? '0px' : 'var(--header-height)',
+      transition: reduceMotion ? 'none' : 'top var(--motion-card) var(--ease-standard)',
+    }"
     role="progressbar"
     aria-label="阅读进度"
     :aria-valuenow="progress"
@@ -24,6 +28,7 @@ const props = defineProps<{
 
 const { y } = useWindowScroll()
 const { height } = useWindowSize()
+const { headerHidden } = useHeaderState()
 const reduceMotion = ref(false)
 
 onMounted(() => {

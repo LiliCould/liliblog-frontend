@@ -188,6 +188,7 @@ const route = useRoute()
 const userStore = useUserStore()
 const appStore = useAppStore()
 const authModal = useAuthModal()
+const { headerHidden } = useHeaderState()
 
 const isScrolled = ref(false)
 const isHidden = ref(false)
@@ -232,6 +233,10 @@ function handleScroll(): void {
   lastScrollY = currentY
 }
 
+watch(isHidden, (hidden) => {
+  headerHidden.value = hidden
+})
+
 watch(() => route.path, () => {
   isHidden.value = false
   userMenuOpen.value = false
@@ -245,6 +250,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  headerHidden.value = false
 })
 
 function handleSearch(): void {

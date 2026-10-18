@@ -30,14 +30,7 @@
       style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(var(--color-primary-rgb),0.02) 2px,rgba(var(--color-primary-rgb),0.02) 4px)"
     />
 
-    <ParticleField variant="hero" :count="160" interactive />
-
     <div class="relative z-10 flex h-full flex-col items-center justify-center gap-6 px-4 text-center">
-      <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-1.5 text-xs font-medium tracking-wide text-white/85 backdrop-blur-md">
-        <Sparkles class="w-3.5 h-3.5 text-t-primary" />
-        立里可的技术与生活空间
-      </span>
-
       <h1 class="glitch-title" :class="titleSizeClass" data-text="LiliCould's Blog">
         <span class="glitch-before" aria-hidden="true">LiliCould's Blog</span>
         <span class="glitch-main">LiliCould's Blog</span>
@@ -72,13 +65,6 @@
         </NuxtLink>
       </div>
 
-      <NuxtLink
-        to="/#article-list"
-        class="mt-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/80 backdrop-blur-md transition-all duration-200 hover:border-white/35 hover:bg-black/40 hover:text-white"
-        aria-label="向下滚动到文章列表"
-      >
-        <ChevronDown class="w-4 h-4 animate-bounce" />
-      </NuxtLink>
     </div>
 
     <div class="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2 backdrop-blur-md">
@@ -124,7 +110,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { ChevronDown, ChevronLeft, ChevronRight, Pause, Play, Sparkles } from 'lucide-vue-next'
+import { ChevronDown, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
 
 const SUB_TEXT = '技术与生活的分享空间'
 const SUB_TYPE_SPEED = 100

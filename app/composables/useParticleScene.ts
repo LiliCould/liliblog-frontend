@@ -7,26 +7,22 @@ export interface ParticleSceneOptions {
   paused?: () => boolean
 }
 
-interface Particle {
+interface Node2D {
   x: number
   y: number
-  z: number
-  ox: number
-  oy: number
-  oz: number
   vx: number
   vy: number
-  size: number
+  radius: number
   colorIndex: number
-  orientation: number
-  seed: number
 }
 
-const WORLD_RADIUS = 16
-const CAMERA_DISTANCE = 50
-const MAGNET_RADIUS = 10
+const TAU = Math.PI * 2
 const MAX_DPR = 2
 
+/**
+ * 全站连线网格背景。
+ * 视觉参数参考 particles.js 的 line_linked / repulse 模式，并按本站四套主题重写。
+ */
 export function useParticleScene(
   canvasRef: Ref<HTMLCanvasElement | null>,
   hostRef: Ref<HTMLElement | null>,
@@ -37,27 +33,25 @@ export function useParticleScene(
 
   let ctx: CanvasRenderingContext2D | null = null
   let host: HTMLElement | null = null
-  let particles: Particle[] = []
-  let sprites: HTMLCanvasElement[][] = []
   let width = 1
   let height = 1
   let dpr = 1
-  let worldScale = 1
-  let worldHalfWidth = WORLD_RADIUS
-  let worldHalfHeight = WORLD_RADIUS
-  let baseOpacity = variant === 'hero' ? 0.55 : 0.3
+  let reduced = false
+  let documentVisible = true
+  let baseOpacity = 0.4
+  let lineColor = '#0284c7'
+  let nodeColors: string[] = []
+  let glowSprites: HTMLCanvasElement[] = []
+  let nodes: Node2D[] = []
   let raf = 0
   let lastTime = 0
-  let reduced = false
-  let inView = true
-  let documentVisible = true
-  let hasPointer = false
+
   let pointerX = 0
   let pointerY = 0
-  let resizeTimer: ReturnType<typeof setTimeout> | null = null
+  let hasPointer = false
 
+  let resizeTimer: ReturnType<typeof setTimeout> | null = null
   let resizeObserver: ResizeObserver | null = null
-  let intersectionObserver: IntersectionObserver | null = null
   let themeObserver: MutationObserver | null = null
 
   function isMobile(): boolean {
@@ -70,10 +64,9 @@ export function useParticleScene(
       && !reduced
   }
 
-  function particleCount(): number {
+  function nodeCount(): number {
     if (options.count && options.count > 0) return options.count
-    if (variant === 'hero') return isMobile() ? 60 : 130
-    return isMobile() ? 30 : 60
+    return isMobile() ? 48 : 90
   }
 
   function readColors(): string[] {
@@ -95,146 +88,176 @@ export function useParticleScene(
       .trim()
     const value = Number(raw)
     if (Number.isFinite(value)) return value
-    return variant === 'hero' ? 0.55 : 0.3
+    return 0.4
   }
 
-  function makeSprite(color: string, angle: number): HTMLCanvasElement {
+  function makeGlowSprite(color: string): HTMLCanvasElement {
     const sprite = document.createElement('canvas')
-    const size = 16
-    const scale = 2
-    sprite.width = size * scale
-    sprite.height = size * scale
+    const size = 32
+    sprite.width = size
+    sprite.height = size
 
     const spriteCtx = sprite.getContext('2d')
     if (!spriteCtx) return sprite
 
-    spriteCtx.scale(scale, scale)
-    spriteCtx.translate(size / 2, size / 2)
-    spriteCtx.rotate(angle)
-    spriteCtx.strokeStyle = color
-    spriteCtx.lineWidth = 4
-    spriteCtx.lineCap = 'round'
+    const gradient = spriteCtx.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      size / 2,
+    )
+    gradient.addColorStop(0, color)
+    gradient.addColorStop(0.35, color)
+    gradient.addColorStop(1, 'transparent')
+
+    spriteCtx.fillStyle = gradient
     spriteCtx.beginPath()
-    spriteCtx.moveTo(0, -5)
-    spriteCtx.lineTo(0, 5)
-    spriteCtx.stroke()
+    spriteCtx.arc(size / 2, size / 2, size / 2, 0, TAU)
+    spriteCtx.fill()
     return sprite
   }
 
-  function buildSprites(): void {
+  function buildTheme(): void {
     baseOpacity = readOpacity()
-    const angles = [0, Math.PI / 4, Math.PI / 2, (Math.PI * 3) / 4]
-    sprites = readColors().map(color => angles.map(angle => makeSprite(color, angle)))
+    nodeColors = readColors()
+    lineColor = nodeColors[0]
+    glowSprites = nodeColors.map(makeGlowSprite)
   }
 
-  function createParticles(): void {
-    particles = Array.from({ length: particleCount() }, (_, index) => {
-      const x = (Math.random() - 0.5) * worldHalfWidth * 2
-      const y = (Math.random() - 0.5) * worldHalfHeight * 2
-      const z = (Math.random() - 0.5) * 20
-      return {
-        x,
-        y,
-        z,
-        ox: x,
-        oy: y,
-        oz: z,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: 0.6 + Math.random() * 0.9,
-        colorIndex: index % 3,
-        orientation: Math.floor(Math.random() * 4),
-        seed: Math.random() * Math.PI * 2,
-      }
-    })
+  function createNodes(): void {
+    nodes = Array.from({ length: nodeCount() }, (_, index) => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 12,
+      radius: 1.2 + Math.random() * 1.6,
+      colorIndex: index % 3,
+    }))
   }
 
-  function draw(): void {
+  function drawGlow(x: number, y: number, radius: number, colorIndex: number, alpha: number): void {
+    const sprite = glowSprites[colorIndex]
+    if (!ctx || !sprite) return
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha))
+    ctx.drawImage(sprite, x - radius * 2, y - radius * 2, radius * 4, radius * 4)
+  }
+
+  function drawNode(x: number, y: number, radius: number, colorIndex: number, alpha: number): void {
+    if (!ctx || alpha <= 0.01) return
+
+    drawGlow(x, y, radius * 1.7, colorIndex, alpha * 0.4)
+
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha))
+    ctx.fillStyle = nodeColors[colorIndex] || lineColor
+    ctx.beginPath()
+    ctx.arc(x, y, Math.max(0.8, radius), 0, TAU)
+    ctx.fill()
+  }
+
+  function draw(time: number): void {
     if (!ctx) return
-
     ctx.clearRect(0, 0, width, height)
-    const centerX = width / 2
-    const centerY = height / 2
-    const baseSize = variant === 'hero' ? 10 : 7
 
-    particles.sort((a, b) => b.z - a.z)
+    const linkDistance = Math.max(100, Math.min(170, Math.max(width, height) * 0.11))
+    const linkDistanceSq = linkDistance * linkDistance
+    const cursorRadius = Math.max(120, Math.min(220, Math.min(width, height) * 0.24))
+    const cursorRadiusSq = cursorRadius * cursorRadius
+    const mouseActive = canInteract() && hasPointer
 
-    for (const particle of particles) {
-      const perspective = CAMERA_DISTANCE / (CAMERA_DISTANCE + particle.z)
-      const screenX = centerX + particle.x * worldScale * perspective
-      const screenY = centerY + particle.y * worldScale * perspective
+    ctx.lineWidth = 0.8
+    ctx.strokeStyle = lineColor
 
-      if (screenX < -24 || screenX > width + 24 || screenY < -24 || screenY > height + 24) {
-        continue
+    // 节点之间的连线
+    for (let i = 0; i < nodes.length; i++) {
+      const first = nodes[i]
+      for (let j = i + 1; j < nodes.length; j++) {
+        const second = nodes[j]
+        const dx = first.x - second.x
+        const dy = first.y - second.y
+        const distanceSq = dx * dx + dy * dy
+        if (distanceSq > linkDistanceSq) continue
+
+        const strength = 1 - Math.sqrt(distanceSq) / linkDistance
+        ctx.globalAlpha = baseOpacity * strength * 0.9
+        ctx.beginPath()
+        ctx.moveTo(first.x, first.y)
+        ctx.lineTo(second.x, second.y)
+        ctx.stroke()
+      }
+    }
+
+    // 鼠标与附近节点的连线
+    if (mouseActive) {
+      for (const node of nodes) {
+        const dx = node.x - pointerX
+        const dy = node.y - pointerY
+        const distanceSq = dx * dx + dy * dy
+        if (distanceSq > cursorRadiusSq) continue
+
+        const strength = 1 - Math.sqrt(distanceSq) / cursorRadius
+        ctx.globalAlpha = baseOpacity * strength * 0.8
+        ctx.beginPath()
+        ctx.moveTo(pointerX, pointerY)
+        ctx.lineTo(node.x, node.y)
+        ctx.stroke()
       }
 
-      const sprite = sprites[particle.colorIndex]?.[particle.orientation]
-      if (!sprite) continue
+      drawGlow(pointerX, pointerY, 9, 0, baseOpacity * 0.85)
+      ctx.globalAlpha = Math.min(0.9, baseOpacity * 1.4)
+      ctx.fillStyle = lineColor
+      ctx.beginPath()
+      ctx.arc(pointerX, pointerY, 2.4, 0, TAU)
+      ctx.fill()
+    }
 
-      const size = baseSize * particle.size * (0.65 + perspective * 0.5)
-      const alpha = baseOpacity * (0.35 + 0.65 * Math.min(1, perspective))
-
-      ctx.globalAlpha = Math.max(0, Math.min(1, alpha))
-      ctx.drawImage(sprite, screenX - size / 2, screenY - size / 2, size, size)
+    // 节点
+    for (const node of nodes) {
+      const pulse = 0.9 + Math.sin(time * 0.6 + node.x * 0.01) * 0.1
+      drawNode(node.x, node.y, node.radius * pulse, node.colorIndex, Math.min(0.9, baseOpacity * 1.3))
     }
 
     ctx.globalAlpha = 1
   }
 
-  function update(dt: number, now: number): void {
-    const time = now / 1000
-    const ease = Math.min(1, dt * 6)
-    const pointerWorldX = (pointerX - width / 2) / worldScale
-    const pointerWorldY = (pointerY - height / 2) / worldScale
-    const magnetActive = canInteract() && hasPointer
+  function update(dt: number): void {
+    const mouseRadius = Math.max(100, Math.min(180, Math.min(width, height) * 0.18))
+    const mouseActive = canInteract() && hasPointer
 
-    for (const particle of particles) {
-      particle.x += particle.vx * dt
-      particle.y += particle.vy * dt
+    for (const node of nodes) {
+      node.x += node.vx * dt
+      node.y += node.vy * dt
 
-      if (particle.x > worldHalfWidth + 0.5) particle.x = -worldHalfWidth - 0.5
-      else if (particle.x < -worldHalfWidth - 0.5) particle.x = worldHalfWidth + 0.5
-      if (particle.y > worldHalfHeight + 0.5) particle.y = -worldHalfHeight - 0.5
-      else if (particle.y < -worldHalfHeight - 0.5) particle.y = worldHalfHeight + 0.5
+      if (node.x < -20) node.x = width + 20
+      else if (node.x > width + 20) node.x = -20
+      if (node.y < -20) node.y = height + 20
+      else if (node.y > height + 20) node.y = -20
 
-      let targetX = particle.x
-      let targetY = particle.y
-      let targetZ = particle.oz + Math.sin(time * 0.35 + particle.seed) * 0.6
+      if (!mouseActive) continue
 
-      if (magnetActive) {
-        const dx = particle.x - pointerWorldX
-        const dy = particle.y - pointerWorldY
-        const distance = Math.hypot(dx, dy)
+      const dx = node.x - pointerX
+      const dy = node.y - pointerY
+      const distance = Math.hypot(dx, dy)
+      if (distance > mouseRadius || distance < 0.001) continue
 
-        if (distance < MAGNET_RADIUS && distance > 0.0001) {
-          const angle = Math.atan2(dy, dx)
-          if (distance < MAGNET_RADIUS * 0.6) {
-            const ringRadius = MAGNET_RADIUS + Math.sin(time * 0.4 + particle.seed) * 0.6
-            targetX = pointerWorldX + Math.cos(angle) * ringRadius
-            targetY = pointerWorldY + Math.sin(angle) * ringRadius
-            targetZ = particle.oz + Math.sin(time * 3 + particle.seed) * 2
-          } else {
-            targetZ = particle.oz + Math.sin(time * 3 + particle.seed) * 2
-          }
-        }
-      }
-
-      particle.x += (targetX - particle.x) * ease * 0.35
-      particle.y += (targetY - particle.y) * ease * 0.35
-      particle.z += (targetZ - particle.z) * ease * 0.5
+      // 鼠标排斥，类似 particles.js 的 repulse，但力度更克制
+      const force = (1 - distance / mouseRadius) * 60 * dt
+      node.x += (dx / distance) * force
+      node.y += (dy / distance) * force
     }
   }
 
   function frame(now: number): void {
-    if (!inView || !documentVisible || options.paused?.()) {
+    if (!documentVisible || options.paused?.()) {
       raf = 0
       return
     }
 
     const dt = Math.min(0.05, Math.max(0, (now - lastTime) / 1000))
     lastTime = now
-    update(dt, now)
-    draw()
+    update(dt)
+    draw(now / 1000)
     raf = requestAnimationFrame(frame)
   }
 
@@ -244,7 +267,7 @@ export function useParticleScene(
   }
 
   function start(): void {
-    if (reduced || raf || !inView || !documentVisible || options.paused?.()) return
+    if (reduced || raf || !documentVisible || options.paused?.()) return
     lastTime = performance.now()
     raf = requestAnimationFrame(frame)
   }
@@ -269,10 +292,7 @@ export function useParticleScene(
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
-    worldScale = Math.min(width, height) / (WORLD_RADIUS * 2)
-    worldHalfWidth = Math.max(1, width / (2 * worldScale))
-    worldHalfHeight = Math.max(1, height / (2 * worldScale))
-    draw()
+    draw(performance.now() / 1000)
   }
 
   function handleResize(): void {
@@ -302,8 +322,8 @@ export function useParticleScene(
   }
 
   function handleThemeChange(): void {
-    buildSprites()
-    draw()
+    buildTheme()
+    draw(performance.now() / 1000)
   }
 
   onMounted(() => {
@@ -314,10 +334,10 @@ export function useParticleScene(
     reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     documentVisible = !document.hidden
 
-    buildSprites()
+    buildTheme()
     resize()
-    createParticles()
-    draw()
+    createNodes()
+    draw(performance.now() / 1000)
 
     themeObserver = new MutationObserver(handleThemeChange)
     themeObserver.observe(document.documentElement, {
@@ -331,15 +351,6 @@ export function useParticleScene(
     resizeObserver.observe(host)
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    if (variant === 'hero') {
-      intersectionObserver = new IntersectionObserver(([entry]) => {
-        inView = entry?.isIntersecting ?? true
-        if (inView) start()
-        else stop()
-      })
-      intersectionObserver.observe(host)
-    }
 
     if (canInteract()) {
       window.addEventListener('pointermove', handlePointerMove, { passive: true })
@@ -357,7 +368,6 @@ export function useParticleScene(
       resizeTimer = null
     }
     resizeObserver?.disconnect()
-    intersectionObserver?.disconnect()
     themeObserver?.disconnect()
 
     document.removeEventListener('visibilitychange', handleVisibilityChange)

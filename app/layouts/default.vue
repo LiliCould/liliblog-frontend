@@ -13,19 +13,5 @@
     </ClientOnly>
     <MobileBottomNav />
     <BackToTop />
-
-    <ClientOnly>
-      <Toaster
-        position="top-center"
-        :duration="2200"
-        :close-button="false"
-        :rich-colors="true"
-        class="liliblog-toaster"
-      />
-    </ClientOnly>
   </div>
 </template>
-
-<script setup lang="ts">
-import { Toaster } from 'vue-sonner'
-</script>

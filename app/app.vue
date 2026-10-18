@@ -3,7 +3,7 @@
   <NuxtRouteAnnouncer />
 
   <ClientOnly>
-    <ParticleField v-if="showGlobalParticles" variant="global" />
+    <ParticleField v-if="showGlobalParticles" variant="global" interactive />
   </ClientOnly>
 
   <NuxtLayout>
@@ -13,10 +13,19 @@
   <ClientOnly>
     <AuthModal />
     <UploadProgressOverlay />
+    <Toaster
+      position="top-center"
+      :duration="2200"
+      :close-button="false"
+      :rich-colors="true"
+      class="liliblog-toaster"
+    />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { Toaster } from 'vue-sonner'
+
 const route = useRoute()
 const { initTheme, currentTheme } = useTheme()
 const { initCodeTheme, syncCodeThemeWithUi } = useCodeTheme()
@@ -87,9 +96,14 @@ onMounted(() => {
   userStore.init()
 
   if (import.meta.dev) {
-    const authMode = new URLSearchParams(window.location.search).get('auth')
+    const params = new URLSearchParams(window.location.search)
+    const authMode = params.get('auth')
     if (authMode === 'login' || authMode === 'register') {
       useAuthModal().open(authMode)
+    }
+    if (params.get('toast') === '1') {
+      const toast = useToast()
+      setTimeout(() => toast.error('测试错误提示：登录失败，请重试'), 600)
     }
   }
 
