@@ -14,7 +14,8 @@ Environment=PORT=3000
 Environment=NUXT_API_BASE=http://127.0.0.1:8080
 Environment=NUXT_PUBLIC_SITE_URL=https://lilicould.cn
 Environment=NODE_OPTIONS=--max-old-space-size=384
-ExecStart=/usr/bin/node .output/server/index.mjs
+Environment=PATH=/opt/node24/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/opt/node24/bin/node .output/server/index.mjs
 Restart=always
 RestartSec=5
 LimitNOFILE=65535

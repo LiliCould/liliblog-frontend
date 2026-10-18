@@ -24,11 +24,22 @@
 
 ## 1. 安装 Node（仅一次）
 
+> 注意：Debian 13 apt 的 Node 20.19.2 **不够**。Nitro 运行时的
+> `undici` 要求 Node >=22.19，`whatwg-url` 等要求 Node >=22.14。
+> 服务器已安装 Node 24.22.0 到 `/opt/node24`，不要再用 apt 的 Node 20。
+
 ```bash
-sudo apt update
-sudo apt install -y nodejs npm
-node -v    # 预期 v20.19.2
-npm -v     # 预期 9.2.0
+curl -fsSL https://nodejs.org/dist/v24.22.0/node-v24.22.0-linux-x64.tar.xz -o /tmp/node24.tar.xz
+sudo mkdir -p /opt/node24
+sudo tar -xJf /tmp/node24.tar.xz -C /opt/node24 --strip-components=1
+/opt/node24/bin/node -v    # 预期 v24.22.0
+rm -f /tmp/node24.tar.xz
+```
+
+systemd 的 `ExecStart` 已改为：
+
+```text
+/opt/node24/bin/node .output/server/index.mjs
 ```
 
 Yarn 4 **不能**用 `npm install -g yarn@4.18.0` 安装：
@@ -53,8 +64,8 @@ yarn -v
 **如果采用“本地构建 + 上传 `.output`”的方式，服务器上只需要 Node，
 不需要安装 Yarn/npm 构建依赖。**
 
-如果 Node 安装在 `/usr/bin/node`，systemd 使用该路径；否则修改
-`deploy/liliblog-web.service` 的 `ExecStart`。
+当前服务器使用 `/opt/node24/bin/node`；如果换机器，按实际路径修改
+`deploy/liliblog-web.service` 的 `ExecStart` 和 `PATH`。
 
 ## 2. 构建与上传
 
