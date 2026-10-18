@@ -4,12 +4,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node -e \"require('fs').cpSync('node_modules/vditor/dist','public/vditor/dist',{recursive:true})\" && vite",
-    "build": "vue-tsc -b && vite build && npm run copy:vditor",
-    "copy:vditor": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor/dist',{recursive:true})\"",
-    "preview": "vite preview"
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "dev:legacy": "node -e \"require('fs').cpSync('node_modules/vditor/dist','public/vditor/dist',{recursive:true})\" && vite",
+    "build:legacy": "vue-tsc -b && vite build && npm run copy:vditor:legacy",
+    "copy:vditor:legacy": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor/dist',{recursive:true})\""
   },
   "dependencies": {
+    "@pinia/nuxt": "^1.0.3",
+    "@vueuse/nuxt": "^15.0.0",
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -19,14 +24,18 @@
     "lucide-vue-next": "^0.511.0",
     "marked": "^18.0.7",
     "nprogress": "^0.2.0",
-    "pinia": "^3.0.2",
+    "nuxt": "^4.6.2",
+    "pinia": "^4.1.0",
     "radix-vue": "^1.9.17",
+    "reka-ui": "^2.11.0",
     "tailwind-merge": "^3.3.0",
     "vditor": "^3.11.2",
     "vue": "^3.5.16",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^24.0.3",
     "@types/nprogress": "^0.2.3",

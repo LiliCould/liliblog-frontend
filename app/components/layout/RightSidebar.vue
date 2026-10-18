@@ -1,0 +1,86 @@
+<template>
+  <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
+    <slot name="top" />
+
+    <div
+      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
+    >
+      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-success transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
+      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
+        <Shuffle class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+        <h3 class="text-base font-semibold text-t-title m-0">随机文章</h3>
+      </div>
+
+      <div v-if="loading" class="flex flex-col gap-3">
+        <div v-for="i in 5" :key="i" class="h-4 bg-[rgba(var(--color-primary-rgb),0.06)] rounded animate-pulse" />
+      </div>
+
+      <div v-else class="flex flex-col gap-1">
+        <NuxtLink
+          v-for="article in articles"
+          :key="article.id"
+          :to="`/article/${article.slug}`"
+          class="flex items-start gap-2 px-3 py-2.5 rounded-md text-sm text-t-body no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] group/article"
+        >
+          <ChevronRight class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-t-muted transition-colors duration-200 group-hover/article:text-t-primary" />
+          <span class="line-clamp-2 leading-snug">{{ article.title }}</span>
+        </NuxtLink>
+        <div v-if="articles.length === 0" class="flex flex-col items-center gap-2 py-6 text-t-muted text-sm">
+          <FileText class="w-8 h-8 opacity-40" />
+          <span>暂无文章</span>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
+      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
+    >
+      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
+      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
+        <TagIcon class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+        <h3 class="text-base font-semibold text-t-title m-0">标签云</h3>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5 max-h-[26rem] overflow-y-auto p-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(var(--color-primary-rgb),0.15)] [&::-webkit-scrollbar-thumb]:rounded-full">
+        <NuxtLink
+          v-for="tag in appStore.tags"
+          :key="tag.id"
+          :to="`/tag/${tag.name}`"
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold no-underline border border-[rgba(var(--color-primary-rgb),0.15)] bg-[rgba(var(--color-primary-rgb),0.06)] transition-all duration-200 hover:-translate-y-px hover:[box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.4)]"
+          :style="{ color: tag.color || 'var(--color-primary)', backgroundColor: tag.color ? tag.color + '15' : 'rgba(var(--color-primary-rgb),0.06)' }"
+        >
+          <span class="w-1.5 h-1.5 rounded-full opacity-70 [box-shadow:0_0_6px_currentColor]" :style="{ backgroundColor: tag.color || 'var(--color-primary)' }" />
+          {{ tag.name }}
+        </NuxtLink>
+        <div v-if="appStore.tags.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm w-full">
+          <AlertCircle class="w-10 h-10 opacity-40" />
+          <span>暂无标签</span>
+        </div>
+      </div>
+    </div>
+
+    <slot />
+  </aside>
+</template>
+
+<script setup lang="ts">
+import { ChevronRight, FileText, AlertCircle, Shuffle, Tag as TagIcon } from 'lucide-vue-next'
+
+interface ArticleSummary {
+  id: number
+  title: string
+  slug: string
+}
+
+withDefaults(defineProps<{
+  articles?: ArticleSummary[]
+  loading?: boolean
+}>(), {
+  articles: () => [],
+  loading: false,
+})
+
+const appStore = useAppStore()
+</script>
