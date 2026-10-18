@@ -1,4 +1,5 @@
 const isDev = process.env.NODE_ENV === 'development'
+const devApiTarget = process.env.NUXT_API_BASE || 'http://localhost:8080'
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-18',
@@ -77,9 +78,9 @@ export default defineNuxtConfig({
 
   nitro: {
     devProxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true },
-      '/auth': { target: 'http://localhost:8080', changeOrigin: true },
-      '/file': { target: 'http://localhost:8080', changeOrigin: true },
+      '/api': { target: devApiTarget, changeOrigin: true },
+      '/auth': { target: devApiTarget, changeOrigin: true },
+      '/file': { target: devApiTarget, changeOrigin: true },
     },
   },
 
