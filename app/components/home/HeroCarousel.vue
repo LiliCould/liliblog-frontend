@@ -38,33 +38,19 @@
         <span class="glitch-line" />
       </h1>
 
-      <p class="tracking-wide flex items-center justify-center min-h-[2em] text-white/80" :class="subtitleSizeClass" style="font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;">
-        <span v-if="subtitleStarted">
-          <span class="text-t-primary">&lt;</span>
-          <span>{{ subDisplayText }}</span>
-          <span class="typewriter-cursor" :class="{ 'cursor-blink': subTypingDone }">|</span>
-          <span v-if="subTypingDone" class="text-t-primary"> /&gt;</span>
-        </span>
-      </p>
+      <div class="flex min-h-[5rem] flex-col items-center justify-center" aria-hidden="true">
+        <p class="max-w-[min(900px,92vw)] break-words font-mono text-base leading-relaxed text-white/85 sm:text-lg md:text-xl">
+          <span class="text-t-primary">{{ typedPrefix }}</span>
+          <span>{{ typedPhrase }}</span>
+          <span class="text-t-primary">{{ typedSuffix }}</span>
+          <span class="typewriter-cursor" :class="{ 'cursor-blink': phase === 'holding' }">|</span>
+        </p>
+      </div>
 
       <div
         class="w-20 h-0.5 bg-gradient-to-r from-transparent via-t-primary to-transparent shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.5)]"
-        :class="{ 'opacity-0': !subTypingDone, 'opacity-100 transition-opacity duration-700': subTypingDone }"
+        :class="{ 'opacity-0': typedLength === 0, 'opacity-100 transition-opacity duration-700': typedLength > 0 }"
       />
-
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <NuxtLink to="/#article-list" class="btn-primary px-5 py-2.5 text-sm">
-          浏览文章
-          <ChevronDown class="w-4 h-4" />
-        </NuxtLink>
-        <NuxtLink
-          to="/about"
-          class="inline-flex items-center gap-2 rounded-control border border-white/20 bg-black/25 px-5 py-2.5 text-sm font-medium text-white/90 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-black/40"
-        >
-          关于我
-        </NuxtLink>
-      </div>
-
     </div>
 
     <div class="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2 backdrop-blur-md">
@@ -110,10 +96,20 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { ChevronDown, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
+import { heroCodeTemplates, heroPhrases, type HeroCodeTemplate } from '~/utils/heroPhrases'
 
-const SUB_TEXT = '技术与生活的分享空间'
-const SUB_TYPE_SPEED = 100
+interface ActiveLine {
+  phrase: string
+  template: HeroCodeTemplate
+  fullPrefix: string
+  fullSuffix: string
+  fullText: string
+}
+
+const TYPE_SPEED = 65
+const DELETE_SPEED = 28
+const HOLD_DURATION = 2200
 
 const slides = [
   { src: 'https://oss.lilicould.cn/file/hero-1.png', alt: 'Hero 1' },
@@ -125,15 +121,129 @@ const slides = [
 const currentIndex = ref(0)
 const paused = ref(false)
 const hovering = ref(false)
-const subDisplayText = ref('')
-const subTypingDone = ref(false)
-const subtitleStarted = ref(false)
+const reduceMotion = ref(false)
+const activeLine = ref<ActiveLine | null>(null)
+const typedLength = ref(0)
+const phase = ref<'typing' | 'holding' | 'deleting'>('typing')
 
 let slideTimer: ReturnType<typeof setInterval> | null = null
-let typeTimer: ReturnType<typeof setInterval> | null = null
+let typeTimer: ReturnType<typeof setTimeout> | null = null
+let lastPhraseIndex = -1
+let lastTemplateIndex = -1
 
 const titleSizeClass = computed(() => 'text-4xl sm:text-5xl md:text-6xl lg:text-7xl')
-const subtitleSizeClass = computed(() => 'text-base sm:text-lg md:text-xl')
+
+const typedPrefix = computed(() => {
+  const line = activeLine.value
+  return line ? line.fullPrefix.slice(0, Math.min(typedLength.value, line.fullPrefix.length)) : ''
+})
+
+const typedPhrase = computed(() => {
+  const line = activeLine.value
+  if (!line) return ''
+  const start = line.fullPrefix.length
+  return line.phrase.slice(0, Math.max(0, Math.min(typedLength.value - start, line.phrase.length)))
+})
+
+const typedSuffix = computed(() => {
+  const line = activeLine.value
+  if (!line) return ''
+  const start = line.fullPrefix.length + line.phrase.length
+  return line.fullSuffix.slice(0, Math.max(0, Math.min(typedLength.value - start, line.fullSuffix.length)))
+})
+
+function pickRandomIndex(length: number, previous: number): number {
+  if (length <= 1) return 0
+  let index = Math.floor(Math.random() * length)
+  if (index === previous) {
+    index = (index + 1 + Math.floor(Math.random() * (length - 1))) % length
+  }
+  return index
+}
+
+function escapePhrase(text: string): string {
+  return text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+function buildLine(): ActiveLine {
+  const phraseIndex = pickRandomIndex(heroPhrases.length, lastPhraseIndex)
+  const templateIndex = pickRandomIndex(heroCodeTemplates.length, lastTemplateIndex)
+  lastPhraseIndex = phraseIndex
+  lastTemplateIndex = templateIndex
+
+  const phrase = escapePhrase(heroPhrases[phraseIndex] || '技术与生活的分享空间')
+  const template = heroCodeTemplates[templateIndex] || {
+    label: 'JavaScript',
+    prefix: 'console.log("',
+    suffix: '");',
+  }
+
+  return {
+    phrase,
+    template,
+    fullPrefix: template.prefix,
+    fullSuffix: template.suffix,
+    fullText: `${template.prefix}${phrase}${template.suffix}`,
+  }
+}
+
+function schedule(delay: number): void {
+  if (typeTimer) clearTimeout(typeTimer)
+  typeTimer = setTimeout(tick, delay)
+}
+
+function tick(): void {
+  const line = activeLine.value
+  if (!line) return
+
+  if (document.hidden) {
+    schedule(600)
+    return
+  }
+
+  if (phase.value === 'typing') {
+    if (typedLength.value < line.fullText.length) {
+      typedLength.value += 1
+      schedule(TYPE_SPEED)
+    } else {
+      phase.value = 'holding'
+      schedule(HOLD_DURATION)
+    }
+    return
+  }
+
+  if (phase.value === 'holding') {
+    phase.value = 'deleting'
+    schedule(DELETE_SPEED)
+    return
+  }
+
+  if (typedLength.value > 0) {
+    typedLength.value -= 1
+    schedule(DELETE_SPEED)
+    return
+  }
+
+  activeLine.value = buildLine()
+  typedLength.value = 0
+  phase.value = 'typing'
+  schedule(TYPE_SPEED)
+}
+
+function startTypewriter(): void {
+  stopTypewriter()
+  activeLine.value = buildLine()
+  typedLength.value = 0
+  phase.value = 'typing'
+  schedule(TYPE_SPEED)
+}
+
+function stopTypewriter(): void {
+  if (typeTimer) {
+    clearTimeout(typeTimer)
+    typeTimer = null
+  }
+}
 
 function next(): void {
   currentIndex.value = (currentIndex.value + 1) % slides.length
@@ -175,36 +285,18 @@ function togglePause(): void {
   else startAutoPlay()
 }
 
-function startTypewriter(): void {
-  subDisplayText.value = ''
-  subTypingDone.value = false
-  subtitleStarted.value = false
-
-  let index = 0
-  setTimeout(() => {
-    subtitleStarted.value = true
-    typeTimer = setInterval(() => {
-      if (index < SUB_TEXT.length) {
-        subDisplayText.value = SUB_TEXT.slice(0, index + 1)
-        index++
-      } else {
-        if (typeTimer) clearInterval(typeTimer)
-        typeTimer = null
-        subTypingDone.value = true
-      }
-    }, SUB_TYPE_SPEED)
-  }, 800)
-}
-
 onMounted(() => {
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (reduceMotion) {
+  reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if (reduceMotion.value) {
     paused.value = true
-    subtitleStarted.value = true
-    subDisplayText.value = SUB_TEXT
-    subTypingDone.value = true
+    const line = buildLine()
+    activeLine.value = line
+    typedLength.value = line.fullText.length
+    phase.value = 'holding'
     return
   }
+
   startAutoPlay()
   startTypewriter()
   document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -212,7 +304,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   stopAutoPlay()
-  if (typeTimer) clearInterval(typeTimer)
+  stopTypewriter()
   document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
