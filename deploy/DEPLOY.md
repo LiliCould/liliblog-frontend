@@ -29,9 +29,29 @@ sudo apt update
 sudo apt install -y nodejs npm
 node -v    # 预期 v20.19.2
 npm -v     # 预期 9.2.0
-sudo npm install -g yarn@4.18.0
+```
+
+Yarn 4 **不能**用 `npm install -g yarn@4.18.0` 安装：
+npm 上的 `yarn` 包只有 1.x，Yarn 4 的包名是 `@yarnpkg/cli-dist`。
+
+如果需要在服务器上构建：
+
+```bash
+sudo npm install -g @yarnpkg/cli-dist@4.18.0
+yarn -v    # 预期 4.18.0
+```
+
+或者使用 corepack：
+
+```bash
+sudo npm install -g corepack@0.36.0
+sudo corepack enable
+corepack prepare yarn@4.18.0 --activate
 yarn -v
 ```
+
+**如果采用“本地构建 + 上传 `.output`”的方式，服务器上只需要 Node，
+不需要安装 Yarn/npm 构建依赖。**
 
 如果 Node 安装在 `/usr/bin/node`，systemd 使用该路径；否则修改
 `deploy/liliblog-web.service` 的 `ExecStart`。
