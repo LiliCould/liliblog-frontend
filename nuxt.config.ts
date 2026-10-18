@@ -1,5 +1,4 @@
 const isDev = process.env.NODE_ENV === 'development'
-const devApiTarget = process.env.NUXT_API_BASE || 'http://localhost:8080'
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-18',
@@ -11,6 +10,7 @@ export default defineNuxtConfig({
     '~/assets/styles/variables.css',
     '~/assets/styles/reset.css',
     '~/assets/styles/transitions.css',
+    '~/assets/styles/upload-progress.css',
     'vue-sonner/style.css',
   ],
 
@@ -76,13 +76,8 @@ export default defineNuxtConfig({
     },
   },
 
-  nitro: {
-    devProxy: {
-      '/api': { target: devApiTarget, changeOrigin: true },
-      '/auth': { target: devApiTarget, changeOrigin: true },
-      '/file': { target: devApiTarget, changeOrigin: true },
-    },
-  },
+  // 同源代理统一由 server/middleware/api-proxy.ts 处理，
+  // 避免 devProxy 与 Nitro 中间件重复转发导致请求头被改写。
 
   routeRules: {
     '/admin/**': { ssr: false },

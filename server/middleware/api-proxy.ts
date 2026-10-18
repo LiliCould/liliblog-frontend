@@ -14,6 +14,15 @@ export default defineEventHandler((event) => {
 
   if (!shouldProxy) return
 
+  // 本地开发时浏览器 Origin 是 localhost，后端会按来源拒绝认证请求。
+  // 这里仅对本地来源移除 Origin/Referer；生产域名不做改写。
+  const headers = event.node.req.headers
+  const origin = typeof headers.origin === 'string' ? headers.origin : ''
+  if (/^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(origin)) {
+    delete headers.origin
+    delete headers.referer
+  }
+
   const config = useRuntimeConfig()
   const target = `${config.apiBase}${path}`
   return proxyRequest(event, target)

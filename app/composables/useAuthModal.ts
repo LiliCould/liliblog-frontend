@@ -1,17 +1,21 @@
-export type AuthMode = 'login' | 'register'
+import { computed } from 'vue'
+import { useUiStore, type AuthModalMode } from '~/stores/ui'
 
-/**
- * 阶段 1 先用路由承接登录/注册入口；
- * 阶段 3 会替换为 Reka UI Dialog，并保持该调用签名不变。
- */
 export function useAuthModal() {
-  function open(mode: AuthMode = 'login'): void {
-    navigateTo(mode === 'login' ? '/login' : '/register')
+  const ui = useUiStore()
+
+  function open(mode: AuthModalMode = 'login'): void {
+    ui.openAuthModal(mode)
   }
 
   function close(): void {
-    // 预留
+    ui.closeAuthModal()
   }
 
-  return { open, close }
+  return {
+    open,
+    close,
+    mode: computed(() => ui.authModalMode),
+    isOpen: computed(() => ui.isAuthModalOpen),
+  }
 }

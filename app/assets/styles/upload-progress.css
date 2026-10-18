@@ -1,0 +1,46 @@
+/* 上传进度：编辑器上传任务条 + 全局进度弹窗过渡 */
+
+/* ── 编辑器上传任务条 ──
+ * 由 MarkdownEditor 插入到 .vditor 内、工具栏与内容区之间。
+ * .vditor 是 flex column、.vditor-content 是 flex:1，因此任务条作为普通
+ * flex 子元素即可把内容顶下去，无需绝对定位或测量工具栏高度。
+ *
+ * 刻意不放进 .vditor-reset：vditor 会在 input / keydown 时把 contenteditable
+ * 的 innerHTML 整体交给 Lute 转成 markdown，放进去的占位节点会被当成
+ * 原始 HTML 写进正文（`<svg>` + 文件名 + 百分比），且不会被自动清除。
+ */
+.upload-tasks {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+/* ── 不确定态进度条 ──
+ * 「服务器处理中」阶段没有任何真实进度数据，用循环流动的滑块代替僵在 100% 的实心条。
+ * 轨道需为 overflow: hidden，滑块宽度 40%，位移按自身宽度百分比换算：
+ * -100% 表示完全移出左侧，250% 表示完全移出右侧（1 / 0.4 = 2.5）。
+ */
+.upload-bar--indeterminate {
+    width: 40%;
+    animation: upload-bar-sweep 1200ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes upload-bar-sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(250%);
+    }
+}
+
+/* 全局上传进度弹窗显隐过渡 */
+.upload-overlay-enter-active,
+.upload-overlay-leave-active {
+    transition: opacity var(--transition-base);
+}
+
+.upload-overlay-enter-from,
+.upload-overlay-leave-to {
+    opacity: 0;
+}
