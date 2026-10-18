@@ -4,30 +4,33 @@
       <HeroCarousel />
     </template>
 
-    <div v-if="pending && articles.length === 0" class="flex flex-col gap-4">
-      <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse" />
+    <div ref="listRef">
+      <div v-if="pending && articles.length === 0" class="flex flex-col gap-4">
+        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse" />
+      </div>
+
+      <ArticleList
+        v-else-if="articles.length > 0"
+        :articles="articles"
+        :total="total"
+        :current="current"
+        :page-size="pageSize"
+        @page-change="handlePageChange"
+        @page-size-change="handlePageSizeChange"
+      />
+
+      <EmptyState v-else message="暂无文章" />
     </div>
-
-    <ArticleList
-      v-else-if="articles.length > 0"
-      :articles="articles"
-      :total="total"
-      :current="current"
-      :page-size="pageSize"
-      @page-change="handlePageChange"
-      @page-size-change="handlePageSizeChange"
-    />
-
-    <EmptyState v-else message="暂无文章" />
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import type { Article, PageResult } from '~/types'
-import { absoluteUrl } from '~/utils/seo'
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '~/utils/seo'
 
 const api = useApi()
+const listRef = ref<HTMLElement | null>(null)
 const current = ref(1)
 const pageSize = ref(5)
 
@@ -57,14 +60,22 @@ const { data: articlePage, pending } = await useAsyncData(
 const articles = computed(() => articlePage.value?.records || [])
 const total = computed(() => articlePage.value?.total || 0)
 
+function scrollToList(): void {
+  if (!import.meta.client || !listRef.value) return
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const top = listRef.value.getBoundingClientRect().top + window.scrollY - 80
+  window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' })
+}
+
 function handlePageChange(page: number): void {
   current.value = page
-  if (import.meta.client) window.scrollTo({ top: 0, behavior: 'smooth' })
+  nextTick(scrollToList)
 }
 
 function handlePageSizeChange(size: number): void {
   pageSize.value = size
   current.value = 1
+  nextTick(scrollToList)
 }
 
 useSeoMeta({
@@ -73,7 +84,13 @@ useSeoMeta({
   ogTitle: '立里博客 | LiliBlog',
   ogDescription: '立里可的技术与生活分享空间',
   ogType: 'website',
+  ogImage: DEFAULT_OG_IMAGE,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageAlt: '立里博客 LiliBlog - 立里可的技术与生活分享空间',
+  ogUrl: absoluteUrl('/'),
   twitterCard: 'summary_large_image',
+  twitterImage: DEFAULT_OG_IMAGE,
 })
 
 useHead({

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ArticleDetail } from '~/types'
-import { absoluteUrl, SITE_NAME, truncateText } from '~/utils/seo'
+import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_NAME, truncateText } from '~/utils/seo'
 
 const route = useRoute()
 const api = useApi()
@@ -37,7 +37,9 @@ useSeoMeta({
   ogTitle: () => article.value?.title || '文章不存在',
   ogDescription: () => article.value?.summary || '',
   ogType: 'article',
-  ogImage: () => article.value?.coverImage ? absoluteUrl(article.value.coverImage) : absoluteUrl('/og-image.png'),
+  ogImage: () => article.value?.coverImage ? absoluteUrl(article.value.coverImage) : DEFAULT_OG_IMAGE,
+  ogImageAlt: () => article.value?.title || '立里博客 LiliBlog',
+  twitterImage: () => article.value?.coverImage ? absoluteUrl(article.value.coverImage) : DEFAULT_OG_IMAGE,
   articlePublishedTime: () => article.value?.createTime,
   articleModifiedTime: () => article.value?.updateTime,
   twitterCard: 'summary_large_image',
