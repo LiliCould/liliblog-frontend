@@ -9,6 +9,7 @@ User=www-data
 Group=www-data
 WorkingDirectory=/var/www/liliblog
 Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
 Environment=PORT=3000
 Environment=NUXT_API_BASE=https://api.lilicould.cn
 Environment=NUXT_PUBLIC_SITE_URL=https://lilicould.cn
