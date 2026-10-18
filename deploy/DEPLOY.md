@@ -81,6 +81,37 @@ rsync -avz --delete .output/ lilicould@lilicould.cn:/opt/liliblog-web/.output/
 
 如果必须在服务器构建，至少确认 swap 可用，并在低峰期执行。
 
+### 2.1 Windows 构建产物的符号链接问题
+
+在 Windows 上执行 `nuxt build` 后，`.output/server/node_modules` 里的包是
+**绝对路径符号链接**，例如：
+
+```text
+vue -> /e/workspace/.../.output/server/node_modules/.nitro/vue@3.5.44
+```
+
+直接上传到 Linux 后链接失效，启动会报：
+
+```text
+Cannot find package 'vue' imported from /opt/liliblog-web/.output/server/index.mjs
+```
+
+三种处理方式，任选一种：
+
+1. **在 Linux/WSL/Docker 中构建**（最干净）
+2. **上传后安装运行依赖**（推荐，当前服务器适用）：
+   ```bash
+   cd /opt/liliblog-web
+   rm -rf .output/server/node_modules
+   cp .output/server/package.json package.json
+   npm install --omit=dev --no-audit --no-fund
+   sudo chown -R lilicould:lilicould /opt/liliblog-web
+   sudo systemctl restart liliblog-web
+   ```
+   这样依赖会装到 `/opt/liliblog-web/node_modules`，Node 从
+   `.output/server/index.mjs` 向上查找可以正常解析。
+3. 上传一个在 Linux 上构建好的 `.output`（包含可用的 node_modules）
+
 ## 3. systemd（前端服务）
 
 ```bash
