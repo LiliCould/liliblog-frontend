@@ -1,13 +1,11 @@
 <template>
-  <div class="min-h-screen bg-t-bg text-t-body">
-    <AppHeader />
-    <main class="pt-16 min-h-screen">
-      <slot />
-    </main>
-    <ClientOnly>
-      <Toaster position="top-center" :duration="2200" :rich-colors="true" class="liliblog-toaster" />
-    </ClientOnly>
-  </div>
+  <AdminLayout>
+    <slot />
+  </AdminLayout>
+
+  <ClientOnly>
+    <Toaster position="top-center" :duration="2200" :rich-colors="true" class="liliblog-toaster" />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/copy-vditor.mjs",
     "dev": "nuxt dev",
+    "prebuild": "node scripts/copy-vditor.mjs",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "node scripts/copy-vditor.mjs && nuxt prepare",
     "dev:legacy": "node -e \"require('fs').cpSync('node_modules/vditor/dist','public/vditor/dist',{recursive:true})\" && vite",
     "build:legacy": "vue-tsc -b && vite build && npm run copy:vditor:legacy",
     "copy:vditor:legacy": "node -e \"require('fs').cpSync('node_modules/vditor/dist','dist/vditor/dist',{recursive:true})\""

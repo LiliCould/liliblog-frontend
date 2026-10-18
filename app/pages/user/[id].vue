@@ -1,25 +1,34 @@
 <template>
-  <UserProfileContent :user-id="userId" :self="false" />
+  <UserProfileContent
+    v-model:active-tab="activeTab"
+    v-model:current-page="currentPage"
+    v-model:page-size="pageSize"
+    :user="user"
+    :articles="articles"
+    :total="total"
+    :pending="pending"
+    :self="false"
+    @refresh="refresh"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { User } from '~/types'
 import { absoluteUrl } from '~/utils/seo'
 
 const route = useRoute()
-const api = useApi()
 const userId = computed(() => Number(route.params.id))
 
-const { data: user } = await useAsyncData(
-  () => `user-seo-page:${userId.value}`,
-  () => api.get<User>(`/api/user/${userId.value}`).catch(() => null),
-  { watch: [userId], default: () => null },
-)
-
-if (!user.value) {
-  throw createError({ statusCode: 404, statusMessage: '用户不存在', fatal: true })
-}
+const {
+  user,
+  articles,
+  total,
+  pending,
+  refresh,
+  currentPage,
+  pageSize,
+  activeTab,
+} = useUserProfileData(userId, false)
 
 useSeoMeta({
   title: () => `${user.value?.nickname || '用户'} | 立里博客`,

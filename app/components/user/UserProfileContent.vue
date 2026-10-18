@@ -9,16 +9,16 @@
         <div class="px-4 md:px-6 pb-6 -mt-10 md:-mt-12 relative z-10">
           <div class="flex items-end gap-3 md:gap-5 max-md:flex-col max-md:items-start">
             <div class="w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-t-surface border-2 border-t-primary flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(var(--color-surface-rgb),0.95)] flex-shrink-0">
-              <img :src="resolveAvatar(targetUser?.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
+              <img :src="resolveAvatar(user?.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
             </div>
             <div class="flex-1 min-w-0 pb-1">
               <div class="flex items-center gap-3 flex-wrap">
-                <h1 class="text-xl md:text-2xl font-bold text-t-title">{{ targetUser?.nickname || '用户' }}</h1>
-                <span class="text-sm text-t-muted">@{{ targetUser?.username }}</span>
+                <h1 class="text-xl md:text-2xl font-bold text-t-title">{{ user?.nickname || '用户' }}</h1>
+                <span class="text-sm text-t-muted">@{{ user?.username }}</span>
               </div>
-              <div v-if="targetUser?.email" class="flex items-center gap-1.5 mt-1.5">
+              <div v-if="user?.email" class="flex items-center gap-1.5 mt-1.5">
                 <Mail class="w-3.5 h-3.5 text-t-muted" />
-                <span class="text-sm text-t-muted">{{ targetUser.email }}</span>
+                <span class="text-sm text-t-muted">{{ user.email }}</span>
               </div>
             </div>
             <div v-if="self" class="flex items-center gap-2 flex-shrink-0 pb-1 max-md:w-full max-md:mt-2">
@@ -117,40 +117,50 @@
       </EmptyState>
     </div>
 
-    <ChangePasswordModal v-if="self" v-model:open="showPasswordModal" />
-
-    <AppConfirmDialog
-      v-model:open="showDeleteConfirm"
-      title="确认删除"
-      :description="`确定要删除文章「${deleteTarget?.title || ''}」吗？此操作不可恢复。`"
-      confirm-text="确认删除"
-      danger
-      @confirm="doDelete"
-    />
   </AppLayout>
+
+  <ChangePasswordModal v-if="self" v-model:open="showPasswordModal" />
+
+  <AppConfirmDialog
+    v-if="self"
+    v-model:open="showDeleteConfirm"
+    title="确认删除"
+    :description="`确定要删除文章「${deleteTarget?.title || ''}」吗？此操作不可恢复。`"
+    confirm-text="确认删除"
+    danger
+    @confirm="doDelete"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Clock, Edit, Eye, FileText, FolderOpen, Lock, Mail, PenLine, Plus, Trash2 } from 'lucide-vue-next'
-import type { Article, PageResult, User } from '~/types'
+import type { Article, User } from '~/types'
 import { formatRelativeTime, handleAvatarError, resolveAvatar } from '~/utils/format'
 import request from '~/utils/request'
 import heroBg from '../../../src/assets/heros/hero-1.png'
 
 const props = defineProps<{
-  userId: number
+  user: User | null
+  articles: Article[]
+  total: number
+  pending: boolean
   self: boolean
+  activeTab: string
+  currentPage: number
+  pageSize: number
+}>()
+
+const emit = defineEmits<{
+  'update:activeTab': [value: string]
+  'update:currentPage': [value: number]
+  'update:pageSize': [value: number]
+  refresh: []
 }>()
 
 const router = useRouter()
-const api = useApi()
-const userStore = useUserStore()
 const toast = useToast()
 
-const activeTab = ref('all')
-const currentPage = ref(1)
-const pageSize = ref(10)
 const showPasswordModal = ref(false)
 const showDeleteConfirm = ref(false)
 const deleteTarget = ref<Article | null>(null)
@@ -162,95 +172,11 @@ const statusTabs = [
   { label: '草稿', value: '2' },
 ]
 
-const emptyPage: PageResult<Article> = {
-  records: [],
-  total: 0,
-  size: 0,
-  current: 1,
-  totalPage: 0,
-  hasPrevious: false,
-  hasNext: false,
-}
-
-function buildSelfUser(): User | null {
-  if (!userStore.isLoggedIn) return null
-  return {
-    id: userStore.userId,
-    username: userStore.username,
-    nickname: userStore.nickname,
-    avatar: userStore.avatar,
-    email: userStore.email,
-    role: userStore.isAdmin ? 0 : 1,
-    status: 1,
-    lastLoginTime: '',
-  }
-}
-
-const { data: publicUser } = await useAsyncData(
-  () => `user-profile:${props.userId}:${props.self}`,
-  async () => {
-    if (props.self) return buildSelfUser()
-    return api.get<User>(`/api/user/${props.userId}`).catch(() => null)
-  },
-  {
-    watch: [() => props.userId, () => props.self],
-    default: () => null,
-  },
-)
-
-const targetUser = computed<User | null>(() => {
-  if (props.self) return buildSelfUser()
-  return publicUser.value || null
-})
-
-if (!props.self && !targetUser.value) {
-  throw createError({ statusCode: 404, statusMessage: '用户不存在', fatal: true })
-}
-
-const { data: articlePage, pending, refresh } = await useAsyncData(
-  () => `user-articles:${props.userId}:${props.self}`,
-  async () => {
-    if (import.meta.server && props.self) return emptyPage
-
-    const params: Record<string, string | number> = {
-      createBy: props.userId,
-      current: currentPage.value,
-      size: pageSize.value,
-    }
-
-    if (props.self && activeTab.value !== 'all') {
-      params.status = Number(activeTab.value)
-    } else if (!props.self) {
-      params.status = 1
-    }
-
-    if (props.self) {
-      const response = await request.get('/api/article', { params }) as unknown as { data: PageResult<Article> }
-      return response.data
-    }
-
-    return api.get<PageResult<Article>>('/api/article', params)
-  },
-  {
-    watch: [
-      () => props.userId,
-      () => props.self,
-      activeTab,
-      currentPage,
-      pageSize,
-    ],
-    default: () => emptyPage,
-  },
-)
-
-const articles = computed(() => articlePage.value?.records || [])
-const total = computed(() => articlePage.value?.total || 0)
-
-const currentTabLabel = computed(() => statusTabs.find(tab => tab.value === activeTab.value)?.label || '')
+const currentTabLabel = computed(() => statusTabs.find(tab => tab.value === props.activeTab)?.label || '')
 
 const emptyMessage = computed(() => {
   if (!props.self) return '该用户暂无文章'
-  return activeTab.value === 'all' ? '还没有文章' : `还没有${currentTabLabel.value}的文章`
+  return props.activeTab === 'all' ? '还没有文章' : `还没有${currentTabLabel.value}的文章`
 })
 
 function articleStatusText(status: number): string {
@@ -273,17 +199,17 @@ function openWriteEdit(id: number): void {
 }
 
 function handleTabChange(tab: string): void {
-  activeTab.value = tab
-  currentPage.value = 1
+  emit('update:activeTab', tab)
+  emit('update:currentPage', 1)
 }
 
 function handlePageChange(page: number): void {
-  currentPage.value = page
+  emit('update:currentPage', page)
 }
 
 function handlePageSizeChange(size: number): void {
-  pageSize.value = size
-  currentPage.value = 1
+  emit('update:pageSize', size)
+  emit('update:currentPage', 1)
 }
 
 function confirmDelete(article: Article): void {
@@ -298,9 +224,9 @@ async function doDelete(): Promise<void> {
     toast.success('文章已删除')
     showDeleteConfirm.value = false
     deleteTarget.value = null
-    await refresh()
+    emit('refresh')
   } catch {
-    // 错误提示由 axios 拦截器统一处理
+    // handled by interceptor
   }
 }
 </script>
