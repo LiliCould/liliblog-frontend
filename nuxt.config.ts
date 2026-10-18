@@ -1,3 +1,5 @@
+const isDev = process.env.NODE_ENV === 'development'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-18',
   srcDir: 'app/',
@@ -63,9 +65,13 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    apiBase: process.env.NUXT_API_BASE || 'https://api.lilicould.cn',
+    // 本地开发默认直连本地后端；服务器上用 NUXT_API_BASE 覆盖
+    apiBase: process.env.NUXT_API_BASE
+      || (isDev ? 'http://localhost:8080' : 'https://api.lilicould.cn'),
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.lilicould.cn',
+      // 浏览器始终走同源 /api，由 Nitro 或 Nginx 转发，避免 CORS 与 Cookie 跨域问题
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://lilicould.cn',
     },
   },
 

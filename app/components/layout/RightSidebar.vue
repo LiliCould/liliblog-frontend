@@ -45,16 +45,16 @@
 
       <div class="flex flex-wrap gap-2.5 max-h-[26rem] overflow-y-auto p-1 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[rgba(var(--color-primary-rgb),0.15)] [&::-webkit-scrollbar-thumb]:rounded-full">
         <NuxtLink
-          v-for="tag in appStore.tags"
+          v-for="tag in tagList"
           :key="tag.id"
-          :to="`/tag/${tag.name}`"
+          :to="`/tag/${encodeURIComponent(tag.name)}`"
           class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold no-underline border border-[rgba(var(--color-primary-rgb),0.15)] bg-[rgba(var(--color-primary-rgb),0.06)] transition-all duration-200 hover:-translate-y-px hover:[box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.4)]"
           :style="{ color: tag.color || 'var(--color-primary)', backgroundColor: tag.color ? tag.color + '15' : 'rgba(var(--color-primary-rgb),0.06)' }"
         >
           <span class="w-1.5 h-1.5 rounded-full opacity-70 [box-shadow:0_0_6px_currentColor]" :style="{ backgroundColor: tag.color || 'var(--color-primary)' }" />
           {{ tag.name }}
         </NuxtLink>
-        <div v-if="appStore.tags.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm w-full">
+        <div v-if="tagList.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm w-full">
           <AlertCircle class="w-10 h-10 opacity-40" />
           <span>暂无标签</span>
         </div>
@@ -66,21 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, FileText, AlertCircle, Shuffle, Tag as TagIcon } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { AlertCircle, ChevronRight, FileText, Shuffle, Tag as TagIcon } from 'lucide-vue-next'
 
-interface ArticleSummary {
-  id: number
-  title: string
-  slug: string
-}
+const { data: tags } = await useTags()
+const { data: randomArticles, pending: loading } = await useRandomArticles(5)
 
-withDefaults(defineProps<{
-  articles?: ArticleSummary[]
-  loading?: boolean
-}>(), {
-  articles: () => [],
-  loading: false,
-})
-
-const appStore = useAppStore()
+const tagList = computed(() => tags.value || [])
+const articles = computed(() => randomArticles.value || [])
 </script>

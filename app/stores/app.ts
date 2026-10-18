@@ -1,17 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-
-export interface Category {
-  id: number
-  name: string
-  slug?: string
-}
-
-export interface Tag {
-  id: number
-  name: string
-  color?: string
-}
+import type { Category, Tag } from '~/types'
 
 export const useAppStore = defineStore('app', () => {
   const categories = ref<Category[]>([])
