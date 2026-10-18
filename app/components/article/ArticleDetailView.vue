@@ -86,8 +86,8 @@
         </div>
       </header>
 
-      <div v-if="article.coverImage" class="mb-8 rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)]">
-        <img :src="article.coverImage" :alt="article.title" class="w-full max-h-[200px] md:max-h-[400px] object-cover" loading="lazy" decoding="async" />
+      <div v-if="article.coverImage" class="mb-8 rounded-lg overflow-hidden border border-[rgba(var(--color-primary-rgb),0.1)] h-[200px] md:h-[320px]">
+        <img :src="article.coverImage" :alt="article.title" class="w-full h-full object-cover" loading="eager" fetchpriority="high" decoding="async" />
       </div>
 
       <MarkdownViewer :content-html="article.contentHtml || ''" />

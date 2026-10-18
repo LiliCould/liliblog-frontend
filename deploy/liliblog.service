@@ -1,0 +1,28 @@
+[Unit]
+Description=LiliBlog Nuxt SSR
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/liliblog
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=NUXT_API_BASE=https://api.lilicould.cn
+Environment=NUXT_PUBLIC_SITE_URL=https://lilicould.cn
+ExecStart=/usr/bin/node .output/server/index.mjs
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/www/liliblog
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

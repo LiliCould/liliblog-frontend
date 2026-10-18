@@ -80,12 +80,13 @@ export default defineNuxtConfig({
   // 避免 devProxy 与 Nitro 中间件重复转发导致请求头被改写。
 
   routeRules: {
-    '/admin/**': { ssr: false },
-    '/write/**': { ssr: false },
-    '/profile/**': { ssr: false },
-    '/user/me': { ssr: false },
-    '/login': { ssr: false },
-    '/register': { ssr: false },
+    '/admin/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/write/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/profile/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/user/me': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/login': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/register': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/search': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
 
   typescript: {
