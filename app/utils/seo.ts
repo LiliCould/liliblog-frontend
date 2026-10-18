@@ -1,6 +1,6 @@
 export const SITE_URL = 'https://lilicould.cn'
 export const SITE_NAME = '立里博客 | LiliBlog'
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`
+export const DEFAULT_OG_IMAGE = 'https://oss.lilicould.cn/file/hero-1.png'
 
 export function absoluteUrl(path: string): string {
   if (!path) return SITE_URL
