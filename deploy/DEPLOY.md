@@ -210,6 +210,77 @@ sudo cp /root/lilicould.conf.bak /opt/1panel/www/conf.d/lilicould.conf
 
 旧静态站仍在原目录，恢复旧配置后即可继续提供服务。
 
+## 6.1 后端 Java 内存调优（避免全局 OOM）
+
+当前服务器只有 1.6GB 内存，Java 峰值 RSS 约 770–811MB。建议把后端
+`liliblog.service` 调整为以下参数，并给 cgroup 设置硬上限。
+
+先备份：
+
+```bash
+sudo cp /etc/systemd/system/liliblog.service /root/liliblog.service.bak
+```
+
+建议的 `[Unit]` / `[Service]`：
+
+```ini
+[Unit]
+Description=Liliblog Spring Boot Application
+After=network.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+User=lilicould
+Group=lilicould
+WorkingDirectory=/opt/liliblog
+ExecStart=/usr/bin/java \
+  -Xms192m -Xmx320m -Xss512k \
+  -XX:+UseG1GC -XX:MaxGCPauseMillis=200 \
+  -XX:MetaspaceSize=96m -XX:MaxMetaspaceSize=128m \
+  -XX:ReservedCodeCacheSize=96m -XX:MaxDirectMemorySize=128m \
+  -XX:+UseContainerSupport -XX:ActiveProcessorCount=2 \
+  -XX:+ExitOnOutOfMemoryError \
+  -Dfile.encoding=UTF-8 \
+  -jar /opt/liliblog/liliblog.jar \
+  --spring.profiles.active=prod \
+  --server.tomcat.threads.max=50 \
+  --server.tomcat.threads.min-spare=5 \
+  --server.tomcat.accept-count=100
+Restart=on-failure
+RestartSec=10
+MemoryAccounting=true
+MemoryHigh=600M
+MemoryMax=720M
+MemorySwapMax=256M
+TasksMax=256
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+```
+
+应用：
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start liliblog
+sudo systemctl status liliblog --no-pager
+free -m
+```
+
+观察：
+
+```bash
+journalctl -u liliblog -f
+systemctl status liliblog --no-pager
+```
+
+- `MemoryHigh=600M`：超过后内核会节流 Java，而不是直接杀进程
+- `MemoryMax=720M`：硬上限，防止 Java 把整机内存吃光
+- 如果启动时就因上限失败，先把 `MemoryMax` 调到 800M 再试
+- 如果仍然 OOM，检查 `journalctl -k | grep -i oom`，并考虑给 MySQL 容器也加内存限制
+
 ## 7. 环境变量
 
 ```bash
