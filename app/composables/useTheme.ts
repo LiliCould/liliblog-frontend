@@ -75,6 +75,14 @@ export function useTheme() {
     if (!import.meta.client) return
 
     try {
+      if (import.meta.dev) {
+        const queryTheme = new URLSearchParams(window.location.search).get('theme')
+        if (queryTheme && themes.some(theme => theme.id === queryTheme)) {
+          applyTheme(queryTheme)
+          return
+        }
+      }
+
       const saved = localStorage.getItem(THEME_KEY)
       if (saved && themes.some(theme => theme.id === saved)) {
         applyTheme(saved)

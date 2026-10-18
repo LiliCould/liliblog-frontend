@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col items-center justify-center py-20 px-6 text-center">
-    <div class="mb-6">
-      <component :is="iconComponent" class="w-14 h-14 text-t-primary opacity-50" />
+  <div class="flex flex-col items-center justify-center px-6 py-16 text-center">
+    <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[rgba(var(--color-primary-rgb),0.08)]">
+      <component :is="iconComponent" class="h-7 w-7 text-t-primary opacity-70" />
     </div>
 
     <h3 class="text-base font-semibold text-t-title mb-1.5">{{ message }}</h3>
-    <p v-if="description" class="text-sm text-t-muted max-w-[300px]">{{ description }}</p>
+    <p v-if="description" class="max-w-[300px] text-sm leading-relaxed text-t-muted">{{ description }}</p>
 
     <slot />
   </div>

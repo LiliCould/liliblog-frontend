@@ -1,10 +1,10 @@
 <template>
   <DialogRoot :open="open" @update:open="onOpenChange">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-[1200] bg-black/60 backdrop-blur-sm" />
+      <DialogOverlay class="fixed inset-0 z-[var(--z-modal)] bg-[var(--color-scrim)] backdrop-blur-sm" />
 
       <DialogContent
-        class="fixed left-1/2 top-1/2 z-[1210] w-full -translate-x-1/2 -translate-y-1/2 border border-t-border bg-t-surface p-6 max-md:inset-2 max-md:max-h-[90dvh] max-md:translate-x-0 max-md:translate-y-0 max-md:overflow-y-auto max-md:max-w-none focus:outline-none"
+        class="panel-glass fixed left-1/2 top-1/2 z-[var(--z-modal)] w-full -translate-x-1/2 -translate-y-1/2 p-6 max-md:max-h-[90dvh] max-md:max-w-[calc(100vw-1rem)] max-md:overflow-y-auto focus:outline-none"
         :class="maxWidth"
       >
         <div class="flex items-center justify-between mb-5">

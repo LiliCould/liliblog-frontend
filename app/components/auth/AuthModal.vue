@@ -1,10 +1,10 @@
 <template>
   <DialogRoot :open="isOpen" @update:open="onOpenChange">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-[1200] bg-black/60 backdrop-blur-sm" />
+      <DialogOverlay class="fixed inset-0 z-[var(--z-modal)] bg-[var(--color-scrim)] backdrop-blur-sm" />
 
       <DialogContent
-        class="fixed left-1/2 top-1/2 z-[1210] w-full max-w-[380px] -translate-x-1/2 -translate-y-1/2 bg-t-surface border border-t-border shadow-lg overflow-hidden focus:outline-none"
+        class="panel-glass fixed left-1/2 top-1/2 z-[var(--z-modal)] w-full max-w-[380px] -translate-x-1/2 -translate-y-1/2 overflow-hidden focus:outline-none max-md:max-h-[90dvh] max-md:max-w-[calc(100vw-1rem)] max-md:overflow-y-auto"
       >
         <DialogTitle class="sr-only">登录立里博客</DialogTitle>
         <DialogDescription class="sr-only">使用用户名密码或邮箱验证码登录</DialogDescription>

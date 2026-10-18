@@ -1,5 +1,10 @@
 <template>
-  <section class="relative w-full h-screen overflow-hidden">
+  <section
+    class="hero-section relative w-full overflow-hidden"
+    style="height: min(720px, calc(80vh - var(--header-height))); height: min(720px, calc(80svh - var(--header-height)))"
+    @mouseenter="hovering = true"
+    @mouseleave="hovering = false"
+  >
     <div
       v-for="(slide, index) in slides"
       :key="index"
@@ -14,15 +19,25 @@
         decoding="async"
         :fetchpriority="index === 0 ? 'high' : 'low'"
       />
-      <div class="absolute inset-0 bg-gradient-to-b from-[rgba(10,10,15,0.3)] via-[rgba(10,10,15,0.5)] to-[rgba(10,10,15,0.85)]" />
+      <div
+        class="absolute inset-0"
+        style="background:linear-gradient(to bottom, rgba(10,10,15,0.28) 0%, rgba(10,10,15,0.55) 68%, var(--color-bg) 100%)"
+      />
     </div>
 
     <div
-      class="absolute inset-0 pointer-events-none"
-      style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,240,255,0.015) 2px,rgba(0,240,255,0.015) 4px)"
+      class="absolute inset-0 pointer-events-none opacity-70"
+      style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(var(--color-primary-rgb),0.02) 2px,rgba(var(--color-primary-rgb),0.02) 4px)"
     />
 
-    <div class="relative z-10 flex flex-col items-center justify-center h-full gap-5 text-center px-4">
+    <ParticleField variant="hero" :count="160" interactive />
+
+    <div class="relative z-10 flex h-full flex-col items-center justify-center gap-6 px-4 text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-1.5 text-xs font-medium tracking-wide text-white/85 backdrop-blur-md">
+        <Sparkles class="w-3.5 h-3.5 text-t-primary" />
+        立里可的技术与生活空间
+      </span>
+
       <h1 class="glitch-title" :class="titleSizeClass" data-text="LiliCould's Blog">
         <span class="glitch-before" aria-hidden="true">LiliCould's Blog</span>
         <span class="glitch-main">LiliCould's Blog</span>
@@ -30,8 +45,8 @@
         <span class="glitch-line" />
       </h1>
 
-      <p class="tracking-wide flex items-center justify-center min-h-[2em]" :class="subtitleSizeClass" style="font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;">
-        <span v-if="subtitleStarted" class="text-[#9ca3af]">
+      <p class="tracking-wide flex items-center justify-center min-h-[2em] text-white/80" :class="subtitleSizeClass" style="font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;">
+        <span v-if="subtitleStarted">
           <span class="text-t-primary">&lt;</span>
           <span>{{ subDisplayText }}</span>
           <span class="typewriter-cursor" :class="{ 'cursor-blink': subTypingDone }">|</span>
@@ -43,39 +58,60 @@
         class="w-20 h-0.5 bg-gradient-to-r from-transparent via-t-primary to-transparent shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.5)]"
         :class="{ 'opacity-0': !subTypingDone, 'opacity-100 transition-opacity duration-700': subTypingDone }"
       />
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <NuxtLink to="/#article-list" class="btn-primary px-5 py-2.5 text-sm">
+          浏览文章
+          <ChevronDown class="w-4 h-4" />
+        </NuxtLink>
+        <NuxtLink
+          to="/about"
+          class="inline-flex items-center gap-2 rounded-control border border-white/20 bg-black/25 px-5 py-2.5 text-sm font-medium text-white/90 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-black/40"
+        >
+          关于我
+        </NuxtLink>
+      </div>
+
+      <NuxtLink
+        to="/#article-list"
+        class="mt-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/80 backdrop-blur-md transition-all duration-200 hover:border-white/35 hover:bg-black/40 hover:text-white"
+        aria-label="向下滚动到文章列表"
+      >
+        <ChevronDown class="w-4 h-4 animate-bounce" />
+      </NuxtLink>
     </div>
 
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
+    <div class="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2 backdrop-blur-md">
       <button
         v-for="(_, index) in slides"
         :key="index"
-        class="w-2.5 h-2.5 rounded-full transition-all duration-300 border"
+        class="h-2.5 rounded-full transition-all duration-300"
         :class="index === currentIndex
-          ? 'bg-t-primary border-t-primary w-8 shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)]'
-          : 'bg-transparent border-[rgba(var(--color-primary-rgb),0.4)] hover:border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.3)]'"
+          ? 'w-8 bg-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)]'
+          : 'w-2.5 bg-white/35 hover:bg-white/60'"
         :aria-label="`切换到第 ${index + 1} 张图片`"
         @click="goTo(index)"
       />
     </div>
 
     <button
-      class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.5)] hover:[box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)]"
+      class="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/80 backdrop-blur-md transition-all duration-200 hover:border-white/35 hover:bg-black/45 hover:text-white"
       aria-label="上一张"
       @click="prev"
     >
       <ChevronLeft class="w-5 h-5" />
     </button>
     <button
-      class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.5)] hover:[box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)]"
+      class="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/80 backdrop-blur-md transition-all duration-200 hover:border-white/35 hover:bg-black/45 hover:text-white"
       aria-label="下一张"
       @click="next"
     >
       <ChevronRight class="w-5 h-5" />
     </button>
 
-    <div class="absolute bottom-8 right-4 z-20">
+    <div class="absolute bottom-7 right-4 z-20">
       <button
-        class="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(20,20,35,0.6)] border border-[rgba(var(--color-primary-rgb),0.2)] text-t-primary transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.15)]"
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/75 backdrop-blur-md transition-all duration-200 hover:bg-black/45 hover:text-white"
         :aria-label="paused ? '继续自动播放' : '暂停自动播放'"
         @click="togglePause"
       >
@@ -88,7 +124,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
+import { ChevronDown, ChevronLeft, ChevronRight, Pause, Play, Sparkles } from 'lucide-vue-next'
 
 const SUB_TEXT = '技术与生活的分享空间'
 const SUB_TYPE_SPEED = 100
@@ -102,6 +138,7 @@ const slides = [
 
 const currentIndex = ref(0)
 const paused = ref(false)
+const hovering = ref(false)
 const subDisplayText = ref('')
 const subTypingDone = ref(false)
 const subtitleStarted = ref(false)
@@ -127,8 +164,16 @@ function goTo(index: number): void {
 function startAutoPlay(): void {
   stopAutoPlay()
   slideTimer = setInterval(() => {
-    if (!paused.value) next()
+    if (!paused.value && !hovering.value) next()
   }, 5000)
+}
+
+function handleVisibilityChange(): void {
+  if (document.hidden) {
+    stopAutoPlay()
+  } else if (!paused.value) {
+    startAutoPlay()
+  }
 }
 
 function stopAutoPlay(): void {
@@ -176,11 +221,13 @@ onMounted(() => {
   }
   startAutoPlay()
   startTypewriter()
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 })
 
 onUnmounted(() => {
   stopAutoPlay()
   if (typeTimer) clearInterval(typeTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
@@ -197,7 +244,7 @@ onUnmounted(() => {
 .glitch-main {
   position: relative;
   z-index: 10;
-  color: transparent;
+  color: #ffffff;
 }
 
 .glitch-before,
@@ -212,15 +259,15 @@ onUnmounted(() => {
 }
 
 .glitch-before {
-  color: #ff2d78;
-  text-shadow: 1px 0 0 #ff2d78;
+  color: var(--color-secondary);
+  text-shadow: 1px 0 0 var(--color-secondary);
   z-index: 20;
   animation: glitch-anim-1 0.95s infinite step-end;
 }
 
 .glitch-after {
-  color: #00f0ff;
-  text-shadow: -1px 0 0 #00f0ff;
+  color: var(--color-primary);
+  text-shadow: -1px 0 0 var(--color-primary);
   z-index: 30;
   mix-blend-mode: lighten;
   animation: glitch-anim-2 1.1s infinite step-end 0.2s;
@@ -231,7 +278,7 @@ onUnmounted(() => {
   left: -3px;
   width: calc(100% + 6px);
   height: 1px;
-  background: #000;
+  background: var(--color-border-solid);
   z-index: 50;
   will-change: transform, opacity;
   animation: glitch-line 3s steps(1) infinite;
@@ -300,7 +347,7 @@ onUnmounted(() => {
 }
 
 .typewriter-cursor {
-  color: #00f0ff;
+  color: var(--color-primary);
   font-weight: 300;
   margin-left: 2px;
   opacity: 1;

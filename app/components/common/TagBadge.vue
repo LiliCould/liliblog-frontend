@@ -1,10 +1,10 @@
 <template>
   <NuxtLink
     :to="`/tag/${encodeURIComponent(tag.name)}`"
-    class="relative inline-flex items-center gap-1.5 px-3.5 py-[5px] rounded-full text-xs font-semibold leading-[1.4] whitespace-nowrap cursor-pointer no-underline transition-all duration-300 border hover:-translate-y-px hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)]"
+    class="chip-glass inline-flex items-center gap-1.5 px-3.5 py-[5px] text-xs font-semibold leading-[1.4] whitespace-nowrap no-underline hover:-translate-y-px"
     :style="badgeStyle"
   >
-    <span class="w-1.5 h-1.5 rounded-full opacity-70 shadow-[0_0_6px_currentColor]" :style="{ background: 'currentColor' }" />
+    <span class="w-1.5 h-1.5 rounded-full" :style="{ background: accentColor }" />
     {{ tag.name }}
   </NuxtLink>
 </template>
@@ -12,26 +12,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Tag } from '~/types'
+import { withAlpha } from '~/utils/color'
 
 const props = defineProps<{
   tag: Tag
 }>()
 
-const textColor = computed(() => props.tag.color || '#00f0ff')
-
-const bgColor = computed(() => {
-  if (props.tag.color) return `${props.tag.color}15`
-  return 'rgba(0, 240, 255, 0.06)'
-})
-
-const borderColor = computed(() => {
-  if (props.tag.color) return `${props.tag.color}40`
-  return 'rgba(0, 240, 255, 0.15)'
-})
+const accentColor = computed(() => props.tag.color || 'var(--color-primary)')
 
 const badgeStyle = computed(() => ({
-  color: textColor.value,
-  backgroundColor: bgColor.value,
-  borderColor: borderColor.value,
+  backgroundColor: props.tag.color
+    ? withAlpha(props.tag.color, 0.10)
+    : 'rgba(var(--color-primary-rgb), 0.08)',
+  borderColor: props.tag.color
+    ? withAlpha(props.tag.color, 0.32)
+    : 'rgba(var(--color-primary-rgb), 0.20)',
 }))
 </script>

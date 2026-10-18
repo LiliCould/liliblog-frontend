@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-t-title">用户管理</h2>
             <button
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                 @click="openCreateDialog">
                 <Plus class="w-4 h-4" />
                 添加用户
@@ -56,7 +56,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button
-                        class="px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                         @click="applyFilters">
                         查询
                     </button>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="flex items-center gap-2 w-full">
                     <button
-                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                         @click="applyFilters">
                         查询
                     </button>
@@ -216,7 +216,7 @@
                                             }"></span>
                                     </button>
                                     <span class="text-xs font-medium transition-colors duration-300"
-                                        :class="user.status === 1 ? 'text-[#4ade80]' : 'text-[#f43f5e]'">
+                                        :class="user.status === 1 ? 'text-t-success' : 'text-t-danger'">
                                         {{ user.status === 1 ? '启用' : '禁用' }}
                                     </span>
                                 </div>
@@ -232,7 +232,7 @@
                                         <Pencil class="w-4 h-4" />
                                     </button>
                                     <button
-                                        class="p-1.5 text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                                        class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
                                         title="删除" @click="handleDelete(user)">
                                         <Trash2 class="w-4 h-4" />
                                     </button>
@@ -280,7 +280,7 @@
                                     left: user.status === 1 ? '18px' : '2px',
                                 }"></span>
                         </button>
-                        <span class="text-xs font-medium" :class="user.status === 1 ? 'text-[#4ade80]' : 'text-[#f43f5e]'">
+                        <span class="text-xs font-medium" :class="user.status === 1 ? 'text-t-success' : 'text-t-danger'">
                             {{ user.status === 1 ? '启用' : '禁用' }}
                         </span>
                     </div>
@@ -291,7 +291,7 @@
                             <Pencil class="w-4 h-4" />
                         </button>
                         <button
-                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
                             title="删除" @click="handleDelete(user)">
                             <Trash2 class="w-4 h-4" />
                         </button>
@@ -387,7 +387,7 @@
             </div>
             <div class="flex justify-end gap-3 mt-6">
                 <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showDialog = false">取消</button>
-                <button class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEditing ? '保存' : '添加' }}</button>
+                <button class="px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEditing ? '保存' : '添加' }}</button>
             </div>
         </AppDialog>
 

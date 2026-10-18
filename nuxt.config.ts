@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '~/assets/styles/tailwind.css',
     '~/assets/styles/variables.css',
     '~/assets/styles/reset.css',
+    '~/assets/styles/components.css',
     '~/assets/styles/transitions.css',
     '~/assets/styles/upload-progress.css',
     'vue-sonner/style.css',

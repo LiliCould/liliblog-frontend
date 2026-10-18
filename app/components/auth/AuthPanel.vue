@@ -5,20 +5,11 @@
       <p class="text-sm text-t-muted">{{ currentView === 'login' ? '欢迎回来' : '创建你的账号' }}</p>
     </div>
 
-    <div v-if="currentView === 'login'" class="flex border-b border-t-border">
-      <button
-        v-for="tab in loginTabs"
-        :key="tab.key"
-        type="button"
-        class="flex-1 py-2 text-sm font-medium transition-all duration-200 cursor-pointer"
-        :class="loginMethod === tab.key
-          ? 'text-t-primary border-b-2 border-t-primary'
-          : 'text-t-muted hover:text-t-body border-b-2 border-transparent'"
-        @click="loginMethod = tab.key"
-      >
-        {{ tab.label }}
-      </button>
-    </div>
+    <AppTabs
+      v-if="currentView === 'login'"
+      v-model="loginMethodTab"
+      :tabs="loginTabOptions"
+    />
 
     <Transition
       enter-active-class="transition-opacity duration-200 ease-out"
@@ -54,7 +45,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full h-9 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            class="w-full h-9 bg-t-primary-fill text-t-on-primary font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {{ loading ? '登录中...' : '登录' }}
           </button>
@@ -97,7 +88,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full h-9 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            class="w-full h-9 bg-t-primary-fill text-t-on-primary font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {{ loading ? '登录中...' : '登录' }}
           </button>
@@ -135,7 +126,7 @@
             <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-t-muted" />
             <input v-model="registerForm.confirmPassword" type="password" autocomplete="new-password" placeholder="确认密码" class="w-full h-9 pl-9 pr-3 bg-t-bg border border-t-border text-t-body text-sm placeholder:text-t-muted outline-none transition-colors duration-200 focus:border-t-primary" />
           </div>
-          <button type="submit" :disabled="loading" class="w-full h-9 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+          <button type="submit" :disabled="loading" class="w-full h-9 bg-t-primary-fill text-t-on-primary font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
             {{ loading ? '注册中...' : '注册' }}
           </button>
         </form>
@@ -155,7 +146,7 @@
             <span class="text-sm text-t-primary font-medium">lilicould@qq.com</span>
             <Copy class="w-3.5 h-3.5 text-t-muted" />
           </div>
-          <button type="button" class="w-full h-9 mt-6 bg-t-primary text-white font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] cursor-pointer" @click="switchView('login')">
+          <button type="button" class="w-full h-9 mt-6 bg-t-primary-fill text-t-on-primary font-semibold text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] cursor-pointer" @click="switchView('login')">
             返回登录
           </button>
         </div>
@@ -181,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { Copy, KeyRound, Lock, Mail, PenLine, User } from 'lucide-vue-next'
 import { getCaptcha, register } from '~/api/auth'
 import logoSvg from '~/assets/logo.svg'
@@ -214,6 +205,19 @@ const loginTabs = [
   { key: 'password' as const, label: '密码登录' },
   { key: 'email' as const, label: '邮箱登录' },
 ]
+
+const loginTabOptions = computed(() =>
+  loginTabs.map(tab => ({ label: tab.label, value: tab.key })),
+)
+
+const loginMethodTab = computed({
+  get: () => loginMethod.value,
+  set: (value: string) => {
+    if (value === 'password' || value === 'email') {
+      loginMethod.value = value
+    }
+  },
+})
 
 const pwdForm = reactive({ username: '', password: '' })
 const emailForm = reactive({ email: '', code: '' })

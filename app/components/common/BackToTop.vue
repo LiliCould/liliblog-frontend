@@ -2,7 +2,7 @@
   <Transition name="back-to-top">
     <button
       v-if="visible"
-      class="fixed right-4 md:right-8 z-[55] w-10 h-10 rounded-full flex items-center justify-center border border-[rgba(var(--color-primary-rgb),0.25)] bg-[rgba(var(--color-surface-rgb),0.92)] text-t-primary shadow-[0_4px_16px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.12)] hover:border-t-primary active:scale-95 cursor-pointer bottom-[calc(var(--mobile-bottom-nav-height,56px)+4.5rem)] md:bottom-8"
+      class="fixed right-4 md:right-8 z-[var(--z-bottom-nav)] w-10 h-10 rounded-full flex items-center justify-center border border-[rgba(var(--color-primary-rgb),0.25)] bg-[rgba(var(--color-surface-rgb),0.92)] text-t-primary shadow-[0_4px_16px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.12)] hover:border-t-primary active:scale-95 cursor-pointer bottom-[calc(var(--mobile-bottom-nav-height,56px)+var(--safe-bottom,0px)+4.5rem)] md:bottom-8"
       aria-label="返回顶部"
       @click="scrollToTop"
     >

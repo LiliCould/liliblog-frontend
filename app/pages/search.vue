@@ -14,17 +14,17 @@
           v-model="inputValue"
           type="text"
           placeholder="搜索文章..."
-          class="flex-1 h-10 px-4 rounded-lg bg-[rgba(var(--color-surface-rgb),0.6)] border border-[rgba(var(--color-primary-rgb),0.12)] text-t-body placeholder-[#6b7280] text-sm outline-none focus:border-[rgba(var(--color-primary-rgb),0.4)]"
+          class="flex-1 h-10 px-4 rounded-lg bg-[rgba(var(--color-surface-rgb),0.6)] border border-[rgba(var(--color-primary-rgb),0.12)] text-t-body placeholder-t-muted text-sm outline-none focus:border-[rgba(var(--color-primary-rgb),0.4)]"
           @keyup.enter="doSearch"
         />
-        <button class="h-10 px-4 rounded-lg text-sm font-medium text-white bg-t-primary transition-all duration-200 hover:-translate-y-px cursor-pointer" @click="doSearch">
+        <button class="h-10 px-4 rounded-control text-sm font-medium text-t-on-primary bg-t-primary-fill transition-all duration-200 hover:-translate-y-px cursor-pointer" @click="doSearch">
           搜索
         </button>
       </div>
 
-      <div v-if="pending" class="flex flex-col gap-4">
-        <div v-for="i in 3" :key="i" class="h-28 rounded-xl bg-t-surface animate-pulse" />
-      </div>
+      <LoadingState v-if="pending" variant="list" :count="3" />
+
+      <ErrorState v-else-if="error && articles.length === 0" title="搜索失败" @retry="refresh" />
 
       <div v-else-if="articles.length > 0" class="flex flex-col gap-6">
         <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
@@ -39,24 +39,25 @@
         />
       </div>
 
-      <div v-else-if="keyword" class="text-center py-16">
-        <Search class="w-16 h-16 text-t-muted mx-auto mb-4 opacity-30" />
-        <p class="text-t-muted text-lg mb-2">未找到相关文章</p>
-        <p class="text-t-muted text-sm">试试其他关键词吧</p>
-      </div>
+      <EmptyState
+        v-else-if="keyword"
+        type="search"
+        message="未找到相关文章"
+        description="试试其他关键词吧"
+      />
 
-      <div v-else class="text-center py-16">
-        <Search class="w-16 h-16 text-t-muted mx-auto mb-4 opacity-30" />
-        <p class="text-t-muted text-lg mb-2">输入关键词开始搜索</p>
-        <p class="text-t-muted text-sm max-md:hidden">在顶部搜索框输入关键词后按回车</p>
-      </div>
+      <EmptyState
+        v-else
+        type="search"
+        message="输入关键词开始搜索"
+        description="在搜索框输入关键词后按回车"
+      />
     </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Search } from 'lucide-vue-next'
 import type { Article, PageResult } from '~/types'
 
 const route = useRoute()
@@ -78,7 +79,7 @@ const emptyPage: PageResult<Article> = {
   hasNext: false,
 }
 
-const { data: resultPage, pending, refresh } = await useAsyncData(
+const { data: resultPage, pending, error, refresh } = await useAsyncData(
   'search-articles',
   () => keyword.value
     ? api.get<PageResult<Article>>('/api/article/search', {

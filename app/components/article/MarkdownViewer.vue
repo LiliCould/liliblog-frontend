@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full min-h-full p-5 px-6 rounded-lg bg-t-bg transition-all duration-200 box-border">
+  <div class="w-full min-h-full box-border">
     <div
       ref="viewerEl"
-      class="prose max-w-none prose-headings:text-t-title prose-p:text-t-body prose-a:text-t-primary prose-strong:text-t-title prose-code:text-t-primary prose-pre:bg-t-elevated prose-blockquote:border-t-primary prose-li:text-t-body"
+      class="article-prose"
       v-html="sanitizedHtml"
       @click="handleClick"
     />
@@ -15,33 +15,25 @@
       @close="previewState.show = false"
     />
 
-    <Teleport to="body">
-      <div v-if="externalLinkState.show" class="fixed inset-0 z-[1200] flex items-center justify-center">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="externalLinkState.show = false" />
-        <div class="relative w-full max-w-md mx-4 rounded-xl bg-t-surface border border-t-border p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)]">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-full bg-[rgba(217,119,6,0.1)] flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-[var(--color-warning,#d97706)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                <path d="M12 9v4" /><path d="M12 17h.01" />
-              </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-t-title">您即将离开本站</h2>
-          </div>
-          <div class="mb-6">
-            <p class="text-t-body mb-3">您正在访问的外部链接：</p>
-            <div class="px-3 py-2 rounded-lg bg-t-elevated border border-t-border">
-              <p class="text-sm text-t-muted break-all line-clamp-2">{{ externalLinkState.url }}</p>
-            </div>
-            <p class="text-t-body-secondary text-sm mt-3">本站不对第三方网站的内容、安全性或隐私保护措施负责。请确认您信任该网站后再继续访问。</p>
-          </div>
-          <div class="flex justify-end gap-3">
-            <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors rounded-lg" @click="externalLinkState.show = false">取消</button>
-            <button class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all rounded-lg" @click="openExternalLink">继续访问</button>
-          </div>
+    <AppConfirmDialog
+      :open="externalLinkState.show"
+      warning
+      title="您即将离开本站"
+      confirm-text="继续访问"
+      cancel-text="取消"
+      @update:open="externalLinkState.show = $event"
+      @confirm="openExternalLink"
+    >
+      <div class="space-y-3">
+        <p class="text-t-body">您正在访问的外部链接：</p>
+        <div class="px-3 py-2 rounded-control bg-t-elevated border border-t-border">
+          <p class="text-sm text-t-muted break-all line-clamp-2">{{ externalLinkState.url }}</p>
         </div>
+        <p class="text-t-body-secondary text-sm">
+          本站不对第三方网站的内容、安全性或隐私保护措施负责。请确认您信任该网站后再继续访问。
+        </p>
       </div>
-    </Teleport>
+    </AppConfirmDialog>
   </div>
 </template>
 
@@ -56,28 +48,28 @@ const props = defineProps<{
 
 const viewerEl = ref<HTMLElement | null>(null)
 
-const FILE_TYPES: Record<string, { color: string; bg: string; label: string }> = {
-  doc: { color: '#2B579A', bg: '#E8F0FE', label: 'DOC' },
-  docx: { color: '#2B579A', bg: '#E8F0FE', label: 'DOC' },
-  xls: { color: '#217346', bg: '#E6F4EA', label: 'XLS' },
-  xlsx: { color: '#217346', bg: '#E6F4EA', label: 'XLS' },
-  ppt: { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
-  pptx: { color: '#D24726', bg: '#FDE7E4', label: 'PPT' },
-  pdf: { color: '#E53935', bg: '#FFEBEE', label: 'PDF' },
-  md: { color: '#64748b', bg: '#f1f5f9', label: 'MD' },
-  markdown: { color: '#64748b', bg: '#f1f5f9', label: 'MD' },
-  zip: { color: '#F57C00', bg: '#FFF3E0', label: 'ZIP' },
-  rar: { color: '#F57C00', bg: '#FFF3E0', label: 'RAR' },
-  '7z': { color: '#F57C00', bg: '#FFF3E0', label: '7Z' },
-  mp4: { color: '#7B1FA2', bg: '#F3E5F5', label: 'MP4' },
-  avi: { color: '#7B1FA2', bg: '#F3E5F5', label: 'AVI' },
-  mov: { color: '#7B1FA2', bg: '#F3E5F5', label: 'MOV' },
-  mp3: { color: '#E64A19', bg: '#FBE9E7', label: 'MP3' },
-  wav: { color: '#E64A19', bg: '#FBE9E7', label: 'WAV' },
-  flac: { color: '#E64A19', bg: '#FBE9E7', label: 'FLAC' },
-  txt: { color: '#616161', bg: '#F5F5F5', label: 'TXT' },
-  csv: { color: '#217346', bg: '#E6F4EA', label: 'CSV' },
-  apk: { color: '#3DDC84', bg: '#E8F5E9', label: 'APK' },
+const FILE_TYPES: Record<string, { color: string; label: string }> = {
+  doc: { color: '#2B579A', label: 'DOC' },
+  docx: { color: '#2B579A', label: 'DOC' },
+  xls: { color: '#217346', label: 'XLS' },
+  xlsx: { color: '#217346', label: 'XLS' },
+  ppt: { color: '#D24726', label: 'PPT' },
+  pptx: { color: '#D24726', label: 'PPT' },
+  pdf: { color: '#E53935', label: 'PDF' },
+  md: { color: '#64748b', label: 'MD' },
+  markdown: { color: '#64748b', label: 'MD' },
+  zip: { color: '#F57C00', label: 'ZIP' },
+  rar: { color: '#F57C00', label: 'RAR' },
+  '7z': { color: '#F57C00', label: '7Z' },
+  mp4: { color: '#7B1FA2', label: 'MP4' },
+  avi: { color: '#7B1FA2', label: 'AVI' },
+  mov: { color: '#7B1FA2', label: 'MOV' },
+  mp3: { color: '#E64A19', label: 'MP3' },
+  wav: { color: '#E64A19', label: 'WAV' },
+  flac: { color: '#E64A19', label: 'FLAC' },
+  txt: { color: '#616161', label: 'TXT' },
+  csv: { color: '#217346', label: 'CSV' },
+  apk: { color: '#3DDC84', label: 'APK' },
 }
 
 const PREVIEWABLE_TYPES = new Set(['pdf', 'md', 'markdown', 'mp4', 'avi', 'mov'])
@@ -127,7 +119,7 @@ function getFileCardHtml(href: string, text: string): string {
     : ''
 
   return `<div class="file-card">
-    <span class="file-card__icon" style="background:${fileType.bg};color:${fileType.color}">${fileType.label}</span>
+    <span class="file-card__icon" style="--file-color:${fileType.color}">${fileType.label}</span>
     <span class="file-card__name">${displayName}</span>
     ${previewBtn}
     <a href="${href}" target="_blank" rel="noopener noreferrer" class="file-card__action">${downloadIcon}</a>
@@ -188,11 +180,11 @@ watch(() => props.contentHtml, highlight, { flush: 'post' })
   gap: 12px;
   padding: 12px 16px;
   margin: 12px 0;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   cursor: default;
-  transition: all 0.2s ease;
+  transition: all var(--motion-base) var(--ease-standard);
   width: 100%;
   box-sizing: border-box;
 }
@@ -213,6 +205,8 @@ watch(() => props.contentHtml, highlight, { flush: 'post' })
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
+  background: color-mix(in srgb, var(--file-color, var(--color-primary)) 14%, var(--color-surface));
+  color: color-mix(in srgb, var(--file-color, var(--color-primary)) 72%, var(--color-title));
 }
 
 .file-card__name {

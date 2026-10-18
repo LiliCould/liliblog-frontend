@@ -2,13 +2,9 @@
   <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
     <slot name="top" />
 
-    <div
-      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
-      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
-    >
-      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-success transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
-      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-        <Shuffle class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+    <div class="panel-glass p-5">
+      <div class="widget-title mb-3 pb-2 border-b border-[var(--glass-border)]">
+        <Shuffle class="w-5 h-5 text-t-primary" />
         <h3 class="text-base font-semibold text-t-title m-0">随机文章</h3>
       </div>
 
@@ -33,13 +29,9 @@
       </div>
     </div>
 
-    <div
-      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
-      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
-    >
-      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
-      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-        <TagIcon class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+    <div class="panel-glass p-5">
+      <div class="widget-title mb-3 pb-2 border-b border-[var(--glass-border)]">
+        <TagIcon class="w-5 h-5 text-t-primary" />
         <h3 class="text-base font-semibold text-t-title m-0">标签云</h3>
       </div>
 
@@ -48,10 +40,10 @@
           v-for="tag in tagList"
           :key="tag.id"
           :to="`/tag/${encodeURIComponent(tag.name)}`"
-          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold no-underline border border-[rgba(var(--color-primary-rgb),0.15)] bg-[rgba(var(--color-primary-rgb),0.06)] transition-all duration-200 hover:-translate-y-px hover:[box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.15)] hover:border-[rgba(var(--color-primary-rgb),0.4)]"
-          :style="{ color: tag.color || 'var(--color-primary)', backgroundColor: tag.color ? tag.color + '15' : 'rgba(var(--color-primary-rgb),0.06)' }"
+          class="chip-glass px-3 py-1 text-xs font-semibold no-underline hover:-translate-y-px"
+          :style="tagStyle(tag.color)"
         >
-          <span class="w-1.5 h-1.5 rounded-full opacity-70 [box-shadow:0_0_6px_currentColor]" :style="{ backgroundColor: tag.color || 'var(--color-primary)' }" />
+          <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: tag.color || 'var(--color-primary)' }" />
           {{ tag.name }}
         </NuxtLink>
         <div v-if="tagList.length === 0" class="flex flex-col items-center gap-2 py-8 text-t-muted text-sm w-full">
@@ -68,8 +60,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { AlertCircle, ChevronRight, FileText, Shuffle, Tag as TagIcon } from 'lucide-vue-next'
+import { withAlpha } from '~/utils/color'
 
 const { data: tags } = await useTags()
+
+function tagStyle(color?: string) {
+  return {
+    backgroundColor: color
+      ? withAlpha(color, 0.10)
+      : 'rgba(var(--color-primary-rgb), 0.08)',
+    borderColor: color
+      ? withAlpha(color, 0.32)
+      : 'rgba(var(--color-primary-rgb), 0.20)',
+  }
+}
 const { data: randomArticles, pending: loading } = await useRandomArticles(5)
 
 const tagList = computed(() => tags.value || [])

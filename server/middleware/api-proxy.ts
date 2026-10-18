@@ -23,6 +23,10 @@ export default defineEventHandler((event) => {
     delete headers.referer
   }
 
+  // proxyRequest 会重新计算请求体长度；转发原始 content-length 会让 undici 报
+  // invalid content-length header，表现为本地 POST 请求 502。
+  delete headers['content-length']
+
   const config = useRuntimeConfig()
   const target = `${config.apiBase}${path}`
   return proxyRequest(event, target)

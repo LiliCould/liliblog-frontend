@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border p-4 transition-all duration-300 hover:border-[rgba(var(--color-primary-rgb),0.3)]" style="backdrop-filter:blur(12px)">
+  <div class="card-glass p-4">
     <div class="flex gap-3">
       <NuxtLink v-if="comment.creator" :to="`/user/${comment.creator.id}`" class="shrink-0">
         <img
@@ -34,26 +34,27 @@
         <p class="text-sm text-t-body leading-relaxed mb-2 break-words">{{ comment.content }}</p>
 
         <div class="flex items-center gap-4">
-          <button class="flex items-center gap-1 text-xs text-t-muted transition-colors duration-300 hover:text-t-secondary" @click="emit('reply', comment)">
+          <button class="flex min-h-11 items-center gap-1 px-1 text-xs text-t-muted transition-colors duration-300 hover:text-t-secondary" @click="emit('reply', comment)">
             <MessageSquare class="w-3.5 h-3.5" />
             回复
           </button>
           <button
-            class="flex items-center gap-1 text-xs transition-all duration-300"
+            class="flex min-h-11 items-center gap-1 px-1 text-xs transition-all duration-300"
             :class="isLiked ? 'text-t-secondary hover:text-t-secondary/80' : 'text-t-muted hover:text-t-secondary'"
             :disabled="likeLoading"
+            :aria-pressed="isLiked"
             @click="toggleLike"
           >
             <Heart class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'fill-current scale-110': isLiked, 'scale-100': !isLiked }" />
             {{ likeCount }}
           </button>
 
-          <button v-if="comment.childCount > 0 && !expanded" class="flex items-center gap-1 text-xs text-t-primary transition-all duration-300 hover:text-t-secondary" @click="toggleChildren">
+          <button v-if="comment.childCount > 0 && !expanded" class="flex min-h-11 items-center gap-1 px-1 text-xs text-t-primary transition-all duration-300 hover:text-t-secondary" @click="toggleChildren">
             <ChevronDown class="w-3.5 h-3.5 transition-transform duration-300" :class="{ 'rotate-180': expanded }" />
             展开 {{ comment.childCount }} 条回复
           </button>
 
-          <button v-if="expanded" class="flex items-center gap-1 text-xs text-t-muted transition-all duration-300 hover:text-t-primary" @click="toggleChildren">
+          <button v-if="expanded" class="flex min-h-11 items-center gap-1 px-1 text-xs text-t-muted transition-all duration-300 hover:text-t-primary" @click="toggleChildren">
             <ChevronUp class="w-3.5 h-3.5" />
             收起回复
           </button>

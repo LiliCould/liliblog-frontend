@@ -1,4 +1,11 @@
 <template>
+  <NuxtLoadingIndicator color="var(--color-primary)" :height="3" />
+  <NuxtRouteAnnouncer />
+
+  <ClientOnly>
+    <ParticleField v-if="showGlobalParticles" variant="global" />
+  </ClientOnly>
+
   <NuxtLayout>
     <NuxtPage :transition="{ name: 'fade', mode: 'out-in' }" />
   </NuxtLayout>
@@ -10,8 +17,16 @@
 </template>
 
 <script setup lang="ts">
-const { initTheme } = useTheme()
-const { initCodeTheme } = useCodeTheme()
+const route = useRoute()
+const { initTheme, currentTheme } = useTheme()
+const { initCodeTheme, syncCodeThemeWithUi } = useCodeTheme()
+
+const showGlobalParticles = computed(() => {
+  const hiddenPrefixes = ['/admin', '/write', '/profile', '/user/me']
+  return !hiddenPrefixes.some(prefix =>
+    route.path === prefix || route.path.startsWith(`${prefix}/`),
+  )
+})
 const { startAutoCheck, stopAutoCheck, checkAndRefresh } = useTokenRefresh()
 const userStore = useUserStore()
 
@@ -70,12 +85,24 @@ onMounted(() => {
   initTheme()
   initCodeTheme()
   userStore.init()
+
+  if (import.meta.dev) {
+    const authMode = new URLSearchParams(window.location.search).get('auth')
+    if (authMode === 'login' || authMode === 'register') {
+      useAuthModal().open(authMode)
+    }
+  }
+
   window.addEventListener('liliblog:auth-expired', handleAuthExpired)
 
   if (userStore.isLoggedIn) {
     startAutoCheck()
     checkAndRefresh()
   }
+})
+
+watch(currentTheme, () => {
+  if (import.meta.client) syncCodeThemeWithUi()
 })
 
 watch(() => userStore.isLoggedIn, (loggedIn) => {

@@ -1,12 +1,7 @@
 <template>
-  <div
-    v-if="tocItems.length > 0"
-    class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
-    style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
-  >
-    <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
-    <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-      <List class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+  <div v-if="tocItems.length > 0" class="panel-glass p-5">
+    <div class="widget-title mb-3 pb-2 border-b border-[var(--glass-border)]">
+      <List class="w-5 h-5 text-t-primary" />
       <h3 class="text-base font-semibold text-t-title m-0">目录</h3>
     </div>
 
@@ -24,7 +19,10 @@
         :aria-current="activeId === item.id ? 'true' : undefined"
         @click.prevent="scrollToHeading(item.id)"
       >
-        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-t-primary to-t-secondary rounded-full transition-[height] duration-200 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)] group-hover/toc:h-3/5" />
+        <span
+          class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-t-primary transition-[height] duration-200 [box-shadow:0_0_6px_rgba(var(--color-primary-rgb),0.4)]"
+          :class="activeId === item.id ? 'h-4/5' : 'h-0 group-hover/toc:h-3/5'"
+        />
         <span class="line-clamp-1">{{ item.text }}</span>
       </a>
     </nav>

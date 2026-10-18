@@ -4,7 +4,7 @@
             <h2 class="text-lg font-semibold text-t-title">审计日志</h2>
             <div class="flex items-center gap-2">
                 <button v-if="selectedIds.length > 0"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer"
                     @click="handleBatchDelete">
                     <Trash2 class="w-4 h-4" />
                     批量删除 ({{ selectedIds.length }})
@@ -54,7 +54,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button
-                        class="px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                         @click="applyFilters">
                         查询
                     </button>
@@ -101,7 +101,7 @@
                 </div>
                 <div class="flex items-center gap-2 w-full">
                     <button
-                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+                        class="flex-1 px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                         @click="applyFilters">
                         查询
                     </button>
@@ -191,7 +191,7 @@
                             </td>
                             <td class="px-5 py-3.5 text-t-muted text-xs font-mono">{{ log.ipAddress }}</td>
                             <td class="px-5 py-3.5">
-                                <span class="text-xs" :class="log.executionTime > 1000 ? 'text-[#f43f5e]' : 'text-t-muted'">
+                                <span class="text-xs" :class="log.executionTime > 1000 ? 'text-t-danger' : 'text-t-muted'">
                                     {{ log.executionTime }}ms
                                 </span>
                             </td>
@@ -200,7 +200,7 @@
                                     :class="statusClass(log.status)">
                                     {{ statusText(log.status) }}
                                 </span>
-                                <p v-if="log.status !== 1 && log.errorMessage" class="text-xs text-[#f43f5e] mt-0.5 line-clamp-1">{{ log.errorMessage }}</p>
+                                <p v-if="log.status !== 1 && log.errorMessage" class="text-xs text-t-danger mt-0.5 line-clamp-1">{{ log.errorMessage }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-t-muted">{{ formatDate(log.createTime) }}</td>
                             <td class="px-5 py-3.5">
@@ -211,7 +211,7 @@
                                         <Eye class="w-4 h-4" />
                                     </button>
                                     <button
-                                        class="p-1.5 text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                                        class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
                                         title="删除" @click="handleDelete(log)">
                                         <Trash2 class="w-4 h-4" />
                                     </button>
@@ -252,7 +252,7 @@
                             <Eye class="w-4 h-4" />
                         </button>
                         <button
-                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+                            class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
                             title="删除" @click="handleDelete(log)">
                             <Trash2 class="w-4 h-4" />
                         </button>
@@ -310,11 +310,11 @@
                     <span class="text-t-muted">请求路径</span><span class="text-t-body font-mono text-xs break-all">{{ detailLog.requestUri }}</span>
                     <span class="text-t-muted">IP地址</span><span class="text-t-body font-mono text-xs">{{ detailLog.ipAddress }}</span>
                     <span class="text-t-muted">User-Agent</span><span class="text-t-body text-xs break-all">{{ detailLog.userAgent || '-' }}</span>
-                    <span class="text-t-muted">执行耗时</span><span class="text-t-body" :class="detailLog.executionTime > 1000 ? 'text-[#f43f5e]' : ''">{{ detailLog.executionTime }}ms</span>
+                    <span class="text-t-muted">执行耗时</span><span class="text-t-body" :class="detailLog.executionTime > 1000 ? 'text-t-danger' : ''">{{ detailLog.executionTime }}ms</span>
                     <span class="text-t-muted">状态</span>
                     <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" :class="statusClass(detailLog.status)">{{ statusText(detailLog.status) }}</span>
                     <template v-if="detailLog.status !== 1 && detailLog.errorMessage">
-                        <span class="text-t-muted">错误信息</span><span class="text-[#f43f5e] text-xs break-all">{{ detailLog.errorMessage }}</span>
+                        <span class="text-t-muted">错误信息</span><span class="text-t-danger text-xs break-all">{{ detailLog.errorMessage }}</span>
                     </template>
                     <span class="text-t-muted">操作时间</span><span class="text-t-body">{{ formatDate(detailLog.createTime) }}</span>
                 </div>
@@ -431,15 +431,15 @@ function statusText(status: number) {
 
 function statusClass(status: number) {
     if (status === 1) return 'bg-[rgba(74,222,128,0.1)] text-[#4ade80] border border-[rgba(74,222,128,0.3)]'
-    return 'bg-[rgba(244,63,94,0.1)] text-[#f43f5e] border border-[rgba(244,63,94,0.3)]'
+    return 'bg-t-danger-soft text-t-danger border border-t-danger'
 }
 
 function methodClass(method: string) {
     const m = method.toUpperCase()
     if (m === 'GET') return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary'
     if (m === 'POST') return 'bg-[rgba(74,222,128,0.1)] text-[#4ade80]'
-    if (m === 'PUT') return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00]'
-    if (m === 'DELETE') return 'bg-[rgba(244,63,94,0.1)] text-[#f43f5e]'
+    if (m === 'PUT') return 'bg-t-warning-soft text-t-warning'
+    if (m === 'DELETE') return 'bg-t-danger-soft text-t-danger'
     return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary'
 }
 

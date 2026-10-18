@@ -1,13 +1,16 @@
 <template>
   <AlertDialogRoot :open="open" @update:open="onOpenChange">
     <AlertDialogPortal>
-      <AlertDialogOverlay class="fixed inset-0 z-[1300] bg-black/60 backdrop-blur-sm" />
+      <AlertDialogOverlay class="fixed inset-0 z-[var(--z-modal)] bg-[var(--color-scrim)] backdrop-blur-sm" />
 
-      <AlertDialogContent class="fixed left-1/2 top-1/2 z-[1310] w-full max-w-sm -translate-x-1/2 -translate-y-1/2 border border-t-border bg-t-surface p-6 shadow-2xl focus:outline-none">
+      <AlertDialogContent class="panel-glass fixed left-1/2 top-1/2 z-[var(--z-modal)] w-full max-w-sm -translate-x-1/2 -translate-y-1/2 p-6 focus:outline-none max-md:max-h-[90dvh] max-md:max-w-[calc(100vw-1rem)] max-md:overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="danger ? 'bg-[rgba(244,63,94,0.1)]' : 'bg-[rgba(var(--color-primary-rgb),0.1)]'">
-              <AlertTriangle v-if="danger" class="w-5 h-5 text-[#f43f5e]" />
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center"
+              :class="danger ? 'bg-t-danger-soft' : warning ? 'bg-t-warning-soft' : 'bg-[rgba(var(--color-primary-rgb),0.1)]'"
+            >
+              <AlertTriangle v-if="danger || warning" class="w-5 h-5" :class="danger ? 'text-t-danger' : 'text-t-warning'" />
               <HelpCircle v-else class="w-5 h-5 text-t-primary" />
             </div>
             <AlertDialogTitle class="text-base font-semibold text-t-title m-0">{{ title }}</AlertDialogTitle>
@@ -19,20 +22,20 @@
           </AlertDialogCancel>
         </div>
 
-        <AlertDialogDescription class="text-sm text-t-body leading-relaxed mb-6">
+        <AlertDialogDescription as="div" class="text-sm text-t-body leading-relaxed mb-6">
           <slot>{{ description }}</slot>
         </AlertDialogDescription>
 
         <div class="flex justify-end gap-3">
           <AlertDialogCancel as-child>
-            <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer">
+            <button class="btn-glass px-4 py-2 text-sm text-t-muted">
               {{ cancelText }}
             </button>
           </AlertDialogCancel>
           <AlertDialogAction as-child>
             <button
-              class="px-4 py-2 text-sm font-semibold text-white transition-all cursor-pointer hover:opacity-90"
-              :class="danger ? 'bg-[#f43f5e]' : 'bg-t-primary'"
+              class="px-4 py-2 text-sm"
+              :class="danger ? 'btn-danger' : 'btn-primary'"
               @click="emit('confirm')"
             >
               {{ confirmText }}
@@ -64,12 +67,14 @@ withDefaults(defineProps<{
   confirmText?: string
   cancelText?: string
   danger?: boolean
+  warning?: boolean
 }>(), {
   title: '确认操作',
   description: '',
   confirmText: '确认',
   cancelText: '取消',
   danger: false,
+  warning: false,
 })
 
 const emit = defineEmits<{

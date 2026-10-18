@@ -1,55 +1,70 @@
 <template>
-  <Teleport to="body">
-    <button
-      v-if="tocItems.length > 0"
-      class="md:hidden fixed right-4 z-[60] w-11 h-11 rounded-full flex items-center justify-center border border-t-border bg-[rgba(var(--color-card-rgb),0.95)] text-t-primary shadow-lg active:scale-95 transition-transform duration-150"
-      :style="{ bottom: 'calc(var(--mobile-bottom-nav-height, 56px) + 16px + env(safe-area-inset-bottom, 0px))' }"
-      aria-label="打开目录"
-      @click="open = !open"
-    >
-      <List class="w-5 h-5" />
-    </button>
+  <button
+    v-if="tocItems.length > 0"
+    class="md:hidden fixed right-4 z-[var(--z-bottom-nav)] flex h-11 w-11 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg-strong)] text-t-primary shadow-lg transition-transform duration-150 active:scale-95"
+    :style="{ bottom: 'calc(var(--mobile-bottom-nav-height, 56px) + 16px + var(--safe-bottom, 0px))' }"
+    aria-label="打开目录"
+    @click="open = true"
+  >
+    <List class="h-5 w-5" />
+  </button>
 
-    <Transition name="fade">
-      <div v-if="open" class="md:hidden fixed inset-0 z-[65] bg-black/40" @click="open = false" />
-    </Transition>
+  <DialogRoot :open="open" @update:open="onOpenChange">
+    <DialogPortal>
+      <DialogOverlay
+        class="md:hidden fixed inset-0 z-[var(--z-modal)] bg-[var(--color-overlay)] backdrop-blur-sm data-[state=open]:animate-[overlay-in_200ms_ease-out] data-[state=closed]:animate-[overlay-out_150ms_ease-in]"
+      />
 
-    <Transition name="slide-up">
-      <div
-        v-if="open && tocItems.length > 0"
-        class="md:hidden fixed inset-x-0 z-[70] bg-[rgba(var(--color-card-rgb),0.98)] border-t border-t-border rounded-t-2xl shadow-2xl"
-        :style="{ bottom: 'calc(var(--mobile-bottom-nav-height, 56px) + env(safe-area-inset-bottom, 0px))', maxHeight: '60dvh' }"
+      <DialogContent
+        class="md:hidden fixed inset-x-0 z-[var(--z-modal)] rounded-t-2xl border-t border-[var(--glass-border)] bg-[var(--glass-bg-strong)] shadow-2xl outline-none data-[state=open]:animate-[sheet-in_300ms_cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:animate-[sheet-out_200ms_ease-in]"
+        :style="{ bottom: 'calc(var(--mobile-bottom-nav-height, 56px) + var(--safe-bottom, 0px))', maxHeight: '70dvh' }"
       >
+        <DialogTitle class="sr-only">文章目录</DialogTitle>
+        <DialogDescription class="sr-only">点击目录项跳转到对应章节</DialogDescription>
+
         <div class="flex justify-center pt-3 pb-1">
-          <div class="w-10 h-1 rounded-full bg-t-border" />
+          <div class="h-1 w-10 rounded-full bg-t-border" />
         </div>
 
-        <div class="flex items-center gap-2.5 px-5 pb-2 border-b border-t-border">
-          <List class="w-4 h-4 text-t-primary" />
-          <h3 class="text-sm font-semibold text-t-title m-0">目录</h3>
+        <div class="flex items-center gap-2.5 border-b border-[var(--glass-border)] px-5 pb-2">
+          <List class="h-4 w-4 text-t-primary" />
+          <h3 class="m-0 text-sm font-semibold text-t-title">目录</h3>
           <span class="ml-auto text-xs text-t-muted">{{ tocItems.length }} 项</span>
+          <DialogClose as-child>
+            <button class="flex h-9 w-9 items-center justify-center rounded-control text-t-muted hover:bg-[rgba(var(--color-primary-rgb),0.08)] hover:text-t-primary" aria-label="关闭目录">
+              <X class="h-4 w-4" />
+            </button>
+          </DialogClose>
         </div>
 
-        <nav class="overflow-y-auto p-3 space-y-0.5" style="max-height: calc(60dvh - 60px);">
-          <a
+        <nav class="overflow-y-auto overscroll-contain p-3 space-y-0.5" style="max-height: calc(70dvh - 64px);">
+          <button
             v-for="item in tocItems"
             :key="item.id"
-            :href="`#${item.id}`"
-            class="block py-2 px-3 rounded-md text-sm text-t-body no-underline transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.06)] active:bg-[rgba(var(--color-primary-rgb),0.1)]"
+            class="block min-h-11 w-full rounded-control px-3 py-2 text-left text-sm text-t-body no-underline transition-all duration-200 hover:bg-[rgba(var(--color-primary-rgb),0.06)] hover:text-t-primary"
             :class="{ 'pl-5': item.level === 2, 'pl-8 text-xs': item.level === 3 }"
-            @click.prevent="handleClick(item.id)"
+            @click="handleClick(item.id)"
           >
             {{ item.text }}
-          </a>
+          </button>
         </nav>
-      </div>
-    </Transition>
-  </Teleport>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { List } from 'lucide-vue-next'
+import { List, X } from 'lucide-vue-next'
+import {
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+} from 'reka-ui'
 import { extractTocItems } from '~/utils/toc'
 
 const props = defineProps<{
@@ -58,6 +73,10 @@ const props = defineProps<{
 
 const open = ref(false)
 const tocItems = computed(() => extractTocItems(props.htmlContent))
+
+function onOpenChange(value: boolean): void {
+  open.value = value
+}
 
 function handleClick(id: string): void {
   open.value = false
@@ -68,23 +87,3 @@ function handleClick(id: string): void {
   window.scrollTo({ top, behavior: 'smooth' })
 }
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: transform 0.25s ease;
-}
-.slide-up-enter-from,
-.slide-up-leave-to {
-  transform: translateY(100%);
-}
-</style>

@@ -43,7 +43,7 @@
         </div>
         <div class="flex items-center gap-3">
           <div v-if="userStore.isLoggedIn" class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-t-primary flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
+            <div class="w-8 h-8 rounded-full bg-t-primary-fill flex items-center justify-center text-t-on-primary text-xs font-semibold overflow-hidden">
               <img :src="resolveAvatar(userStore.avatar)" alt="" class="w-full h-full object-cover" @error="handleAvatarError" />
             </div>
           </div>
@@ -57,7 +57,7 @@
 
     <Teleport to="body">
       <Transition enter-active-class="transition duration-300" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-200" leave-from-class="opacity-100" leave-to-class="opacity-0">
-        <div v-if="sidebarOpen" class="fixed inset-0 z-[60] bg-[rgba(0,0,0,0.6)] md:hidden" @click="sidebarOpen = false" />
+        <div v-if="sidebarOpen" class="fixed inset-0 z-[60] bg-[var(--color-scrim)] md:hidden" @click="sidebarOpen = false" />
       </Transition>
 
       <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="-translate-x-full" enter-to-class="translate-x-0" leave-active-class="transition duration-200 ease-in" leave-from-class="translate-x-0" leave-to-class="-translate-x-full">

@@ -3,11 +3,11 @@
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-t-title">标签管理</h2>
       <div class="flex items-center gap-2">
-        <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
+        <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
           <Trash2 class="w-4 h-4" />
           批量删除 ({{ selectedIds.length }})
         </button>
-        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
+        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
           <Plus class="w-3.5 h-3.5" />
           添加标签
         </button>
@@ -26,7 +26,7 @@
           <input v-model="filters.name" type="text" class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="搜索标签名称" />
         </div>
         <div class="flex items-center gap-2">
-          <button class="px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer" @click="applyFilters">查询</button>
+          <button class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="applyFilters">查询</button>
           <button class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="resetFilters">重置</button>
         </div>
       </div>
@@ -78,7 +78,7 @@
                   <button class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] cursor-pointer" title="编辑" @click="openEditDialog(tag)">
                     <Edit3 class="w-4 h-4" />
                   </button>
-                  <button class="p-1.5 text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer" title="删除" @click="handleDelete(tag)">
+                  <button class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer" title="删除" @click="handleDelete(tag)">
                     <Trash2 class="w-4 h-4" />
                   </button>
                 </div>
@@ -104,7 +104,7 @@
           <button class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] cursor-pointer" title="编辑" @click="openEditDialog(tag)">
             <Edit3 class="w-4 h-4" />
           </button>
-          <button class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer" title="删除" @click="handleDelete(tag)">
+          <button class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer" title="删除" @click="handleDelete(tag)">
             <Trash2 class="w-4 h-4" />
           </button>
         </div>
@@ -137,11 +137,11 @@
     <AppDialog v-model:open="showDialog" :title="isEdit ? '编辑标签' : '添加标签'">
       <div class="space-y-4">
         <div>
-          <label class="block text-xs text-t-muted mb-1">标签名称 <span class="text-[#f43f5e]">*</span></label>
+          <label class="block text-xs text-t-muted mb-1">标签名称 <span class="text-t-danger">*</span></label>
           <input v-model="form.name" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入标签名称" />
         </div>
         <div>
-          <label class="block text-xs text-t-muted mb-1">颜色 <span class="text-[#f43f5e]">*</span></label>
+          <label class="block text-xs text-t-muted mb-1">颜色 <span class="text-t-danger">*</span></label>
           <div class="flex items-center gap-3">
             <input v-model="form.color" type="color" class="w-10 h-10 border border-t-border cursor-pointer p-0.5 bg-t-bg" />
             <input v-model="form.color" type="text" class="flex-1 px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm font-mono outline-none transition-colors duration-200 focus:border-t-primary" placeholder="#000000" />
@@ -150,7 +150,7 @@
       </div>
       <div class="flex justify-end gap-3 mt-6">
         <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showDialog = false">取消</button>
-        <button class="px-4 py-2 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
+        <button class="px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
       </div>
     </AppDialog>
 

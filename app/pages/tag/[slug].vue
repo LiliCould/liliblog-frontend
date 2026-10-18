@@ -11,9 +11,13 @@
         <p class="text-t-muted text-sm ml-[52px]">共 {{ filteredArticles.length }} 篇文章</p>
       </div>
 
-      <div v-if="pending && filteredArticles.length === 0" class="flex flex-col gap-6">
-        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse" />
-      </div>
+      <LoadingState v-if="pending && filteredArticles.length === 0" variant="list" :count="3" />
+
+      <ErrorState
+        v-else-if="error && filteredArticles.length === 0"
+        title="标签文章加载失败"
+        @retry="refresh"
+      />
 
       <ArticleList
         v-else-if="paginatedArticles.length > 0"
@@ -25,7 +29,11 @@
         @page-size-change="handlePageSizeChange"
       />
 
-      <EmptyState v-else message="该标签暂无文章" />
+      <EmptyState
+        v-else
+        :message="tagExists ? '该标签暂无文章' : '标签不存在'"
+        :description="tagExists ? '换个标签看看吧' : '请检查链接是否正确'"
+      />
     </div>
   </AppLayout>
 </template>
@@ -42,21 +50,55 @@ const tagName = computed(() => decodeURIComponent(String(route.params.slug || ''
 const current = ref(1)
 const pageSize = ref(10)
 
-const { data: articlePage, pending } = await useAsyncData(
+const MAX_TAG_PAGES = 10
+
+const emptyPage: PageResult<Article> = {
+  records: [],
+  total: 0,
+  size: 0,
+  current: 1,
+  totalPage: 0,
+  hasPrevious: false,
+  hasNext: false,
+}
+
+async function fetchAllPublishedArticles(): Promise<PageResult<Article>> {
+  const firstPage = await api.get<PageResult<Article>>('/api/article', {
+    status: 1,
+    current: 1,
+    size: 100,
+  })
+
+  const records = [...(firstPage.records || [])]
+  const totalPage = Math.min(Number(firstPage.totalPage || 1), MAX_TAG_PAGES)
+
+  if (totalPage > 1) {
+    const remaining = await Promise.all(
+      Array.from({ length: totalPage - 1 }, (_, index) =>
+        api.get<PageResult<Article>>('/api/article', {
+          status: 1,
+          current: index + 2,
+          size: 100,
+        }),
+      ),
+    )
+    for (const page of remaining) {
+      records.push(...(page.records || []))
+    }
+  }
+
+  return { ...firstPage, records }
+}
+
+const { data: articlePage, pending, error, refresh } = await useAsyncData(
   'published-articles-for-tags',
-  () => api.get<PageResult<Article>>('/api/article', { status: 1, current: 1, size: 100 }),
-  {
-    default: () => ({
-      records: [],
-      total: 0,
-      size: 0,
-      current: 1,
-      totalPage: 0,
-      hasPrevious: false,
-      hasNext: false,
-    } as PageResult<Article>),
-  },
+  fetchAllPublishedArticles,
+  { default: () => emptyPage },
 )
+
+const { data: tags } = await useTags()
+
+const tagExists = computed(() => (tags.value || []).some(tag => tag.name === tagName.value))
 
 const filteredArticles = computed(() => {
   const records = articlePage.value?.records || []

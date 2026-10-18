@@ -6,7 +6,7 @@
       <DialogContent class="fixed left-1/2 top-1/2 z-[1210] w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-t-border bg-t-surface p-6 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.1)] focus:outline-none">
         <div class="flex items-center justify-between mb-6">
           <DialogTitle class="text-lg font-semibold text-t-title">修改密码</DialogTitle>
-          <button class="w-8 h-8 rounded-lg flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(255,255,255,0.05)] transition-all duration-200" aria-label="关闭" @click="close">
+          <button class="w-8 h-8 rounded-lg flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all duration-200" aria-label="关闭" @click="close">
             <X class="w-5 h-5" />
           </button>
         </div>

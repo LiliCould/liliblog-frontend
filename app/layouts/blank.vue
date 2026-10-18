@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-t-bg text-t-body">
+  <div class="relative z-[var(--z-content)] min-h-screen text-t-body">
     <slot />
     <ClientOnly>
       <Toaster position="top-center" :duration="2200" :rich-colors="true" class="liliblog-toaster" />

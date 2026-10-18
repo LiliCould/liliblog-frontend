@@ -1,12 +1,8 @@
 <template>
   <aside class="hidden lg:flex flex-col gap-6 sticky top-24 self-start">
-    <div
-      class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg p-5 transition-all duration-200 relative overflow-hidden hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
-      style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
-    >
-      <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
-      <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-t-border">
-        <FolderOpen class="w-5 h-5 text-t-primary [filter:drop-shadow(0_0_3px_rgba(var(--color-primary-rgb),0.3))]" />
+    <div class="panel-glass p-5">
+      <div class="widget-title mb-3 pb-2 border-b border-[var(--glass-border)]">
+        <FolderOpen class="w-5 h-5 text-t-primary" />
         <h3 class="text-base font-semibold text-t-title m-0">分类</h3>
       </div>
 

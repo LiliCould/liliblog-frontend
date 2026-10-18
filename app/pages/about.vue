@@ -9,16 +9,19 @@
       <div class="absolute bottom-0 left-0 w-16 md:w-28 h-0.5 bg-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.4)]" />
     </div>
 
-    <div v-if="pending" class="flex flex-col gap-4">
-      <div class="h-60 rounded-xl bg-t-surface animate-pulse" />
-      <div class="h-40 rounded-xl bg-t-surface animate-pulse" />
-    </div>
+    <LoadingState v-if="pending" variant="article" />
 
-    <div v-else-if="about" class="rounded-xl bg-t-surface border border-t-border p-4 md:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.2)]">
+    <ErrorState
+      v-else-if="error && !about"
+      title="内容加载失败"
+      @retry="refresh"
+    />
+
+    <div v-else-if="about" class="card-glass p-4 md:p-6">
       <MarkdownViewer :content-html="about.contentHtml || ''" />
     </div>
 
-    <EmptyState v-else message="内容加载失败" />
+    <EmptyState v-else message="暂无内容" description="关于页面还没有发布内容" />
   </AppLayout>
 </template>
 
@@ -28,9 +31,9 @@ import { absoluteUrl } from '~/utils/seo'
 
 const api = useApi()
 
-const { data: about, pending } = await useAsyncData(
+const { data: about, pending, error, refresh } = await useAsyncData(
   'about-article',
-  () => api.get<ArticleDetail>('/api/article/1').catch(() => null),
+  () => api.get<ArticleDetail>('/api/article/1'),
   { default: () => null },
 )
 

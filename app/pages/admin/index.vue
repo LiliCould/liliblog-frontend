@@ -68,9 +68,9 @@ const loadingArticles = ref(false)
 
 const statCards = computed(() => [
   { label: '文章数', value: stats.articleCount, icon: FileText, bg: 'rgba(var(--color-primary-rgb),0.1)', color: 'var(--color-primary)' },
-  { label: '分类数', value: stats.categoryCount, icon: FolderOpen, bg: 'rgba(163,230,53,0.1)', color: '#a3e635' },
+  { label: '分类数', value: stats.categoryCount, icon: FolderOpen, bg: 'var(--color-success-soft)', color: 'var(--color-success)' },
   { label: '标签数', value: stats.tagCount, icon: Tag, bg: 'rgba(var(--color-secondary-rgb),0.1)', color: 'var(--color-secondary)' },
-  { label: '评论数', value: stats.commentCount, icon: MessageSquare, bg: 'rgba(185,103,255,0.1)', color: '#b967ff' },
+  { label: '评论数', value: stats.commentCount, icon: MessageSquare, bg: 'rgba(var(--color-tertiary-rgb),0.1)', color: 'var(--color-tertiary)' },
 ])
 
 function statusText(status: number): string {
@@ -80,8 +80,8 @@ function statusText(status: number): string {
 
 function statusClass(status: number): string {
   if (status === 1) return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
-  if (status === 0) return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
-  return 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'
+  if (status === 0) return 'bg-t-warning-soft text-t-warning border border-t-warning'
+  return 'bg-t-elevated text-t-muted border border-t-border'
 }
 
 async function fetchStats(): Promise<void> {

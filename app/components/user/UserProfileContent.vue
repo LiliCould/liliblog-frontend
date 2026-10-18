@@ -47,19 +47,14 @@
         </button>
       </div>
 
-      <div v-if="self" class="flex gap-2 mb-6 overflow-x-auto scrollbar-hide flex-nowrap">
-        <button
-          v-for="tab in statusTabs"
-          :key="tab.value"
-          class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-[background-color,border-color,color,box-shadow] duration-200 shrink-0"
-          :class="activeTab === tab.value
-            ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]'
-            : 'border border-t-border text-t-muted hover:text-t-body hover:border-[rgba(var(--color-primary-rgb),0.3)]'"
-          @click="handleTabChange(tab.value)"
-        >
-          {{ tab.label }}
-        </button>
-      </div>
+      <AppTabs
+        v-if="self"
+        :model-value="activeTab"
+        :tabs="statusTabs"
+        variant="pill"
+        list-class="mb-6 overflow-x-auto scrollbar-hide flex-nowrap"
+        @update:model-value="handleTabChange"
+      />
 
       <div v-if="pending && articles.length === 0" class="flex flex-col gap-3">
         <div v-for="i in 3" :key="i" class="h-20 rounded-xl bg-t-surface animate-pulse" />
@@ -82,7 +77,7 @@
                 {{ article.category?.name || '未分类' }}
               </span>
               <template v-if="article.tags?.length">
-                <span v-for="tag in article.tags.slice(0, 3)" :key="tag.id" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0" :style="{ backgroundColor: tag.color ? `${tag.color}18` : 'rgba(var(--color-primary-rgb),0.08)', color: tag.color || 'var(--color-primary)' }">
+                <span v-for="tag in article.tags.slice(0, 3)" :key="tag.id" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0" :style="{ backgroundColor: tag.color ? withAlpha(tag.color, 0.10) : 'rgba(var(--color-primary-rgb),0.08)' }">
                   #{{ tag.name }}
                 </span>
                 <span v-if="article.tags.length > 3" class="text-[10px] text-t-muted shrink-0">+{{ article.tags.length - 3 }}</span>
@@ -101,7 +96,7 @@
             <button class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-[color,background-color] duration-200" aria-label="编辑文章" @click="openWriteEdit(article.id)">
               <Edit class="w-4 h-4" />
             </button>
-            <button class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)] transition-[color,background-color] duration-200" aria-label="删除文章" @click="confirmDelete(article)">
+            <button class="w-9 h-9 rounded flex items-center justify-center text-t-muted hover:text-t-danger hover:bg-t-danger-soft transition-[color,background-color] duration-200" aria-label="删除文章" @click="confirmDelete(article)">
               <Trash2 class="w-4 h-4" />
             </button>
           </div>
@@ -138,6 +133,7 @@
 import { computed, ref } from 'vue'
 import { Clock, Edit, Eye, FileText, FolderOpen, Lock, Mail, PenLine, Plus, Trash2 } from 'lucide-vue-next'
 import type { Article, User } from '~/types'
+import { withAlpha } from '~/utils/color'
 import { formatRelativeTime, handleAvatarError, resolveAvatar } from '~/utils/format'
 import request from '~/utils/request'
 import heroBg from '~/assets/hero-bg.webp'
@@ -188,8 +184,8 @@ function articleStatusText(status: number): string {
 
 function articleStatusClass(status: number): string {
   if (status === 1) return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
-  if (status === 0) return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
-  return 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'
+  if (status === 0) return 'bg-t-warning-soft text-t-warning border border-t-warning'
+  return 'bg-t-elevated text-t-muted border border-t-border'
 }
 
 function openWrite(): void {

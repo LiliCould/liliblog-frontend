@@ -6,16 +6,16 @@
         <CustomSelect
           :model-value="pageSize"
           :options="pageSizeSelectOptions"
-          button-class="px-2 py-1 text-xs"
+          button-class="px-3 py-1.5 rounded-full text-xs min-w-[76px]"
           @update:model-value="onPageSizeChange"
         />
       </div>
       <span class="text-xs text-t-muted md:hidden">共 {{ total }} 条</span>
     </div>
 
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-1.5">
       <button
-        class="flex items-center justify-center w-8 h-8 max-md:w-10 max-md:h-10 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-t-muted transition-all duration-200 hover:border-t-primary hover:text-t-primary disabled:cursor-not-allowed disabled:opacity-30 max-md:h-11 max-md:w-11"
         :disabled="current <= 1"
         aria-label="上一页"
         @click="emit('update:current', current - 1)"
@@ -23,22 +23,29 @@
         <ChevronLeft class="w-4 h-4" />
       </button>
 
-      <template v-for="page in displayedPages" :key="page">
-        <span v-if="page === '...'" class="w-8 h-8 max-md:w-10 max-md:h-10 flex items-center justify-center text-t-muted text-xs">...</span>
-        <button
-          v-else
-          class="w-8 h-8 max-md:w-10 max-md:h-10 text-xs font-medium transition-all duration-200"
-          :class="page === current
-            ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary'
-            : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'"
-          @click="emit('update:current', page as number)"
-        >
-          {{ page }}
-        </button>
-      </template>
+      <div class="hidden items-center gap-1.5 md:flex">
+        <template v-for="page in displayedPages" :key="page">
+          <span v-if="page === '...'" class="flex h-10 w-10 items-center justify-center text-xs text-t-muted">...</span>
+          <button
+            v-else
+            class="flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-xs font-medium transition-all duration-200"
+            :class="page === current
+              ? 'border border-t-primary bg-[rgba(var(--color-primary-rgb),0.14)] text-t-primary font-semibold'
+              : 'border border-transparent text-t-muted hover:border-t-primary hover:text-t-primary'"
+            :aria-current="page === current ? 'page' : undefined"
+            @click="emit('update:current', page as number)"
+          >
+            {{ page }}
+          </button>
+        </template>
+      </div>
+
+      <span class="min-w-[64px] text-center text-xs font-medium text-t-body md:hidden">
+        {{ current }} / {{ totalPages }}
+      </span>
 
       <button
-        class="flex items-center justify-center w-8 h-8 max-md:w-10 max-md:h-10 border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-t-muted transition-all duration-200 hover:border-t-primary hover:text-t-primary disabled:cursor-not-allowed disabled:opacity-30 max-md:h-11 max-md:w-11"
         :disabled="current >= totalPages"
         aria-label="下一页"
         @click="emit('update:current', current + 1)"
@@ -47,21 +54,21 @@
       </button>
     </div>
 
-    <div class="flex items-center gap-2">
-      <span class="text-xs text-t-muted max-md:hidden">共 {{ total }} 条</span>
-      <div v-if="totalPages > 1" class="flex items-center gap-1.5 ml-2">
-        <span class="text-xs text-t-muted max-md:hidden">跳至</span>
+    <div class="flex items-center gap-2 max-md:hidden">
+      <span class="text-xs text-t-muted">共 {{ total }} 条</span>
+      <div v-if="totalPages > 1" class="ml-2 flex items-center gap-1.5">
+        <span class="text-xs text-t-muted">跳至</span>
         <input
           v-model="jumpInput"
           type="number"
           :min="1"
           :max="totalPages"
-          class="w-12 h-7 text-center text-xs rounded border border-t-border bg-[rgba(var(--color-surface-rgb),0.6)] text-t-body outline-none focus:border-t-primary transition-colors duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          class="h-8 w-14 rounded-full border border-[var(--glass-border)] bg-[rgba(var(--color-surface-rgb),0.55)] text-center text-xs text-t-body outline-none transition-colors duration-200 focus:border-t-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           @keyup.enter="handleJump"
         />
-        <span class="text-xs text-t-muted max-md:hidden">页</span>
+        <span class="text-xs text-t-muted">页</span>
         <button
-          class="h-7 px-2 text-xs rounded border border-t-border text-t-muted hover:text-t-primary hover:border-t-primary transition-colors duration-200"
+          class="h-8 rounded-full border border-[var(--glass-border)] px-3 text-xs text-t-muted transition-colors duration-200 hover:border-t-primary hover:text-t-primary"
           @click="handleJump"
         >
           跳转

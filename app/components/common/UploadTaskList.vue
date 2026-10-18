@@ -8,7 +8,7 @@
       <div
         class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full"
         :class="task.status === 'error'
-          ? 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e]'
+          ? 'bg-t-danger-soft text-t-danger'
           : 'bg-[rgba(var(--color-primary-rgb),0.12)] text-t-primary'"
       >
         <AlertCircle v-if="task.status === 'error'" class="w-3.5 h-3.5" />
@@ -25,7 +25,7 @@
           <div
             v-else
             class="h-full rounded-full transition-[width] duration-200 ease-out"
-            :class="task.status === 'error' ? 'bg-[#f43f5e]' : 'bg-t-primary'"
+            :class="task.status === 'error' ? 'bg-t-danger' : 'bg-t-primary'"
             :style="{ width: task.percent + '%' }"
           ></div>
         </div>
@@ -33,7 +33,7 @@
 
       <span
         class="flex-shrink-0 text-xs tabular-nums"
-        :class="task.status === 'error' ? 'text-[#f43f5e]' : 'text-t-primary'"
+        :class="task.status === 'error' ? 'text-t-danger' : 'text-t-primary'"
       >
         {{ statusText(task) }}
       </span>

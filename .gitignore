@@ -15,6 +15,10 @@ dist-ssr
 public/vditor
 *.local
 
+# 本地 UI 验收产物
+qa/
+.chrome-qa*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

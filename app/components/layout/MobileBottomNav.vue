@@ -1,17 +1,22 @@
 <template>
   <nav
-    class="md:hidden fixed bottom-0 inset-x-0 z-[55] border-t border-t-border bg-[rgba(var(--color-bg-rgb),0.95)]"
-    style="backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding-bottom: env(safe-area-inset-bottom);"
+    class="md:hidden fixed bottom-0 inset-x-0 z-[var(--z-bottom-nav)] border-t border-[var(--glass-border)] bg-[var(--glass-nav-bg)] pb-[var(--safe-bottom)]"
+    style="backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"
   >
-    <div class="flex items-center justify-around h-14">
+    <div class="flex items-center justify-around h-14 px-1">
       <button
         v-for="item in navItems"
         :key="item.path"
-        class="flex flex-col items-center justify-center flex-1 h-full transition-colors duration-200"
+        class="flex flex-col items-center justify-center flex-1 h-full min-w-0 transition-colors duration-200"
         :class="isActive(item.path) ? 'text-t-primary' : 'text-t-muted'"
         @click="handleClick(item)"
       >
-        <component :is="item.icon" class="w-5 h-5" />
+        <span
+          class="flex items-center justify-center w-10 h-7 rounded-full transition-colors duration-200"
+          :class="isActive(item.path) ? 'bg-[rgba(var(--color-primary-rgb),0.12)]' : ''"
+        >
+          <component :is="item.icon" class="w-5 h-5" />
+        </span>
         <span class="text-[10px] mt-0.5">{{ item.label }}</span>
       </button>
     </div>

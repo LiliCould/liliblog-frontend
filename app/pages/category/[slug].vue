@@ -11,9 +11,13 @@
         <p v-if="category?.description" class="text-t-muted text-sm ml-[52px]">{{ category.description }}</p>
       </div>
 
-      <div v-if="pending && articles.length === 0" class="flex flex-col gap-6">
-        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse" />
-      </div>
+      <LoadingState v-if="pending && articles.length === 0" variant="list" :count="3" />
+
+      <ErrorState
+        v-else-if="error && articles.length === 0"
+        title="文章加载失败"
+        @retry="refresh"
+      />
 
       <ArticleList
         v-else-if="articles.length > 0"
@@ -60,7 +64,7 @@ const emptyPage: PageResult<Article> = {
   hasNext: false,
 }
 
-const { data: articlePage, pending } = await useAsyncData(
+const { data: articlePage, pending, error, refresh } = await useAsyncData(
   () => `category-articles:${slug.value}`,
   () => api.get<PageResult<Article>>('/api/article', {
     categoryId: category.value!.id,

@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
     <Transition name="upload-overlay">
-      <div v-if="state.visible" class="fixed inset-0 z-[1500] flex items-center justify-center" role="alert" aria-live="polite">
-        <div class="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style="backdrop-filter: blur(4px)" />
+      <div v-if="state.visible" class="fixed inset-0 z-[var(--z-toast)] flex items-center justify-center" role="alert" aria-live="polite">
+        <div class="absolute inset-0 bg-[var(--color-scrim)] backdrop-blur-sm" />
 
-        <div class="relative w-full max-w-sm mx-4 rounded-xl border border-[rgba(var(--color-primary-rgb),0.2)] p-6" style="background: rgba(var(--color-surface-rgb), 0.98)">
+        <div class="panel-glass relative w-full max-w-sm mx-4 p-6">
           <div class="flex items-center gap-3 mb-5">
             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(var(--color-primary-rgb),0.1)]">
               <Loader2 class="w-5 h-5 text-t-primary animate-spin" />

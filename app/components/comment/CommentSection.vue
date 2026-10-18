@@ -1,9 +1,16 @@
 <template>
   <div class="flex flex-col gap-6">
-    <div class="rounded-xl bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border p-5" style="backdrop-filter:blur(12px)">
-      <div class="flex gap-3">
+    <div class="card-glass p-5">
+      <div v-if="!userStore.isLoggedIn" class="flex flex-col items-center gap-3 py-3 text-center">
+        <p class="text-sm text-t-muted">登录后即可参与评论</p>
+        <button class="btn-primary px-4 py-2 text-sm" @click="authModal.open('login')">
+          登录 / 注册
+        </button>
+      </div>
+
+      <div v-else class="flex gap-3">
         <img
-          :src="resolveAvatar(userStore.isLoggedIn ? userStore.avatar : '')"
+          :src="resolveAvatar(userStore.avatar)"
           :alt="userStore.nickname"
           class="w-10 h-10 rounded-full border border-[rgba(var(--color-primary-rgb),0.2)] shrink-0 object-cover"
           @error="handleAvatarError"
@@ -11,9 +18,8 @@
         <div class="flex-1 min-w-0">
           <textarea
             v-model="commentContent"
-            :placeholder="replyTarget ? `回复 @${replyTarget.creator?.nickname}...` : userStore.isLoggedIn ? '写下你的评论...' : '请先登录后评论'"
-            :disabled="!userStore.isLoggedIn"
-            class="w-full min-h-[80px] p-3 rounded-lg bg-[rgba(var(--color-bg-rgb),0.3)] border border-t-border text-t-body text-sm placeholder-t-muted outline-none resize-none transition-all duration-300 focus:border-t-primary focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+            :placeholder="replyTarget ? `回复 @${replyTarget.creator?.nickname}...` : '写下你的评论...'"
+            class="w-full min-h-[80px] p-3 rounded-control bg-[rgba(var(--color-bg-rgb),0.35)] border border-t-border text-t-body text-sm placeholder-t-muted outline-none resize-none transition-all duration-300 focus:border-t-primary focus:shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.1)]"
           />
           <div class="flex items-center justify-between mt-2">
             <button v-if="replyTarget" class="text-xs text-t-muted hover:text-t-primary transition-colors" @click="cancelReply">
@@ -21,8 +27,8 @@
             </button>
             <span v-else />
             <button
-              class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[rgba(var(--color-primary-rgb),0.1)] border border-[rgba(var(--color-primary-rgb),0.3)] text-t-primary text-sm font-semibold transition-all duration-300 hover:bg-[rgba(var(--color-primary-rgb),0.2)] hover:shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.15)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="!userStore.isLoggedIn || !commentContent.trim() || submitting"
+              class="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="!commentContent.trim() || submitting"
               @click="submitComment"
             >
               <Send class="w-4 h-4" />
@@ -33,12 +39,15 @@
       </div>
     </div>
 
-    <div v-if="pending" class="flex flex-col gap-4">
-      <div v-for="i in 3" :key="i" class="h-24 rounded-xl bg-[rgba(var(--color-card-rgb),0.5)] border border-[rgba(var(--color-primary-rgb),0.1)] animate-pulse" />
-    </div>
+    <LoadingState v-if="pending" variant="list" :count="2" />
+
+    <ErrorState v-else-if="error && comments.length === 0" title="评论加载失败" @retry="refresh" />
 
     <div v-else-if="comments.length > 0" class="flex flex-col gap-4">
       <CommentItem v-for="comment in comments" :key="comment.id" :comment="comment" :article-id="articleId" @reply="handleReply" />
+      <button v-if="hasMore" class="btn-glass mx-auto px-4 py-2 text-sm" @click="loadMore">
+        加载更多评论
+      </button>
     </div>
 
     <EmptyState v-else message="暂无评论，快来抢沙发吧" />
@@ -58,10 +67,14 @@ const props = defineProps<{
 const api = useApi()
 const userStore = useUserStore()
 const toast = useToast()
+const authModal = useAuthModal()
 
 const commentContent = ref('')
 const submitting = ref(false)
 const replyTarget = ref<Comment | null>(null)
+const extraComments = ref<Comment[]>([])
+const loadedPage = ref(1)
+const loadingMore = ref(false)
 
 const emptyPage: PageResult<Comment> = {
   records: [],
@@ -73,7 +86,7 @@ const emptyPage: PageResult<Comment> = {
   hasNext: false,
 }
 
-const { data: commentPage, pending, refresh } = await useAsyncData(
+const { data: commentPage, pending, error, refresh } = await useAsyncData(
   () => `comments:${props.articleId}`,
   () => api.get<PageResult<Comment>>('/api/comment', { id: props.articleId, current: 1, size: 50 }),
   {
@@ -82,7 +95,32 @@ const { data: commentPage, pending, refresh } = await useAsyncData(
   },
 )
 
-const comments = computed(() => commentPage.value?.records || [])
+const comments = computed(() => [
+  ...(commentPage.value?.records || []),
+  ...extraComments.value,
+])
+
+const totalComments = computed(() => commentPage.value?.total || 0)
+const hasMore = computed(() => comments.value.length < totalComments.value)
+
+async function loadMore(): Promise<void> {
+  if (loadingMore.value || !hasMore.value) return
+  loadingMore.value = true
+  try {
+    const nextPage = loadedPage.value + 1
+    const page = await api.get<PageResult<Comment>>('/api/comment', {
+      id: props.articleId,
+      current: nextPage,
+      size: 50,
+    })
+    extraComments.value.push(...(page.records || []))
+    loadedPage.value = nextPage
+  } catch (loadError) {
+    toast.error(loadError)
+  } finally {
+    loadingMore.value = false
+  }
+}
 
 async function submitComment(): Promise<void> {
   if (!commentContent.value.trim() || submitting.value) return
@@ -98,6 +136,8 @@ async function submitComment(): Promise<void> {
     await api.post('/api/comment', data)
     commentContent.value = ''
     replyTarget.value = null
+    extraComments.value = []
+    loadedPage.value = 1
     await refresh()
     toast.success('评论已发布')
   } catch (error) {

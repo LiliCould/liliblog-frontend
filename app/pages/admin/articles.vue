@@ -4,7 +4,7 @@
  <h2 class="text-lg font-semibold text-t-title">文章管理</h2>
  <div class="flex items-center gap-2">
  <button v-if="selectedIds.length > 0"
- class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer"
+ class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer"
  @click="handleBatchDelete">
  <Trash2 class="w-4 h-4" />
  批量删除 ({{ selectedIds.length }})
@@ -46,7 +46,7 @@
  </div>
  <div class="flex items-center gap-2">
  <button
- class="px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+ class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
  @click="applyFilters">
  查询
  </button>
@@ -85,7 +85,7 @@
  </div>
  <div class="flex items-center gap-2 w-full">
  <button
- class="flex-1 px-4 py-1.5 text-sm font-semibold text-white bg-t-primary hover:opacity-90 transition-all cursor-pointer"
+ class="flex-1 px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
  @click="applyFilters">
  查询
  </button>
@@ -177,7 +177,7 @@
  <CheckCircle class="w-4 h-4" />
  </button>
  <button v-if="article.status === 0"
- class="p-1.5 text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
  title="审核不通过" @click="openRejectDialog(article)">
  <XCircle class="w-4 h-4" />
  </button>
@@ -187,7 +187,7 @@
  <Eye class="w-4 h-4" />
  </button>
  <button
- class="p-1.5 text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ class="p-1.5 text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
  title="删除" @click="handleDelete(article)">
  <Trash2 class="w-4 h-4" />
  </button>
@@ -226,7 +226,7 @@
  <CheckCircle class="w-4 h-4" />
  </button>
  <button v-if="article.status === 0"
- class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
  title="审核不通过" @click="openRejectDialog(article)">
  <XCircle class="w-4 h-4" />
  </button>
@@ -236,7 +236,7 @@
  <Eye class="w-4 h-4" />
  </button>
  <button
- class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] cursor-pointer"
+ class="w-9 h-9 flex items-center justify-center text-t-muted transition-all duration-200 hover:text-t-danger hover:bg-t-danger-soft cursor-pointer"
  title="删除" @click="handleDelete(article)">
  <Trash2 class="w-4 h-4" />
  </button>
@@ -297,7 +297,7 @@
             <textarea v-model="rejectReason" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary resize-none" rows="4" placeholder="请输入不通过原因..." />
             <div class="flex justify-end gap-3 mt-5">
                 <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showRejectDialog = false">取消</button>
-                <button class="px-4 py-2 text-sm font-semibold text-white bg-[#f43f5e] hover:opacity-90 transition-all cursor-pointer" @click="handleReject">确认不通过</button>
+                <button class="px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleReject">确认不通过</button>
             </div>
         </AppDialog>
 
@@ -423,7 +423,7 @@ function statusText(status: number) {
 
 function statusClass(status: number) {
  if (status === 1) return 'bg-[rgba(var(--color-primary-rgb),0.1)] text-t-primary border border-[rgba(var(--color-primary-rgb),0.3)]'
- if (status === 0) return 'bg-[rgba(255,170,0,0.1)] text-[#ffaa00] border border-[rgba(255,170,0,0.3)]'
+ if (status === 0) return 'bg-t-warning-soft text-t-warning border border-t-warning'
  return 'bg-[rgba(107,114,128,0.1)] text-t-muted border border-[rgba(107,114,128,0.3)]'
 }
 

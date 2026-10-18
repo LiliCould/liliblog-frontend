@@ -1,13 +1,8 @@
 <template>
-  <div
-    class="bg-[rgba(var(--color-card-rgb),0.85)] border border-t-border rounded-lg transition-all duration-200 relative hover:[box-shadow:0_8px_32px_rgba(var(--color-primary-rgb),0.1),0_0_1px_rgba(var(--color-primary-rgb),0.3)] hover:-translate-y-0.5 hover:border-[rgba(var(--color-primary-rgb),0.3)] group"
-    style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
-  >
-    <div class="absolute top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-t-primary to-t-secondary transition-[width] duration-300 [box-shadow:0_0_8px_rgba(var(--color-primary-rgb),0.4)] group-hover:w-full" />
-
-    <div class="relative overflow-hidden rounded-t-lg">
-      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-48 object-cover" width="640" height="351" loading="lazy" decoding="async" />
-      <div class="absolute top-3 right-3 bg-[rgba(var(--color-primary-rgb),0.85)] text-white px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
+  <div class="panel-glass overflow-hidden">
+    <div class="relative overflow-hidden">
+      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-36 object-cover" width="640" height="351" loading="lazy" decoding="async" />
+      <div class="absolute top-3 right-3 bg-t-primary-fill text-t-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
         {{ userInfo.badge }}
       </div>
     </div>
@@ -31,7 +26,7 @@
           target="_blank"
           rel="noopener noreferrer"
           :class="[
-            'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200',
+            'w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200',
             'border border-[rgba(var(--color-primary-rgb),0.15)] bg-[rgba(var(--color-primary-rgb),0.06)]',
             'hover:scale-110 hover:[box-shadow:0_0_12px_rgba(var(--color-primary-rgb),0.3)] hover:border-[rgba(var(--color-primary-rgb),0.4)]',
             social.iconColor,
@@ -102,10 +97,10 @@ const userInfo = {
 }
 
 const socialLinks = [
-  { name: 'GitHub', url: 'https://github.com/liliCould', icon: GithubIcon, iconColor: 'text-gray-300 hover:text-white' },
+  { name: 'GitHub', url: 'https://github.com/liliCould', icon: GithubIcon, iconColor: 'text-t-muted hover:text-t-primary' },
   { name: 'Bilibili', url: 'https://space.bilibili.com/360583544', icon: Tv, iconColor: 'text-cyan-400 hover:text-cyan-300' },
   { name: '网易云音乐', url: 'https://music.163.com/#/user/home?id=1410136194', icon: Music, iconColor: 'text-red-400 hover:text-red-300' },
-  { name: '邮箱', url: 'mailto:lilicould@qq.com', icon: Mail, iconColor: 'text-gray-300 hover:text-white' },
+  { name: '邮箱', url: 'mailto:lilicould@qq.com', icon: Mail, iconColor: 'text-t-muted hover:text-t-primary' },
 ]
 
 const infoLinks = [

@@ -1,8 +1,8 @@
 <template>
-  <div class="app-wrapper min-h-screen bg-t-bg text-t-body flex flex-col">
+  <div class="app-wrapper relative z-[var(--z-content)] min-h-screen text-t-body flex flex-col">
     <AppHeader />
 
-    <main class="main-content pt-16 min-h-screen bg-t-bg pb-14 md:pb-0 flex-1">
+    <main class="main-content pt-16 min-h-screen pb-[calc(var(--mobile-bottom-nav-height)+var(--safe-bottom))] md:pb-0 flex-1">
       <slot />
     </main>
 

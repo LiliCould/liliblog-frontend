@@ -11,21 +11,26 @@
         <p class="text-t-muted text-sm ml-[52px]">共 {{ categories.length }} 个分类</p>
       </div>
 
-      <div v-if="pending && categories.length === 0" class="flex flex-col gap-3">
-        <div v-for="i in 3" :key="i" class="h-20 rounded-xl bg-t-surface border border-t-border animate-pulse" />
-      </div>
+      <LoadingState v-if="pending && categories.length === 0" variant="cards" :count="3" />
 
-      <div v-else-if="categories.length === 0" class="text-center py-16">
-        <FolderOpen class="w-16 h-16 text-t-muted mx-auto mb-4 opacity-30" />
-        <p class="text-t-muted text-lg mb-2">暂无分类</p>
-      </div>
+      <ErrorState
+        v-else-if="error && categories.length === 0"
+        title="分类加载失败"
+        @retry="refresh"
+      />
 
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <EmptyState
+        v-else-if="categories.length === 0"
+        message="暂无分类"
+        description="分类创建后会显示在这里"
+      />
+
+      <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <NuxtLink
           v-for="category in categories"
           :key="category.id"
           :to="`/category/${encodeURIComponent(category.slug)}`"
-          class="group flex items-center gap-4 p-4 rounded-xl bg-t-surface border border-t-border no-underline transition-all duration-200 hover:border-[rgba(var(--color-primary-rgb),0.3)] hover:shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.06)] hover:-translate-y-0.5"
+          class="card-glass card-interactive group flex items-center gap-4 p-4 no-underline"
         >
           <div class="w-10 h-10 rounded-lg bg-[rgba(var(--color-primary-rgb),0.08)] border border-[rgba(var(--color-primary-rgb),0.15)] flex items-center justify-center flex-shrink-0 group-hover:bg-[rgba(var(--color-primary-rgb),0.12)] transition-colors duration-200">
             <FolderOpen class="w-5 h-5 text-t-primary" />
@@ -46,7 +51,7 @@ import { computed } from 'vue'
 import { ChevronRight, FolderOpen, LayoutGrid } from 'lucide-vue-next'
 import { absoluteUrl } from '~/utils/seo'
 
-const { data: categoryData, pending } = await useCategories()
+const { data: categoryData, pending, error, refresh } = await useCategories()
 const categories = computed(() => categoryData.value || [])
 
 useSeoMeta({

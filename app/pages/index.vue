@@ -4,10 +4,14 @@
       <HeroCarousel />
     </template>
 
-    <div ref="listRef">
-      <div v-if="pending && articles.length === 0" class="flex flex-col gap-4">
-        <div v-for="i in 3" :key="i" class="h-40 rounded-xl bg-t-surface border border-t-border animate-pulse" />
-      </div>
+    <div id="article-list" ref="listRef" class="scroll-mt-24">
+      <LoadingState v-if="pending && articles.length === 0" variant="list" :count="3" />
+
+      <ErrorState
+        v-else-if="error && articles.length === 0"
+        title="文章加载失败"
+        @retry="refresh"
+      />
 
       <ArticleList
         v-else-if="articles.length > 0"
@@ -44,7 +48,7 @@ const emptyPage: PageResult<Article> = {
   hasNext: false,
 }
 
-const { data: articlePage, pending } = await useAsyncData(
+const { data: articlePage, pending, error, refresh } = await useAsyncData(
   'home-articles',
   () => api.get<PageResult<Article>>('/api/article', {
     status: 1,

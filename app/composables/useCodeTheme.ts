@@ -21,6 +21,7 @@ export interface CodeThemeInfo {
 const CODE_THEME_KEY = 'liliblog-code-theme'
 const STYLE_ID = 'code-theme-style'
 const DEFAULT_CODE_THEME = 'atom-one-dark'
+const LIGHT_CODE_THEME = 'github'
 
 const cssMap: Record<string, string> = {
   github: githubCss,
@@ -50,7 +51,7 @@ export const codeThemes: CodeThemeInfo[] = [
 
 const currentCodeTheme = ref<string>(DEFAULT_CODE_THEME)
 
-function applyCodeTheme(themeId: string): void {
+function applyCodeTheme(themeId: string, persist = true): void {
   const theme = codeThemes.find(item => item.id === themeId)
   if (!theme) return
 
@@ -67,6 +68,8 @@ function applyCodeTheme(themeId: string): void {
   styleEl.textContent = cssMap[theme.id] ?? ''
   document.documentElement.setAttribute('data-code-theme', theme.id)
 
+  if (!persist) return
+
   try {
     localStorage.setItem(CODE_THEME_KEY, theme.id)
   } catch {
@@ -75,7 +78,27 @@ function applyCodeTheme(themeId: string): void {
 }
 
 function setCodeTheme(themeId: string): void {
-  applyCodeTheme(themeId)
+  applyCodeTheme(themeId, true)
+}
+
+function uiThemeIsLight(): boolean {
+  if (!import.meta.client) return false
+  return document.documentElement.getAttribute('data-theme') === 'light'
+}
+
+function hasSavedCodeTheme(): boolean {
+  if (!import.meta.client) return false
+  try {
+    return Boolean(localStorage.getItem(CODE_THEME_KEY))
+  } catch {
+    return false
+  }
+}
+
+/** 用户没有手动选过代码主题时，让它跟随界面明暗 */
+function syncCodeThemeWithUi(): void {
+  if (!import.meta.client || hasSavedCodeTheme()) return
+  applyCodeTheme(uiThemeIsLight() ? LIGHT_CODE_THEME : DEFAULT_CODE_THEME, false)
 }
 
 function initCodeTheme(): void {
@@ -88,7 +111,12 @@ function initCodeTheme(): void {
     // ignore
   }
 
-  applyCodeTheme(saved && cssMap[saved] ? saved : DEFAULT_CODE_THEME)
+  if (saved && cssMap[saved]) {
+    applyCodeTheme(saved, false)
+    return
+  }
+
+  applyCodeTheme(uiThemeIsLight() ? LIGHT_CODE_THEME : DEFAULT_CODE_THEME, false)
 }
 
 export function useCodeTheme() {
@@ -97,5 +125,6 @@ export function useCodeTheme() {
     codeThemes,
     setCodeTheme,
     initCodeTheme,
+    syncCodeThemeWithUi,
   }
 }
