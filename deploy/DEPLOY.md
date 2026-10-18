@@ -1,99 +1,125 @@
-# LiliBlog Nuxt 上线手册
+# LiliBlog Nuxt 上线手册（当前服务器实测版）
 
-> 本文档中的安装、systemd 重启、Nginx reload 都需要在服务器上执行。
-> 本地只能生成代码和配置，不能代替服务器操作。
+> 目标服务器：`lilicould.cn`
+> 本次只做了只读检查，没有执行任何部署、重启或配置修改。
+> 所有 `sudo`、systemd、1Panel 操作都需要你在服务器上执行。
 
-## 1. 服务器前置条件
+## 0. 已确认的服务器事实
 
-- Node.js 20 LTS 或 22 LTS；确认路径：`which node`（示例 `/usr/bin/node`）
-- Yarn 4：`corepack enable`
-- Nginx
-- systemd
-- 一个运行应用的系统用户，示例 `www-data`
-- 应用目录示例：`/var/www/liliblog`
+| 项 | 现状 |
+|---|---|
+| 系统 | Debian 13 (trixie) |
+| 用户 | `lilicould`，在 `sudo` 组 |
+| OpenResty | 1Panel Docker 容器，镜像 `1panel/openresty:1.27.1.2-5-1-focal`，**network=host** |
+| OpenResty 配置 | `/opt/1panel/www/conf.d/lilicould.conf`（容器内 `/usr/local/openresty/nginx/conf/conf.d/`） |
+| 站点静态目录 | `/www/sites/lilicould/index`（旧前端 `dist`，保留回滚） |
+| 后端 | Spring Boot `liliblog.service`，监听 `127.0.0.1:8080`，Jar 在 `/opt/liliblog` |
+| Node | **未安装**；apt 候选 Node 20.19.2、npm 9.2.0 |
+| 内存 | 1.6GB + 2GB swap；Java 进程 RSS 约 770MB，偏紧 |
+| 端口 | 3000 空闲；80/443/8080/8888 已占用 |
+| systemd | 257；已有 `liliblog.service`（后端），**新前端服务必须另起名** |
 
-## 2. 构建
+因为 OpenResty 容器是 `network=host`，Nuxt 绑定 `127.0.0.1:3000` 后，
+容器可以直接访问，不需要 `host.docker.internal` 或 Docker 网桥 IP。
 
-在服务器或 CI 中执行：
+## 1. 安装 Node（仅一次）
 
 ```bash
-cd /var/www/liliblog
-corepack enable
+sudo apt update
+sudo apt install -y nodejs npm
+node -v    # 预期 v20.19.2
+npm -v     # 预期 9.2.0
+sudo npm install -g yarn@4.18.0
+yarn -v
+```
+
+如果 Node 安装在 `/usr/bin/node`，systemd 使用该路径；否则修改
+`deploy/liliblog-web.service` 的 `ExecStart`。
+
+## 2. 构建与上传
+
+**建议本地/CI 构建**，服务器内存偏紧，不建议在服务器上跑完整 `nuxt build`。
+
+本地：
+
+```bash
 yarn install --immutable
 yarn build
 ```
 
-产物：
-
-- `.output/server/index.mjs`
-- `.output/public/_nuxt/*`
-- `public/vditor` 会在 `prebuild` 阶段自动复制到 `.output/public/vditor`
-
-如果构建在本地完成，把 `.output` 同步到服务器应用目录。
-
-## 3. systemd
+服务器准备目录：
 
 ```bash
-sudo cp deploy/liliblog.service /etc/systemd/system/liliblog.service
-# 按实际路径修改 User/WorkingDirectory/ExecStart
-sudo systemctl daemon-reload
-sudo systemctl enable --now liliblog
-sudo systemctl status liliblog
-sudo journalctl -u liliblog -f
+sudo install -d -o lilicould -g lilicould /opt/liliblog-web
 ```
 
-验证 Node 进程：
+本地上传：
+
+```bash
+rsync -avz --delete .output/ lilicould@lilicould.cn:/opt/liliblog-web/.output/
+```
+
+如果必须在服务器构建，至少确认 swap 可用，并在低峰期执行。
+
+## 3. systemd（前端服务）
+
+```bash
+sudo cp deploy/liliblog-web.service /etc/systemd/system/liliblog-web.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now liliblog-web
+sudo systemctl status liliblog-web
+sudo journalctl -u liliblog-web -f
+```
+
+验证：
 
 ```bash
 curl -I http://127.0.0.1:3000/
 ```
 
-## 4. Nginx / 1Panel OpenResty
+注意：
 
-### 4.1 宿主机安装的 OpenResty/Nginx
+- 不要覆盖/重启 `liliblog.service`，那是 Java 后端。
+- 服务已设置 `HOST=127.0.0.1`、`PORT=3000`、`NODE_OPTIONS=--max-old-space-size=384`。
+- 服务端请求后端走 `NUXT_API_BASE=http://127.0.0.1:8080`，避免绕公网。
 
-```bash
-sudo cp deploy/nginx-liliblog.conf /etc/nginx/conf.d/liliblog.conf
-# 替换证书路径、应用目录、端口
-sudo nginx -t
-sudo systemctl reload nginx
-```
+## 4. 1Panel OpenResty 站点配置
 
-### 4.2 1Panel 里的 OpenResty
+当前站点配置：`/opt/1panel/www/conf.d/lilicould.conf`
 
-先确认 OpenResty 是宿主机服务还是 1Panel 的 Docker 应用：
+1. 先备份：
+   在 1Panel「网站 -> 网站 -> lilicould -> 配置文件」复制一份内容，
+   或执行：
+   ```bash
+   sudo cp /opt/1panel/www/conf.d/lilicould.conf /root/lilicould.conf.bak
+   ```
+2. 用 `deploy/1panel-lilicould-site.conf` 的内容替换站点配置。
+3. 保存后，使用 1Panel 的「重载/重启」按钮重载 OpenResty。
 
-```bash
-docker ps --format '{{.Names}} {{.Image}}' | grep -i openresty
-# 有输出：Docker 应用
-systemctl status openresty 2>/dev/null | head
-# 有输出：宿主机服务
-```
+关键修改：
 
-- **宿主机 OpenResty**：upstream 用 `127.0.0.1:3000`，可直接使用
-  `deploy/nginx-liliblog.conf`。
-- **1Panel Docker OpenResty**：容器里的 `127.0.0.1` 不是宿主机，
-  upstream 必须改为 `host.docker.internal:3000` 或 Docker 网桥 IP
-  （常见 `172.17.0.1`）。使用 `deploy/openresty-1panel-site.conf`。
-- 1Panel 的站点 SSL、证书、HTTP/2 由面板管理，不要把整段
-  `server {}` 覆盖进去；只把 `location` 合并到「网站 -> 网站 -> 配置文件」。
-- 修改后优先用 1Panel 面板的「重启/重载」按钮，或重启对应 OpenResty 应用；
-  不要假设存在 `systemctl reload nginx`。
-- 1Panel 防火墙/安全组只放行 80/443；3000 只绑定 `127.0.0.1`，
-  不要对外开放。
+- 删除 `location / { try_files $uri $uri/ /index.html; }`
+- 删除 `error_page 404 = @redirect_to_index` 和 `location @redirect_to_index`
+- 删除 `location ~* \.(jpg|jpeg|png|gif|ico|css|js)$`
+  （否则会拦截 `/_nuxt/*.js`、`/_nuxt/*.css`）
+- `/_nuxt/`、`/vditor/`、`/` 代理到 `127.0.0.1:3000`
+- `/api/`、`/auth/`、`/file/` 代理到 `127.0.0.1:8080`
+- 保留 1Panel 管理的证书路径、`http2 on`、ACME 路径
 
-如果 Nginx 已经直接代理 `/api`、`/auth`、`/file`，保留配置中的三段；
-如果希望全部交给 Nuxt 处理，删除这三段即可，`server/middleware/api-proxy.ts` 会转发。
+如果不方便整段替换，只把 `deploy/1panel-lilicould-site.conf` 中的
+`location` 段合并到现有 server 中，并删除上面三个冲突段。
 
 ## 5. 上线前验证
 
 ```bash
+curl -I http://127.0.0.1:3000/
 curl -I https://lilicould.cn/
 curl -I https://lilicould.cn/article/CO
 curl -I https://lilicould.cn/admin
 curl -s https://lilicould.cn/sitemap.xml | head
 curl -s https://lilicould.cn/robots.txt
 curl -I https://lilicould.cn/index.html
+curl -s 'https://lilicould.cn/api/article?status=1&current=1&size=1' | head -c 200
 ```
 
 预期：
@@ -103,30 +129,41 @@ curl -I https://lilicould.cn/index.html
 - `sitemap.xml` 只包含公开文章、分类、标签、作者
 - `robots.txt` 禁止后台、登录、写作、搜索
 - `/index.html` 301 到 `/`
+- `/api/article` 返回后端 JSON
 
 ## 6. 回滚
 
-上线前保留：
+保留：
 
-- 旧的静态 `dist/` 目录
-- 旧 Nginx 配置备份
+- 旧静态站 `/www/sites/lilicould/index`
+- 旧站点配置 `/root/lilicould.conf.bak` 或 1Panel 里的配置副本
 
-回滚时：
+回滚：
 
 ```bash
-sudo systemctl stop liliblog
-sudo cp /etc/nginx/conf.d/liliblog.conf.bak /etc/nginx/conf.d/liliblog.conf
-sudo nginx -t && sudo systemctl reload nginx
-# 把 Nginx root 指回旧 dist
+sudo systemctl stop liliblog-web
+sudo cp /root/lilicould.conf.bak /opt/1panel/www/conf.d/lilicould.conf
+# 在 1Panel 里重载 OpenResty
 ```
 
-## 7. 常用环境变量
+旧静态站仍在原目录，恢复旧配置后即可继续提供服务。
+
+## 7. 环境变量
 
 ```bash
 NODE_ENV=production
+HOST=127.0.0.1
 PORT=3000
-NUXT_API_BASE=https://api.lilicould.cn
+NUXT_API_BASE=http://127.0.0.1:8080
 NUXT_PUBLIC_SITE_URL=https://lilicould.cn
+NODE_OPTIONS=--max-old-space-size=384
 ```
 
 不要把登录 token、数据库密码等写入仓库。
+
+## 8. 安全提醒
+
+- 本次只读检查使用的服务器密码已在聊天中出现，**建议立即修改服务器密码**，
+  并改用 SSH 密钥登录。
+- 3000 只绑定 `127.0.0.1`，1Panel 防火墙/云安全组不要放行 3000。
+- 后端 8080 也不应直接对公网开放，应由 OpenResty 代理。
