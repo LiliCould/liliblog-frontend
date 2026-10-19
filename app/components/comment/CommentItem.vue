@@ -134,6 +134,7 @@ const emit = defineEmits<{
 }>()
 
 const api = useApi()
+const authApi = useAuthApi()
 const userStore = useUserStore()
 
 const children = ref<Comment[]>([])
@@ -152,7 +153,7 @@ const ChildLikeButton = {
     initialCount: { type: Number, default: 0 },
   },
   setup(childProps: { commentId: number; initialCount: number }) {
-    const childApi = useApi()
+    const childApi = useAuthApi()
     const childUserStore = useUserStore()
     const liked = ref(false)
     const count = ref(childProps.initialCount)
@@ -210,7 +211,7 @@ const ChildLikeButton = {
 onMounted(async () => {
   if (!userStore.isLoggedIn) return
   try {
-    isLiked.value = (await api.get<boolean>(`/api/comment/${props.comment.id}/like`)) === true
+    isLiked.value = (await authApi.get<boolean>(`/api/comment/${props.comment.id}/like`)) === true
   } catch {
     isLiked.value = false
   }
@@ -225,17 +226,17 @@ async function toggleLike(): Promise<void> {
   likeLoading.value = true
   try {
     if (isLiked.value) {
-      await api.put(`/api/comment/${props.comment.id}/unlike`)
+      await authApi.put(`/api/comment/${props.comment.id}/unlike`)
       isLiked.value = false
       likeCount.value--
     } else {
-      await api.put(`/api/comment/${props.comment.id}/like`)
+      await authApi.put(`/api/comment/${props.comment.id}/like`)
       isLiked.value = true
       likeCount.value++
     }
   } catch {
     try {
-      isLiked.value = (await api.get<boolean>(`/api/comment/${props.comment.id}/like`)) === true
+      isLiked.value = (await authApi.get<boolean>(`/api/comment/${props.comment.id}/like`)) === true
     } catch {
       // ignore
     }

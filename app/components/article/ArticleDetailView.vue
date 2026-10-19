@@ -181,7 +181,7 @@ const props = defineProps<{
   article: ArticleDetail
 }>()
 
-const api = useApi()
+const authApi = useAuthApi()
 const userStore = useUserStore()
 const toast = useToast()
 const { currentCodeTheme, codeThemes, setCodeTheme } = useCodeTheme()
@@ -216,7 +216,7 @@ function tagStyle(color?: string) {
 onMounted(async () => {
   if (!userStore.isLoggedIn) return
   try {
-    isLiked.value = (await api.get<boolean>(`/api/article/${props.article.id}/like`)) === true
+    isLiked.value = (await authApi.get<boolean>(`/api/article/${props.article.id}/like`)) === true
   } catch {
     isLiked.value = false
   }
@@ -230,11 +230,11 @@ async function toggleLike(): Promise<void> {
 
   try {
     if (isLiked.value) {
-      await api.put(`/api/article/${props.article.id}/unlike`)
+      await authApi.put(`/api/article/${props.article.id}/unlike`)
       isLiked.value = false
       likeCount.value--
     } else {
-      await api.put(`/api/article/${props.article.id}/like`)
+      await authApi.put(`/api/article/${props.article.id}/like`)
       isLiked.value = true
       likeCount.value++
     }

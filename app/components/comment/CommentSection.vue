@@ -65,6 +65,7 @@ const props = defineProps<{
 }>()
 
 const api = useApi()
+const authApi = useAuthApi()
 const userStore = useUserStore()
 const toast = useToast()
 const authModal = useAuthModal()
@@ -124,6 +125,10 @@ async function loadMore(): Promise<void> {
 
 async function submitComment(): Promise<void> {
   if (!commentContent.value.trim() || submitting.value) return
+  if (!userStore.isLoggedIn) {
+    authModal.open('login')
+    return
+  }
   submitting.value = true
   try {
     const target = replyTarget.value
@@ -133,7 +138,7 @@ async function submitComment(): Promise<void> {
       parentId: target?.id || 0,
       rootId: target?.rootId || target?.id || 0,
     }
-    await api.post('/api/comment', data)
+    await authApi.post('/api/comment', data)
     commentContent.value = ''
     replyTarget.value = null
     extraComments.value = []
