@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen flex flex-col bg-t-bg overflow-hidden">
-    <header class="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-6 z-50 border-b border-t-border"
+    <header class="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-6 z-[100] border-b border-t-border"
       style="background:rgba(var(--color-bg-rgb),0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
       <div class="flex items-center gap-3">
         <NuxtLink to="/" class="flex items-center gap-2 no-underline group">
@@ -356,7 +356,8 @@ import logoSvg from '~/assets/logo.svg'
 const router = useRouter()
 const route = useRoute()
 const saving = ref(false)
-const metaOpen = ref(true)
+// onMounted 会按屏幕宽度设置：桌面打开侧栏，移动端保持关闭
+const metaOpen = ref(false)
 const showRestoreDialog = ref(false)
 const showCategoryModal = ref(false)
 const categories = ref<Category[]>([])
@@ -451,7 +452,18 @@ function validate(): boolean {
   else if (/[^a-zA-Z0-9-]/.test(form.slug) || form.slug.startsWith('-') || form.slug.endsWith('-')) { errors.slug = '别名格式不正确'; valid = false } else { errors.slug = '' }
   if (!form.summary.trim()) { errors.summary = '请输入摘要'; valid = false } else { errors.summary = '' }
   if (!form.categoryId) { errors.categoryId = '请选择分类'; valid = false } else { errors.categoryId = '' }
-  if (!form.content.trim()) { valid = false }
+  const hasContent = Boolean(form.content.trim())
+  if (!hasContent) { valid = false }
+
+  if (!valid) {
+    // 移动端这些字段都在底部抽屉里，校验失败时打开抽屉并提示，避免“点了没反应”
+    const firstError = errors.title || errors.slug || errors.summary || errors.categoryId
+      || (!hasContent ? '请输入文章内容' : '请检查表单')
+    toast.error(firstError)
+    if (window.innerWidth < 768) {
+      metaOpen.value = true
+    }
+  }
   return valid
 }
 
