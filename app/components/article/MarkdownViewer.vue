@@ -96,18 +96,55 @@ function isLilicouldDomain(url: string): boolean {
   }
 }
 
+/**
+ * 从 URL 路径中取扩展名。
+ * 先去掉 query/fragment，避免签名参数里的点干扰后缀判断。
+ */
+function getFileExtension(href: string): string {
+  const path = href.split('?')[0].split('#')[0]
+  const lastSegment = path.split('/').pop() || ''
+  const dotIndex = lastSegment.lastIndexOf('.')
+  if (dotIndex < 0 || dotIndex === lastSegment.length - 1) return ''
+  return lastSegment.substring(dotIndex + 1).toLowerCase()
+}
+
+/**
+ * 链接文本通常是原始文件名（MarkdownEditor 插入时写入）；
+ * 没有文本时退回 URL 最后一段。
+ */
+function getDisplayName(href: string, text: string): string {
+  if (text) return text
+  const raw = href.split('?')[0].split('#')[0].split('/').pop() || ''
+  try {
+    return decodeURIComponent(raw) || '未知文件'
+  } catch {
+    return raw || '未知文件'
+  }
+}
+
+/**
+ * 七牛的 attname 参数会设置 Content-Disposition 的下载文件名，
+ * 这样对象 key 用 UUID 也不会让用户下载到 uuid.ext。
+ */
+function getDownloadHref(href: string, displayName: string): string {
+  if (!displayName) return href
+  const separator = href.includes('?') ? '&' : '?'
+  return `${href}${separator}attname=${encodeURIComponent(displayName)}`
+}
+
 function getFileCardHtml(href: string, text: string): string {
   if (!isLilicouldDomain(href)) {
     return `<a href="${href}" target="_blank" rel="noopener noreferrer" data-external="true" data-url="${href}">${text}</a>`
   }
 
-  const ext = href.split('.').pop()?.split('?')[0]?.toLowerCase() || ''
+  const ext = getFileExtension(href)
   const fileType = FILE_TYPES[ext]
   if (!fileType) {
     return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
   }
 
-  const displayName = text || href.split('/').pop() || '未知文件'
+  const displayName = getDisplayName(href, text)
+  const downloadHref = getDownloadHref(href, displayName)
   const canPreview = PREVIEWABLE_TYPES.has(ext)
   const previewType = VIDEO_EXTS.has(ext) ? 'video' : ext === 'pdf' ? 'pdf' : 'markdown'
 
@@ -122,7 +159,7 @@ function getFileCardHtml(href: string, text: string): string {
     <span class="file-card__icon" style="--file-color:${fileType.color}">${fileType.label}</span>
     <span class="file-card__name">${displayName}</span>
     ${previewBtn}
-    <a href="${href}" target="_blank" rel="noopener noreferrer" class="file-card__action">${downloadIcon}</a>
+    <a href="${downloadHref}" target="_blank" rel="noopener noreferrer" class="file-card__action">${downloadIcon}</a>
   </div>`
 }
 

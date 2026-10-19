@@ -166,6 +166,10 @@ curl -I http://127.0.0.1:3000/
   （否则会拦截 `/_nuxt/*.js`、`/_nuxt/*.css`）
 - `/_nuxt/`、`/vditor/`、`/` 代理到 `127.0.0.1:3000`
 - `/api/`、`/auth/`、`/file/` 代理到 `127.0.0.1:8080`
+- 前端直传模式下，文件内容直接发往七牛上传域名，不经过本机 Nginx；
+  但 `/file/token`、`/file/complete` 仍走上面的 `/file/` 代理。
+- 需在七牛 bucket 的跨域设置中允许站点域名和 `http://localhost:3000`，
+  方法包含 `POST/GET/HEAD/OPTIONS`，否则浏览器直传会出现 CORS 错误。
 - 保留 1Panel 管理的证书路径、`http2 on`、ACME 路径
 
 如果不方便整段替换，只把 `deploy/1panel-lilicould-site.conf` 中的
@@ -289,6 +293,8 @@ HOST=127.0.0.1
 PORT=3000
 NUXT_API_BASE=http://127.0.0.1:8080
 NUXT_PUBLIC_SITE_URL=https://lilicould.cn
+# direct=前端直传七牛；proxy=回退到后端中转上传
+NUXT_PUBLIC_UPLOAD_MODE=direct
 NODE_OPTIONS=--max-old-space-size=384
 ```
 

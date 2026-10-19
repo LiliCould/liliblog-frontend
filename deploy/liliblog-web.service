@@ -13,6 +13,8 @@ Environment=HOST=127.0.0.1
 Environment=PORT=3000
 Environment=NUXT_API_BASE=http://127.0.0.1:8080
 Environment=NUXT_PUBLIC_SITE_URL=https://lilicould.cn
+# direct=前端直传七牛；回退到后端中转时改为 proxy
+Environment=NUXT_PUBLIC_UPLOAD_MODE=direct
 Environment=NODE_OPTIONS=--max-old-space-size=384
 Environment=PATH=/opt/node24/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ExecStart=/opt/node24/bin/node .output/server/index.mjs

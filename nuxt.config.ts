@@ -76,6 +76,8 @@ export default defineNuxtConfig({
       // 浏览器始终走同源 /api，由 Nitro 或 Nginx 转发，避免 CORS 与 Cookie 跨域问题
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://lilicould.cn',
+      // direct=前端直传七牛，proxy=回退到后端中转 /file/upload
+      uploadMode: process.env.NUXT_PUBLIC_UPLOAD_MODE || 'direct',
     },
   },
 
