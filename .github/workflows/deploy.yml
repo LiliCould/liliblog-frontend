@@ -42,13 +42,26 @@ jobs:
           TARGET: /opt/liliblog-web/.output/
           # Windows 本地构建会带绝对路径符号链接，CI 在 Linux 构建；
           # 仍然排除 node_modules 和 source map，运行依赖在服务器上安装。
+          # 注意：ssh-deploy@v4 的 SCRIPT_BEFORE/SCRIPT_AFTER 失败不会让步骤变红，
+          # 因此这里只负责上传，安装与重启交给下面的 ssh-action。
           ARGS: "-rlgoDzvc --delete --exclude=server/node_modules --exclude=*.map"
-          SCRIPT_BEFORE: |
-            sudo mkdir -p /opt/liliblog-web
-          SCRIPT_AFTER: |
+
+      - name: Install runtime dependencies and restart
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
             cd /opt/liliblog-web
             rm -rf .output/server/node_modules
             cp .output/server/package.json package.json
             PATH=/opt/node24/bin:$PATH /opt/node24/bin/npm install --omit=dev --no-audit --no-fund
-            sudo chown -R lilicould:lilicould /opt/liliblog-web
-            sudo systemctl restart liliblog-web
+            sudo -n /usr/bin/systemctl restart liliblog-web.service
+            sleep 3
+            systemctl is-active liliblog-web.service
+            curl -fsS --max-time 10 http://127.0.0.1:3000/_nuxt/builds/latest.json >/dev/null
+            echo "frontend deploy verified"
