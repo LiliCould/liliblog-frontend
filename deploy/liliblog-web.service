@@ -3,21 +3,25 @@ Description=LiliBlog Nuxt SSR Frontend
 After=network-online.target
 Wants=network-online.target
 
+# 复制到 /etc/systemd/system/ 后按实际环境修改：
+# - User / Group
+# - WorkingDirectory
+# - PATH 和 ExecStart 中的 Node 路径
+# - NUXT_PUBLIC_SITE_URL
 [Service]
 Type=simple
-User=lilicould
-Group=lilicould
-WorkingDirectory=/opt/liliblog-web
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/liliblog-web
 Environment=NODE_ENV=production
 Environment=HOST=127.0.0.1
 Environment=PORT=3000
 Environment=NUXT_API_BASE=http://127.0.0.1:8080
-Environment=NUXT_PUBLIC_SITE_URL=https://lilicould.cn
-# direct=前端直传七牛；回退到后端中转时改为 proxy
+Environment=NUXT_PUBLIC_SITE_URL=https://example.com
 Environment=NUXT_PUBLIC_UPLOAD_MODE=direct
 Environment=NODE_OPTIONS=--max-old-space-size=384
-Environment=PATH=/opt/node24/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ExecStart=/opt/node24/bin/node .output/server/index.mjs
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env node .output/server/index.mjs
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
@@ -25,7 +29,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=true
-ReadWritePaths=/opt/liliblog-web
+ReadWritePaths=/var/www/liliblog-web
 StandardOutput=journal
 StandardError=journal
 

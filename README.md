@@ -1,11 +1,11 @@
 # 立里博客前端
 
-[![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vue.js&logoColor=fff)](https://vuejs.org/)[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)](https://vite.dev/)[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=fff)](https://tailwindcss.com/)[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?logo=nuxt&logoColor=fff)](https://nuxt.com/)[![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vue.js&logoColor=fff)](https://vuejs.org/)[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=fff)](https://tailwindcss.com/)[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**立里博客**（LiliBlog）是一个基于 Vue 3 + TypeScript + Vite 构建的现代化个人博客系统前端。采用赛博朋克/霓虹美学设计，支持多主题切换、深色模式、完整的后台管理面板，以及基于 Vditor 的 Markdown 文章编辑器。
+**立里博客**（LiliBlog）是一个基于 **Nuxt 4 + Vue 3 + TypeScript** 构建的个人博客前端，使用 SSR 渲染，采用赛博朋克/霓虹美学设计，支持多主题切换、深色模式、后台管理面板，以及基于 Vditor 的 Markdown 文章编辑器。
 
-- 🌐 在线站点：<https://lilicould.cn>
-- 📦 后端仓库(本仓库仅包含前端代码)：[LiliCould/liliblog-backend](https://github.com/LiliCould/liliblog-backend)
+- 在线站点：<https://lilicould.cn>
+- 后端仓库（本仓库仅包含前端代码）：[LiliCould/liliblog-backend](https://github.com/LiliCould/liliblog-backend)
 
 ---
 
@@ -16,8 +16,9 @@
 - [项目结构](#项目结构)
 - [快速开始](#快速开始)
 - [脚本命令](#脚本命令)
-- [部署指南](#部署指南)
 - [环境变量](#环境变量)
+- [路由一览](#路由一览)
+- [构建与部署](#构建与部署)
 - [开发规范](#开发规范)
 - [许可证](#许可证)
 
@@ -27,241 +28,115 @@
 
 ### 核心框架
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| **Vue 3** | ^3.5.16 | 渐进式前端框架（Composition API + `<script setup>`） |
-| **TypeScript** | ~5.8.3 | 类型安全 JavaScript |
-| **Vite** | ^8.0.0 | 构建工具与开发服务器 |
-| **Vue Router 4** | ^4.5.1 | 客户端路由 |
-| **Pinia** | ^3.0.2 | 状态管理 |
+| 技术 | 用途 |
+|---|---|
+| **Nuxt 4** | SSR 应用框架，文件路由、自动导入、Nitro 服务端 |
+| **Vue 3** | Composition API + `<script setup>` |
+| **TypeScript** | 严格模式类型检查 |
+| **Nitro** | Nuxt 服务端引擎，负责 SSR、同源 API 代理、sitemap/robots |
+| **Pinia** | 状态管理 |
+| **Vue Router 5** | 由 Nuxt 集成，负责页面路由与导航守卫 |
 
 ### UI 与样式
 
 | 技术 | 用途 |
-|------|------|
-| **Tailwind CSS** 3 | 工具类优先的 CSS 框架 |
+|---|---|
+| **Tailwind CSS 3** | 工具类优先的 CSS 框架 |
 | **@tailwindcss/typography** | Markdown 内容排版 |
-| **Radix Vue** | 无样式、可访问的 UI 原语 |
-| **Lucide Vue Next** | 开源图标库 |
-| **class-variance-authority** | 组件变体管理 |
-| **Tailwind Merge / clsx** | Tailwind 类名合并 |
+| **Reka UI** | 无样式、可访问的 UI 原语 |
+| **Lucide Vue Next** | 图标库 |
+| **vue-sonner** | Toast 提示 |
+| **NProgress** | 页面加载进度条 |
 
-### 编辑器
+### 内容与编辑器
 
 | 技术 | 用途 |
-|------|------|
-| **Vditor** 3.11.2 | 自托管 Markdown 编辑器（WYSIWYG / IR / SV 三种模式，支持 KaTeX、Mermaid、代码高亮） |
+|---|---|
+| **Vditor** | 自托管 Markdown 编辑器（WYSIWYG / IR / SV） |
+| **marked** | Markdown 渲染 |
+| **highlight.js** | 代码高亮 |
+| **DOMPurify** | HTML 输出安全过滤 |
 
 ### 其他工具
 
 | 技术 | 用途 |
-|------|------|
-| **Axios** | HTTP 客户端（自动 Token 刷新、请求队列） |
-| **Day.js** | 轻量级日期格式化 |
-| **DOMPurify** | HTML/Markdown 输出安全过滤 |
-| **NProgress** | 页面顶部加载进度条 |
-| **unplugin-auto-import** | 自动导入 Vue/Router/Pinia API |
-| **unplugin-vue-components** | 自动注册组件 |
+|---|---|
+| **Axios** | HTTP 客户端（Token 刷新、请求队列） |
+| **Day.js** | 日期格式化 |
+| **VueUse** | 常用组合式工具 |
 
 ---
 
 ## 功能特性
 
-### 前台功能
+### 前台
 
-| 功能 | 说明 |
-|------|------|
-| 🏠 **首页** | 轮播大图 + 分页文章列表 |
-| 📄 **文章详情** | Markdown 渲染、目录导航、点赞、评论区 |
-| 📂 **分类过滤** | 按分类浏览文章 |
-| 🏷️ **标签过滤** | 按标签浏览文章 |
-| 👤 **用户主页** | 公开个人主页（`/user/:id`）与个人中心（`/user/me`） |
-| 🔐 **认证系统** | 密码登录 + 邮箱验证码登录、注册、登出 |
-| 🔍 **搜索** | 全站文章搜索 |
-| ℹ️ **关于页面** | 博客介绍 |
-| 🎨 **多主题** | 4 套内置主题（浅色、赛博暗色、海洋、森林）+ 自定义颜色覆盖 + 跟随系统 |
-| 📱 **响应式设计** | 桌面三栏布局、平板、移动端侧滑导航 |
-| 🌙 **深色模式** | 基于 class 策略的深色模式支持 |
+- 首页轮播大图 + 分页文章列表
+- 文章详情、目录导航、阅读进度、点赞与评论区
+- 分类、标签、全站搜索
+- 用户公开主页与个人中心
+- 密码登录、邮箱验证码登录、注册、登出
+- 4 套内置主题：浅色、赛博暗色、海洋、森林，支持自定义颜色
+- 响应式布局，适配桌面、平板和移动端
 
 ### 后台管理
 
-| 功能 | 说明 |
-|------|------|
-| 📊 **仪表盘** | 站点概览与统计数据 |
-| 📝 **文章管理** | CRUD、批量删除、审核 |
-| 📁 **分类管理** | CRUD、批量删除 |
-| 🏷️ **标签管理** | CRUD、批量删除 |
-| 💬 **评论管理** | 审核、删除、批量删除 |
-| 👥 **用户管理** | CRUD、角色/状态管理 |
-| 📋 **审计日志** | 操作日志查看 |
+- 仪表盘与站点统计
+- 文章、分类、标签、评论、用户管理
+- 审计日志查看
+- 管理员路由守卫与 `noindex` 保护
 
 ### 文章编辑器
 
-- 基于 Vditor 的完整 Markdown 编辑器，支持 WYSIWYG / IR / SV 三种编辑模式
-- 自动保存草稿到 IndexedDB + localStorage（30 秒间隔）
-- 重新访问时恢复未保存的草稿
-- 保留最近 10 个版本的草稿历史
-- 离开前未保存内容提醒（`beforeunload`）
+- Vditor Markdown 编辑器，支持 WYSIWYG / IR / SV 三种模式
+- 自动保存草稿到 IndexedDB + localStorage
+- 重新访问时恢复草稿，保留最近版本
+- 离开页面前未保存提醒
+- 图片/文件上传，支持七牛前端直传或后端中转
 
-### SEO 优化
+### SEO 与 SSR
 
-- 📍 XML 网站地图（`/sitemap.xml`）
-- 🤖 爬虫规则（`/robots.txt`）
-- 📝 Open Graph / Twitter Card 元标签
-- 🔗 Canonical URL
-- 🧩 JSON-LD 结构化数据
-- 🚀 字体与 API 预连接（`preconnect`）
+- 服务端渲染，文章正文可直接被爬虫抓取
+- 动态 `/sitemap.xml` 与 `/robots.txt`
+- Open Graph、Twitter Card、Canonical、JSON-LD
+- 后台、登录、写作、搜索页面自动加 `X-Robots-Tag: noindex, nofollow`
 
 ---
 
 ## 项目结构
 
-```
-├── public/                      # 静态资源
-│   ├── avatar.png               # 默认头像
-│   ├── favicon.svg              # 网站图标
-│   ├── manifest.json            # PWA manifest
-│   ├── robots.txt               # 爬虫规则
-│   ├── sitemap.xml              # 网站地图
-│   └── vditor/                  # 自托管 Vditor 编辑器资源
-├── src/
-│   ├── api/                     # API 服务层
-│   │   ├── admin/               # 后台管理 API
-│   │   │   ├── article.ts
-│   │   │   ├── auditLog.ts
-│   │   │   ├── category.ts
-│   │   │   ├── comment.ts
-│   │   │   ├── tag.ts
-│   │   │   └── user.ts
-│   │   ├── article.ts
-│   │   ├── auth.ts
-│   │   ├── category.ts
-│   │   ├── comment.ts
-│   │   ├── file.ts
-│   │   ├── tag.ts
-│   │   └── user.ts
-│   ├── assets/
-│   │   ├── heros/               # 轮播图资源
-│   │   ├── logo.svg             # 应用 Logo
-│   │   ├── my.png               # 个人照片
-│   │   └── styles/
-│   │       ├── markdown.css     # Markdown 内容样式
-│   │       ├── reset.css        # CSS 重置 + 全局样式
-│   │       ├── tailwind.css     # Tailwind 指令入口
-│   │       ├── transitions.css  # 路由过渡动画
-│   │       └── variables.css    # CSS 自定义属性（主题变量）
-│   ├── components/
-│   │   ├── article/             # 文章相关组件
-│   │   │   ├── ArticleList.vue
-│   │   │   ├── ArticleToc.vue
-│   │   │   ├── MarkdownEditor.vue
-│   │   │   └── MarkdownViewer.vue
-│   │   ├── auth/                # 认证组件
-│   │   │   └── AuthModal.vue
-│   │   ├── comment/             # 评论组件
-│   │   │   ├── CommentItem.vue
-│   │   │   └── CommentSection.vue
-│   │   ├── common/              # 通用组件
-│   │   │   ├── ArticleCard.vue
-│   │   │   ├── EmptyState.vue
-│   │   │   ├── HeroCarousel.vue
-│   │   │   ├── MyInfo.vue
-│   │   │   ├── TagBadge.vue
-│   │   │   ├── ThemePanel.vue
-│   │   │   └── ToastContainer.vue
-│   │   ├── layout/              # 布局组件
-│   │   │   ├── AdminLayout.vue
-│   │   │   ├── AppFooter.vue
-│   │   │   ├── AppHeader.vue
-│   │   │   ├── AppLayout.vue
-│   │   │   ├── AppSidebar.vue
-│   │   │   ├── MobileNav.vue
-│   │   │   └── RightSidebar.vue
-│   │   ├── ui/                  # UI 基础组件
-│   │   │   ├── CustomSelect.vue
-│   │   │   └── Pagination.vue
-│   │   └── user/
-│   │       └── ChangePasswordModal.vue
-│   ├── composables/             # 组合式函数
-│   │   ├── useAuthModal.ts
-│   │   ├── useAutoSave.ts
-│   │   ├── useTheme.ts
-│   │   ├── useToast.ts
-│   │   └── useTokenRefresh.ts
-│   ├── directives/              # 自定义指令
-│   │   └── lazy.ts              # v-lazy 图片懒加载
-│   ├── router/
-│   │   ├── index.ts             # 路由设置 + 导航守卫
-│   │   └── routes.ts            # 路由定义
-│   ├── stores/                  # Pinia 状态管理
-│   │   ├── app.ts               # 应用配置（分类、标签、全局 UI）
-│   │   ├── article.ts           # 文章数据
-│   │   ├── index.ts             # Pinia 实例
-│   │   └── user.ts              # 用户认证信息
-│   ├── types/                   # TypeScript 类型定义
-│   │   ├── admin.d.ts
-│   │   ├── api.d.ts
-│   │   ├── article.d.ts
-│   │   ├── auth.d.ts
-│   │   ├── category.d.ts
-│   │   ├── comment.d.ts
-│   │   ├── common.d.ts
-│   │   ├── router.d.ts
-│   │   ├── tag.d.ts
-│   │   └── user.d.ts
-│   ├── utils/                   # 工具函数
-│   │   ├── format.ts            # 日期/头像/数字格式化
-│   │   ├── request.ts           # Axios 实例 + 拦截器
-│   │   └── storage.ts           # localStorage 封装
-│   ├── views/                   # 页面视图
-│   │   ├── about/
-│   │   │   └── AboutView.vue
-│   │   ├── admin/
-│   │   │   ├── Articles.vue
-│   │   │   ├── AuditLogs.vue
-│   │   │   ├── Categories.vue
-│   │   │   ├── Comments.vue
-│   │   │   ├── Dashboard.vue
-│   │   │   ├── Tags.vue
-│   │   │   └── Users.vue
-│   │   ├── article/
-│   │   │   └── ArticleDetail.vue
-│   │   ├── auth/
-│   │   │   ├── LoginRedirect.vue
-│   │   │   ├── LoginView.vue
-│   │   │   ├── RegisterRedirect.vue
-│   │   │   └── RegisterView.vue
-│   │   ├── category/
-│   │   │   └── CategoryArticles.vue
-│   │   ├── home/
-│   │   │   └── HomeView.vue
-│   │   ├── manage/
-│   │   │   └── ArticleEditor.vue
-│   │   ├── tag/
-│   │   │   └── TagArticles.vue
-│   │   ├── user/
-│   │   │   ├── ProfileEdit.vue
-│   │   │   └── UserProfile.vue
-│   │   └── NotFound.vue
-│   ├── App.vue                  # 根组件
-│   ├── main.ts                  # 应用入口
-│   ├── env.d.ts                 # 环境变量类型声明
-│   ├── auto-imports.d.ts        # 自动生成（unplugin-auto-import）
-│   └── components.d.ts          # 自动生成（unplugin-vue-components）
-├── .env.development             # 开发环境变量
-├── .env.production              # 生产环境变量
-├── .gitignore
-├── index.html                   # SPA 入口
-├── package.json
-├── vite.config.ts               # Vite 配置
-├── tsconfig.json                # TypeScript 配置
-├── tsconfig.app.json
-├── tsconfig.node.json
+```text
+├── app/                         # Nuxt 应用源码（srcDir）
+│   ├── api/                     # 后端接口封装
+│   ├── assets/                  # 图片、Logo、全局样式与代码主题
+│   ├── components/              # 文章、评论、布局、UI 等组件
+│   ├── composables/             # 主题、上传、自动保存等组合式函数
+│   ├── layouts/                 # default / admin / blank 布局
+│   ├── middleware/              # auth / admin 路由守卫
+│   ├── pages/                   # 文件路由页面
+│   ├── plugins/                 # Nuxt 插件
+│   ├── stores/                  # Pinia stores
+│   ├── types/                   # TypeScript 类型
+│   ├── utils/                   # 请求、格式化、SEO、目录等工具
+│   ├── app.vue                  # 根组件
+│   ├── error.vue                # 错误页
+│   └── router.options.ts        # 路由滚动行为
+├── server/
+│   ├── middleware/api-proxy.ts  # 同源 /api、/auth、/file 代理
+│   ├── middleware/legacy-redirects.ts
+│   └── routes/                  # sitemap.xml、robots.txt
+├── public/                      # favicon、manifest、Vditor 静态资源
+├── scripts/copy-vditor.mjs      # 将 Vditor 复制到 public/vditor
+├── deploy/                      # 通用部署手册、systemd、Nginx 配置
+├── .github/workflows/deploy.yml # GitHub Actions 自动部署
+├── nuxt.config.ts               # Nuxt 配置
 ├── tailwind.config.js           # Tailwind 配置
-├── postcss.config.js            # PostCSS 配置
-├── .yarnrc.yml                  # Yarn 配置
+├── tsconfig.json                # 引用 .nuxt 生成的 tsconfig
+├── package.json
 └── yarn.lock
 ```
+
+> `.nuxt/`、`.output/`、`.data/` 均为本地生成目录，已加入 `.gitignore`。其中 `.data/kv` 是 Nitro 开发时的本地 KV 存储。
 
 ---
 
@@ -269,44 +144,29 @@
 
 ### 环境要求
 
-- **Node.js** >= 18
-- **npm** 或 **yarn**
+- **Node.js** >= 22.19，推荐 24 LTS
+- **Yarn** 4.18（通过 Corepack 启用）
+- 已运行的后端服务，本地默认 `http://localhost:8080`
 
-### 安装依赖
+### 安装与启动
 
 ```bash
-# 使用 npm
-npm install
-
-# 使用 yarn
+corepack enable
+corepack prepare yarn@4.18.0 --activate
 yarn install
-```
-
-### 启动开发服务器
-
-```bash
-npm run dev
-# 或
 yarn dev
 ```
 
-开发服务器默认运行在 `http://localhost:3000`，API 请求会自动代理到 `http://localhost:8080`。
+开发服务器默认运行在 <http://localhost:3000>。
 
-### 构建生产版本
+- 浏览器请求同源 `/api`、`/auth`、`/file`，由 Nitro 转发到后端。
+- 后端地址由 `NUXT_API_BASE` 控制，开发环境默认 `http://localhost:8080`。
+- `predev` 和 `postinstall` 会自动把 Vditor 资源复制到 `public/vditor`。
+
+### 生产预览
 
 ```bash
-npm run build
-# 或
 yarn build
-```
-
-构建产物输出到 `dist/` 目录。
-
-### 预览生产构建
-
-```bash
-npm run preview
-# 或
 yarn preview
 ```
 
@@ -315,130 +175,99 @@ yarn preview
 ## 脚本命令
 
 | 命令 | 说明 |
-|------|------|
-| `dev` | 启动 Vite 开发服务器 |
-| `build` | TypeScript 类型检查 + Vite 生产构建 |
-| `preview` | 预览生产构建结果 |
-
----
-
-## 部署指南
-
-### 静态文件部署
-
-1. 执行 `npm run build` 构建生产版本
-2. 将 `dist/` 目录下的文件部署到 Nginx、CDN 或任何静态文件服务器
-
-### 推荐 Nginx 配置
-
-```nginx
-server {
-    listen 80;
-    server_name lilicould.cn www.lilicould.cn;
-
-    root /path/to/dist;
-    index index.html;
-
-    # SPA 路由重写
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # API 反向代理
-    location /api {
-        proxy_pass https://api.lilicould.cn;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /auth {
-        proxy_pass https://api.lilicould.cn;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /file {
-        proxy_pass https://api.lilicould.cn;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # 静态资源缓存
-    location /assets {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-}
-```
+|---|---|
+| `yarn dev` | 启动 Nuxt 开发服务器 |
+| `yarn build` | 构建生产产物到 `.output/` |
+| `yarn preview` | 预览生产构建 |
+| `yarn typecheck` | 使用 `vue-tsc` 执行类型检查 |
+| `yarn postinstall` | 复制 Vditor 资源并执行 `nuxt prepare` |
 
 ---
 
 ## 环境变量
 
-项目使用两个环境文件：
+| 变量 | 说明 | 默认值 |
+|---|---|---|
+| `NUXT_API_BASE` | 服务端 SSR 请求后端使用的地址 | 开发 `http://localhost:8080`，生产 `https://api.lilicould.cn` |
+| `NUXT_PUBLIC_API_BASE` | 浏览器端 API 前缀，留空表示同源 | 空 |
+| `NUXT_PUBLIC_SITE_URL` | sitemap、canonical、OG 使用的站点地址 | `https://lilicould.cn` |
+| `NUXT_PUBLIC_UPLOAD_MODE` | 上传模式：`direct` 前端直传，`proxy` 后端中转 | `direct` |
 
-| 文件 | 用途 |
-|------|------|
-| `.env.development` | 开发环境配置 |
-| `.env.production` | 生产环境配置 |
+示例：
 
-| 变量 | 说明 | 开发环境值 | 生产环境值 |
-|------|------|-----------|-----------|
-| `VITE_API_BASE_URL` | API 基础地址 | `http://localhost:8080` | `https://api.lilicould.cn` |
+```bash
+NUXT_API_BASE=http://localhost:8080
+NUXT_PUBLIC_SITE_URL=https://example.com
+NUXT_PUBLIC_UPLOAD_MODE=direct
+```
 
-> 开发时 Vite 通过 proxy 将 `/api`、`/auth`、`/file` 路径代理到 `http://localhost:8080`，因此开发环境也设置为后端地址。
+开发和生产配置分别放在 `.env.development`、`.env.production`。不要把 Token、数据库密码等敏感信息提交到仓库。
 
 ---
 
 ## 路由一览
 
 | 路径 | 页面 | 权限 | 布局 |
-|------|------|------|------|
-| `/` | 首页 | - | 默认 |
-| `/article/:id` | 文章详情 | - | 默认 |
-| `/category/:slug` | 分类文章列表 | - | 默认 |
-| `/tag/:slug` | 标签文章列表 | - | 默认 |
-| `/search?q=` | 搜索结果 | - | 默认 |
-| `/user/me` | 个人主页 | 登录 | 默认 |
-| `/user/:id` | 用户公开主页 | - | 默认 |
-| `/login` | 登录 | - | 默认 |
-| `/register` | 注册 | - | 默认 |
-| `/profile/edit` | 编辑资料 | 登录 | 默认 |
-| `/write` | 写文章 | 登录 | 空白 |
-| `/write/:id` | 编辑文章 | 登录 | 空白 |
-| `/admin` | 管理仪表盘 | 管理员 | 管理 |
-| `/admin/articles` | 文章管理 | 管理员 | 管理 |
-| `/admin/categories` | 分类管理 | 管理员 | 管理 |
-| `/admin/tags` | 标签管理 | 管理员 | 管理 |
-| `/admin/comments` | 评论管理 | 管理员 | 管理 |
-| `/admin/users` | 用户管理 | 管理员 | 管理 |
-| `/admin/audit-logs` | 审计日志 | 管理员 | 管理 |
-| `/about` | 关于 | - | 默认 |
-| `/*` | 404 页面 | - | 默认 |
+|---|---|---|---|
+| `/` | 首页 | - | default |
+| `/article/:slug` | 文章详情 | - | default |
+| `/article/id/:id` | 按 ID 访问文章（兼容旧链接） | - | default |
+| `/categories` | 分类总览 | - | default |
+| `/category/:slug` | 分类文章列表 | - | default |
+| `/tag/:slug` | 标签文章列表 | - | default |
+| `/search?q=` | 搜索结果 | - | default |
+| `/about` | 关于 | - | default |
+| `/user/:id` | 用户公开主页 | - | default |
+| `/user/me` | 我的主页 | 登录 | default |
+| `/profile/edit` | 编辑资料 | 登录 | default |
+| `/login` | 登录 | - | blank |
+| `/register` | 注册 | - | blank |
+| `/write` | 写文章 | 登录 | blank |
+| `/write/:id` | 编辑文章 | 登录 | blank |
+| `/admin` | 管理仪表盘 | 管理员 | admin |
+| `/admin/articles` | 文章管理 | 管理员 | admin |
+| `/admin/categories` | 分类管理 | 管理员 | admin |
+| `/admin/tags` | 标签管理 | 管理员 | admin |
+| `/admin/comments` | 评论管理 | 管理员 | admin |
+| `/admin/users` | 用户管理 | 管理员 | admin |
+| `/admin/audit-logs` | 审计日志 | 管理员 | admin |
+| `/*` | 404 页面 | - | default |
+
+---
+
+## 构建与部署
+
+```bash
+yarn build
+```
+
+构建产物位于 `.output/`，由 Node 运行：
+
+```bash
+node .output/server/index.mjs
+```
+
+生产环境推荐：
+
+- 使用 systemd 运行 Nuxt SSR，监听 `127.0.0.1:3000`
+- 使用 Nginx 或 OpenResty 反向代理 `80/443`
+- 浏览器始终请求同源 `/api`、`/auth`、`/file`
+
+完整步骤、systemd 单元和 Nginx 配置见 [deploy/DEPLOY.md](deploy/DEPLOY.md)。
+
+仓库也提供 GitHub Actions 工作流 `.github/workflows/deploy.yml`，在推送到 `main` 时构建并部署 `.output/`。
 
 ---
 
 ## 开发规范
 
 - **语言**：TypeScript 严格模式
-- **框架**：Vue 3 Composition API + `<script setup>` 语法
-- **样式**：Tailwind CSS 工具类优先，CSS 变量驱动主题
-- **组件命名**：PascalCase，文件名与组件名一致
-- **Git 提交**：遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范
-
-### 自动导入
-
-本项目使用 `unplugin-auto-import` 和 `unplugin-vue-components`，以下 API 无需手动 import：
-- Vue API（`ref`、`computed`、`watch` 等）
-- Vue Router API（`useRoute`、`useRouter` 等）
-- Pinia API（`defineStore`、`storeToRefs` 等）
-- `src/components/` 下的所有组件
+- **框架**：Vue 3 Composition API + `<script setup>`
+- **样式**：Tailwind CSS 工具类优先，主题由 CSS 变量驱动
+- **组件命名**：PascalCase，文件名与组件名保持一致
+- **自动导入**：使用 Nuxt 内置自动导入，无需手动导入 Vue、Router、Pinia API
+- **提交规范**：遵循 [Conventional Commits](https://www.conventionalcommits.org/)
+- **提交前检查**：执行 `yarn typecheck` 和 `yarn build`
 
 ---
 
@@ -453,7 +282,3 @@ server {
 - 作者：**LiliCould**（立里可）
 - 网站：<https://lilicould.cn>
 - GitHub：<https://github.com/LiliCould>
-
----
-
-⭐ 如果你喜欢这个项目，欢迎给个 Star！
