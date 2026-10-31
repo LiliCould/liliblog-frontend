@@ -12,6 +12,7 @@ dist
 dist-ssr
 .nuxt
 .output
+.data
 public/vditor
 *.local
 
@@ -36,6 +37,7 @@ trae
 .trae/
 
 .mimocode/
+.opencode/
 
 # Yarn
 .yarn/*

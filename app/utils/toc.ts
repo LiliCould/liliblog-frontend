@@ -37,9 +37,9 @@ export function extractTocItems(html: string): TocItem[] {
   let match: RegExpExecArray | null
 
   while ((match = headingRegex.exec(html)) !== null) {
-    const level = Number(match[1])
+    const level = Number(match[1] || 0)
     const attributes = match[2] || ''
-    const text = stripTags(match[3])
+    const text = stripTags(match[3] || '')
     if (!text) continue
 
     const idMatch = attributes.match(/\sid\s*=\s*["']([^"']+)["']/i)

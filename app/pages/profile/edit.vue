@@ -71,6 +71,7 @@ function handleAvatarChange(event: Event): void {
   const input = event.target as HTMLInputElement
   if (!input.files?.length) return
   const file = input.files[0]
+  if (!file) return
   if (avatarPreview.value) URL.revokeObjectURL(avatarPreview.value)
   avatarFile.value = file
   avatarPreview.value = URL.createObjectURL(file)

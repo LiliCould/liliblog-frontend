@@ -77,7 +77,7 @@ export function useParticleScene(
     const fallbacks = [primary, secondary, title]
 
     return [1, 2, 3].map((index, i) =>
-      style.getPropertyValue(`--particle-color-${index}`).trim() || fallbacks[i],
+      style.getPropertyValue(`--particle-color-${index}`).trim() || fallbacks[i] || primary,
     )
   }
 
@@ -122,7 +122,7 @@ export function useParticleScene(
   function buildTheme(): void {
     baseOpacity = readOpacity()
     nodeColors = readColors()
-    lineColor = nodeColors[0]
+    lineColor = nodeColors[0] || '#0284c7'
     glowSprites = nodeColors.map(makeGlowSprite)
   }
 
@@ -172,8 +172,10 @@ export function useParticleScene(
     // 节点之间的连线
     for (let i = 0; i < nodes.length; i++) {
       const first = nodes[i]
+      if (!first) continue
       for (let j = i + 1; j < nodes.length; j++) {
         const second = nodes[j]
+        if (!second) continue
         const dx = first.x - second.x
         const dy = first.y - second.y
         const distanceSq = dx * dx + dy * dy

@@ -4,7 +4,7 @@ type QueryParams = Record<string, string | number | boolean | undefined | null>
 
 interface RequestOptions {
   params?: QueryParams
-  body?: unknown
+  body?: BodyInit | Record<string, unknown> | null
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   headers?: Record<string, string>
 }
@@ -41,10 +41,10 @@ export function useApi() {
     get<T>(path: string, params?: QueryParams) {
       return request<T>(path, { params })
     },
-    post<T>(path: string, body?: unknown) {
+    post<T>(path: string, body?: RequestOptions['body']) {
       return request<T>(path, { method: 'POST', body })
     },
-    put<T>(path: string, body?: unknown) {
+    put<T>(path: string, body?: RequestOptions['body']) {
       return request<T>(path, { method: 'PUT', body })
     },
     del<T>(path: string) {

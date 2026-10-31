@@ -5,7 +5,7 @@ const REDIRECTS: Record<string, string> = {
 }
 
 export default defineEventHandler((event) => {
-  const path = (event.path || '/').split('?')[0]
+  const path = (event.path || '/').split('?')[0] || '/'
   const target = REDIRECTS[path]
   if (target) return sendRedirect(event, target, 301)
 })

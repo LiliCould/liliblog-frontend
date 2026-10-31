@@ -101,7 +101,7 @@ function isLilicouldDomain(url: string): boolean {
  * 先去掉 query/fragment，避免签名参数里的点干扰后缀判断。
  */
 function getFileExtension(href: string): string {
-  const path = href.split('?')[0].split('#')[0]
+  const path = (href.split('?')[0] ?? '').split('#')[0] ?? ''
   const lastSegment = path.split('/').pop() || ''
   const dotIndex = lastSegment.lastIndexOf('.')
   if (dotIndex < 0 || dotIndex === lastSegment.length - 1) return ''
@@ -114,7 +114,7 @@ function getFileExtension(href: string): string {
  */
 function getDisplayName(href: string, text: string): string {
   if (text) return text
-  const raw = href.split('?')[0].split('#')[0].split('/').pop() || ''
+  const raw = (href.split('?')[0] ?? '').split('#')[0]?.split('/').pop() || ''
   try {
     return decodeURIComponent(raw) || '未知文件'
   } catch {
