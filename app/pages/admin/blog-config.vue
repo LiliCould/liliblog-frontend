@@ -2,8 +2,7 @@
   <div class="space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <h2 class="text-lg font-semibold text-t-title">站点配置</h2>
-        <p class="mt-1 text-xs text-t-muted">
+        <p class="text-xs text-t-muted max-w-2xl">
           管理博客站点的分组配置，hero / author 支持可视化编辑，其余分组使用 JSON 编辑。
         </p>
       </div>

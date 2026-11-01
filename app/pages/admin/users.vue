@@ -1,7 +1,6 @@
 <template>
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-t-title">用户管理</h2>
+        <div class="flex items-center justify-end">
             <button
                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
                 @click="openCreateDialog">
