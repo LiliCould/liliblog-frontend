@@ -95,9 +95,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-vue-next'
-import { heroCodeTemplates, heroPhrases, type HeroCodeTemplate } from '~/utils/heroPhrases'
+import { heroCodeTemplates, heroPhrases } from '~/utils/heroPhrases'
+import type { HeroCodeTemplate } from '~/types'
+import { defaultBlogConfig } from '~/utils/blogConfigDefaults'
 
 interface ActiveLine {
   phrase: string
@@ -111,12 +113,26 @@ const TYPE_SPEED = 65
 const DELETE_SPEED = 28
 const HOLD_DURATION = 2200
 
-const slides = [
-  { src: 'https://oss.lilicould.cn/file/hero-1.png', alt: 'Hero 1' },
-  { src: 'https://oss.lilicould.cn/file/hero-2.png', alt: 'Hero 2' },
-  { src: 'https://oss.lilicould.cn/file/hero-3.png', alt: 'Hero 3' },
-  { src: 'https://oss.lilicould.cn/file/hero-4.jpg', alt: 'Hero 4' },
-]
+const { data: blogConfig } = useBlogConfig()
+
+const cfg = computed(() => blogConfig.value ?? defaultBlogConfig)
+
+const phrases = computed(() => {
+  const list = cfg.value.hero?.typewriter?.phrases
+  return list?.length ? list : heroPhrases
+})
+
+const templates = computed(() => {
+  const list = cfg.value.hero?.typewriter?.templates
+  return list?.length ? list : heroCodeTemplates
+})
+
+const slides = computed(() => {
+  const remote = (cfg.value.hero?.slides ?? []).filter(slide => slide.enabled !== false && slide.src)
+  return remote.length ? remote : (defaultBlogConfig.hero?.slides ?? [])
+})
+
+const typewriterEnabled = computed(() => cfg.value.hero?.typewriter?.enabled !== false)
 
 const currentIndex = ref(0)
 const paused = ref(false)
@@ -166,13 +182,16 @@ function escapePhrase(text: string): string {
 }
 
 function buildLine(): ActiveLine {
-  const phraseIndex = pickRandomIndex(heroPhrases.length, lastPhraseIndex)
-  const templateIndex = pickRandomIndex(heroCodeTemplates.length, lastTemplateIndex)
+  const phraseList = phrases.value
+  const templateList = templates.value
+  const phraseIndex = pickRandomIndex(phraseList.length, lastPhraseIndex)
+  const templateIndex = pickRandomIndex(templateList.length, lastTemplateIndex)
   lastPhraseIndex = phraseIndex
   lastTemplateIndex = templateIndex
 
-  const phrase = escapePhrase(heroPhrases[phraseIndex] || '技术与生活的分享空间')
-  const template = heroCodeTemplates[templateIndex] || {
+  const phrase = escapePhrase(phraseList[phraseIndex] || '技术与生活的分享空间')
+  const template = templateList[templateIndex] || {
+    key: 'javascript',
     label: 'JavaScript',
     prefix: 'console.log("',
     suffix: '");',
@@ -245,17 +264,46 @@ function stopTypewriter(): void {
   }
 }
 
+// 关闭打字机或开启「减少动态效果」时，直接展示一句完整文案
+function showStaticLine(): void {
+  stopTypewriter()
+  const line = buildLine()
+  activeLine.value = line
+  typedLength.value = line.fullText.length
+  phase.value = 'holding'
+}
+
+function syncTypewriter(): void {
+  if (!typewriterEnabled.value || reduceMotion.value) {
+    showStaticLine()
+    return
+  }
+  startTypewriter()
+}
+
 function next(): void {
-  currentIndex.value = (currentIndex.value + 1) % slides.length
+  const length = slides.value.length
+  if (!length) return
+  currentIndex.value = (currentIndex.value + 1) % length
 }
 
 function prev(): void {
-  currentIndex.value = (currentIndex.value - 1 + slides.length) % slides.length
+  const length = slides.value.length
+  if (!length) return
+  currentIndex.value = (currentIndex.value - 1 + length) % length
 }
 
 function goTo(index: number): void {
+  if (!slides.value.length) return
   currentIndex.value = index
 }
+
+watch(
+  () => slides.value.length,
+  (length) => {
+    if (currentIndex.value >= length) currentIndex.value = 0
+  },
+)
 
 function startAutoPlay(): void {
   stopAutoPlay()
@@ -285,20 +333,20 @@ function togglePause(): void {
   else startAutoPlay()
 }
 
+// 配置晚于组件挂载到达时（客户端导航），按最新的打字机开关切换表现
+watch(typewriterEnabled, () => syncTypewriter())
+
 onMounted(() => {
   reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  syncTypewriter()
+
   if (reduceMotion.value) {
     paused.value = true
-    const line = buildLine()
-    activeLine.value = line
-    typedLength.value = line.fullText.length
-    phase.value = 'holding'
     return
   }
 
   startAutoPlay()
-  startTypewriter()
   document.addEventListener('visibilitychange', handleVisibilityChange)
 })
 

@@ -219,4 +219,14 @@ export interface AdminAuditLogQuery {
   endTime?: string
 }
 
+export interface AdminBlogConfigSection {
+  id: number
+  key: string
+  value: Record<string, unknown>
+  enabled: number
+  remark: string | null
+  createTime: string
+  updateTime: string
+}
+
 export type AdminPage<T> = PageResult<T>

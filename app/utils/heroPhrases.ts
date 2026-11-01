@@ -1,10 +1,12 @@
+import type { HeroCodeTemplate } from '~/types'
+
 /**
- * Hero 打字机文案列表。
- * 在这里增删即可，每行一句；打字机会随机挑一句，再随机套用一种编程语言模板。
+ * Hero 打字机文案列表（本地兜底值）。
+ * 线上内容以 /api/blog-config 为准；接口不可用时使用这里的默认值。
  */
 export const heroPhrases: string[] = [
   '代码拯救世界!',
-  '永远不要忘记: say hello world!',
+  'never foget to say hello world!',
   '计算机是一个大的世界，而编程语言是和这个世界交流的工具。',
   '永远相信美好的事情即将发生。',
   '让代码像诗一样优雅。',
@@ -15,26 +17,19 @@ export const heroPhrases: string[] = [
   '互联网从不缺乏天才，缺乏的是敢于追求梦想的勇气。',
 ]
 
-export interface HeroCodeTemplate {
-  label: string
-  prefix: string
-  suffix: string
-}
-
 /**
  * 编程语言模板：最终输出 = prefix + 文案 + suffix。
- * 如需增加语言，按相同结构追加即可。
  */
 export const heroCodeTemplates: HeroCodeTemplate[] = [
-  { label: 'Java', prefix: 'System.out.println("', suffix: '");' },
-  { label: 'JavaScript', prefix: 'console.log("', suffix: '");' },
-  { label: 'TypeScript', prefix: 'console.log("', suffix: '");' },
-  { label: 'Python', prefix: 'print("', suffix: '")' },
-  { label: 'C', prefix: 'printf("', suffix: '\\n");' },
-  { label: 'C++', prefix: 'std::cout << "', suffix: '" << std::endl;' },
-  { label: 'C#', prefix: 'Console.WriteLine("', suffix: '");' },
-  { label: 'Go', prefix: 'fmt.Println("', suffix: '")' },
-  { label: 'Rust', prefix: 'println!("', suffix: '");' },
-  { label: 'Kotlin', prefix: 'println("', suffix: '")' },
-  { label: 'Swift', prefix: 'print("', suffix: '")' },
+  { key: 'java', label: 'Java', prefix: 'System.out.println("', suffix: '");' },
+  { key: 'javascript', label: 'JavaScript', prefix: 'console.log("', suffix: '");' },
+  { key: 'typescript', label: 'TypeScript', prefix: 'console.log("', suffix: '");' },
+  { key: 'python', label: 'Python', prefix: 'print("', suffix: '")' },
+  { key: 'c', label: 'C', prefix: 'printf("', suffix: '\\n");' },
+  { key: 'cpp', label: 'C++', prefix: 'std::cout << "', suffix: '" << std::endl;' },
+  { key: 'csharp', label: 'C#', prefix: 'Console.WriteLine("', suffix: '");' },
+  { key: 'go', label: 'Go', prefix: 'fmt.Println("', suffix: '")' },
+  { key: 'rust', label: 'Rust', prefix: 'println!("', suffix: '");' },
+  { key: 'kotlin', label: 'Kotlin', prefix: 'println("', suffix: '")' },
+  { key: 'swift', label: 'Swift', prefix: 'print("', suffix: '")' },
 ]

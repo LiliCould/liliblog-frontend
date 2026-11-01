@@ -132,3 +132,67 @@ export interface LoginVO {
   expiresIn: number
   userInfo: User
 }
+
+// ===== 站点配置 =====
+export interface HeroCodeTemplate {
+  key: string
+  label: string
+  prefix: string
+  suffix: string
+}
+
+export interface HeroSlide {
+  key: string
+  src: string
+  alt?: string
+  enabled?: boolean
+}
+
+export interface HeroTypewriterConfig {
+  enabled?: boolean
+  phrases?: string[]
+  templates?: HeroCodeTemplate[]
+}
+
+export interface HeroConfig {
+  typewriter?: HeroTypewriterConfig
+  slides?: HeroSlide[]
+}
+
+export interface AuthorProfile {
+  avatar?: string
+  nickname?: string
+  handle?: string
+  email?: string
+  signature?: string
+  badge?: string
+}
+
+export interface AuthorSocialLink {
+  key: string
+  name: string
+  icon: string
+  url: string
+  enabled?: boolean
+}
+
+export interface AuthorInfoGroup {
+  key: string
+  text: string
+  emoji?: string
+  items: string[]
+}
+
+export interface AuthorConfig {
+  profile?: AuthorProfile
+  socialLinks?: AuthorSocialLink[]
+  infoGroups?: AuthorInfoGroup[]
+}
+
+export interface BlogConfig {
+  version: number
+  updatedAt: string
+  hero?: HeroConfig
+  author?: AuthorConfig
+  extensions?: Record<string, unknown>
+}

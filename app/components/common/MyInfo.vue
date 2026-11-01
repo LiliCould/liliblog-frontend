@@ -1,21 +1,21 @@
 <template>
   <div class="panel-glass overflow-hidden">
     <div class="relative overflow-hidden">
-      <img :src="userInfo.avatar" :alt="userInfo.nickname" class="w-full h-36 object-cover" width="640" height="351" loading="lazy" decoding="async" />
+      <img :src="avatarSrc" :alt="displayProfile.nickname" class="w-full h-36 object-cover" width="640" height="351" loading="lazy" decoding="async" @error="handleAvatarError" />
       <div class="absolute top-3 right-3 bg-t-primary-fill text-t-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.3)]">
-        {{ userInfo.badge }}
+        {{ displayProfile.badge }}
       </div>
     </div>
 
     <div class="p-5">
       <div class="text-center mb-5">
-        <h3 class="text-xl font-bold text-t-title">{{ userInfo.nickname }}</h3>
+        <h3 class="text-xl font-bold text-t-title">{{ displayProfile.nickname }}</h3>
         <div class="flex items-center justify-center gap-2 mt-1.5">
-          <span class="text-xs text-t-muted">@LiliCould</span>
+          <span class="text-xs text-t-muted">@{{ displayProfile.handle }}</span>
           <span class="w-0.5 h-0.5 rounded-full bg-t-border" />
-          <span class="text-xs text-t-muted">lilicould@qq.com</span>
+          <span class="text-xs text-t-muted">{{ displayProfile.email }}</span>
         </div>
-        <p v-if="userInfo.signature" class="text-xs text-t-muted mt-2 opacity-70">{{ userInfo.signature }}</p>
+        <p v-if="displayProfile.signature" class="text-xs text-t-muted mt-2 opacity-70">{{ displayProfile.signature }}</p>
       </div>
 
       <div class="flex justify-center gap-3 mb-5 pb-5 border-b border-t-border">
@@ -64,8 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+import { computed, h, ref, watch } from 'vue'
 import { ChevronDown, Mail, Music, Tv } from 'lucide-vue-next'
+import type { AuthorInfoGroup } from '~/types'
+import { defaultBlogConfig } from '~/utils/blogConfigDefaults'
 import myAvatar from '~/assets/my-avatar.webp'
 
 const GithubIcon = {
@@ -89,23 +91,72 @@ const GithubIcon = {
   },
 }
 
-const userInfo = {
-  avatar: myAvatar,
-  nickname: '立里可',
-  signature: '热爱技术，追求卓越',
-  badge: '关于作者',
+const { data: blogConfig } = useBlogConfig()
+
+const fallbackProfile = defaultBlogConfig.author!.profile!
+const author = computed(() => blogConfig.value?.author ?? defaultBlogConfig.author!)
+const profile = computed(() => author.value.profile ?? fallbackProfile)
+
+const displayProfile = computed(() => ({
+  nickname: profile.value.nickname || fallbackProfile.nickname!,
+  handle: profile.value.handle || fallbackProfile.handle!,
+  email: profile.value.email || fallbackProfile.email!,
+  signature: profile.value.signature || fallbackProfile.signature!,
+  badge: profile.value.badge || fallbackProfile.badge!,
+}))
+
+const avatarSrc = ref(profile.value.avatar || myAvatar)
+
+watch(
+  () => profile.value.avatar,
+  (avatar) => {
+    avatarSrc.value = avatar || myAvatar
+  },
+)
+
+function handleAvatarError(): void {
+  avatarSrc.value = myAvatar
 }
 
-const socialLinks = [
-  { name: 'GitHub', url: 'https://github.com/liliCould', icon: GithubIcon, iconColor: 'text-t-muted hover:text-t-primary' },
-  { name: 'Bilibili', url: 'https://space.bilibili.com/360583544', icon: Tv, iconColor: 'text-cyan-400 hover:text-cyan-300' },
-  { name: '网易云音乐', url: 'https://music.163.com/#/user/home?id=1410136194', icon: Music, iconColor: 'text-red-400 hover:text-red-300' },
-  { name: '邮箱', url: 'mailto:lilicould@qq.com', icon: Mail, iconColor: 'text-t-muted hover:text-t-primary' },
-]
+const iconMap = {
+  github: { icon: GithubIcon, color: 'text-t-muted hover:text-t-primary' },
+  bilibili: { icon: Tv, color: 'text-cyan-400 hover:text-cyan-300' },
+  music: { icon: Music, color: 'text-red-400 hover:text-red-300' },
+  mail: { icon: Mail, color: 'text-t-muted hover:text-t-primary' },
+}
 
-const infoLinks = [
-  { text: '喜欢的动漫', emoji: '📺', items: ['海贼王', '鬼灭之刃', '凡人修仙传', '剑来', '间谍过家家', '龙与虎'] },
-  { text: '喜欢的美食', emoji: '🍦', items: ['菠萝', '炒粉', '酸菜鱼', '臭豆腐', '烤面筋'] },
-  { text: '喜欢的游戏', emoji: '🎮', items: ['Minecraft', '星露谷物语', '荒野大镖客2', '巫师3', 'GTA5'] },
-]
+type IconKey = keyof typeof iconMap
+type IconPreset = (typeof iconMap)[IconKey]
+
+function resolveIcon(icon: string): IconPreset | null {
+  if (!(icon in iconMap)) return null
+  return iconMap[icon as IconKey] ?? null
+}
+
+const socialLinks = computed(() =>
+  (author.value.socialLinks ?? []).flatMap((link) => {
+    if (link.enabled === false) return []
+    const preset = resolveIcon(link.icon)
+    if (!preset) return []
+    return [{
+      name: link.name,
+      url: link.url,
+      icon: preset.icon,
+      iconColor: preset.color,
+    }]
+  }),
+)
+
+type InfoGroupWithEnabled = AuthorInfoGroup & { enabled?: boolean }
+
+const infoLinks = computed(() =>
+  (author.value.infoGroups ?? [])
+    .filter(group => (group as InfoGroupWithEnabled).enabled !== false)
+    .map(group => ({
+      text: group.text,
+      emoji: group.emoji ?? '',
+      items: group.items ?? [],
+    }))
+    .filter(group => group.items.length > 0),
+)
 </script>
