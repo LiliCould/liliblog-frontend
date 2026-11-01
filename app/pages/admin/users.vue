@@ -1,21 +1,21 @@
 <template>
     <div class="space-y-6">
-        <div class="flex items-center justify-end">
-            <button
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
-                @click="openCreateDialog">
-                <Plus class="w-4 h-4" />
-                添加用户
-            </button>
-        </div>
-
         <div class="bg-t-surface border border-t-border p-4">
-            <!-- 移动端筛选切换按钮 -->
-            <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                筛选
-                <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
+            <div class="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-t-border">
+                <!-- 移动端筛选切换按钮 -->
+                <button class="md:hidden flex items-center gap-2 text-sm text-t-muted cursor-pointer" @click="showFilter = !showFilter">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    筛选
+                    <svg class="w-4 h-4 transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <span class="hidden md:inline text-[11px] font-semibold text-t-muted uppercase tracking-wider">筛选条件</span>
+                <button
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
+                    @click="openCreateDialog">
+                    <Plus class="w-3.5 h-3.5" />
+                    添加用户
+                </button>
+            </div>
             <div class="flex flex-wrap items-end gap-3 max-md:hidden">
                 <div class="flex-1 min-w-[150px] max-md:min-w-0 max-md:w-full">
                     <label class="block text-xs text-t-muted mb-1">用户名</label>

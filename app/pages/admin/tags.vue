@@ -1,24 +1,24 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-end">
-      <div class="flex items-center gap-2">
-        <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
-          <Trash2 class="w-4 h-4" />
-          批量删除 ({{ selectedIds.length }})
-        </button>
-        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
-          <Plus class="w-3.5 h-3.5" />
-          添加标签
-        </button>
-      </div>
-    </div>
-
     <div class="bg-t-surface border border-t-border p-4">
-      <button class="md:hidden flex items-center gap-2 text-sm text-t-muted mb-2 cursor-pointer" @click="showFilter = !showFilter">
-        <Filter class="w-4 h-4" />
-        筛选
-        <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': showFilter }" />
-      </button>
+      <div class="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-t-border">
+        <button class="md:hidden flex items-center gap-2 text-sm text-t-muted cursor-pointer" @click="showFilter = !showFilter">
+          <Filter class="w-4 h-4" />
+          筛选
+          <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': showFilter }" />
+        </button>
+        <span class="hidden md:inline text-[11px] font-semibold text-t-muted uppercase tracking-wider">筛选条件</span>
+        <div class="flex items-center gap-2">
+          <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
+            <Trash2 class="w-3.5 h-3.5" />
+            批量删除 ({{ selectedIds.length }})
+          </button>
+          <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
+            <Plus class="w-3.5 h-3.5" />
+            添加标签
+          </button>
+        </div>
+      </div>
       <div class="flex flex-wrap items-end gap-3" :class="{ 'max-md:hidden': !showFilter }">
         <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
           <label class="block text-xs text-t-muted mb-1">标签名称</label>

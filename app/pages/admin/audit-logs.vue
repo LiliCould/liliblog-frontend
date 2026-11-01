@@ -2,9 +2,9 @@
     <div class="space-y-6">
         <div v-if="selectedIds.length > 0" class="flex items-center justify-end">
             <button
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer"
                 @click="handleBatchDelete">
-                <Trash2 class="w-4 h-4" />
+                <Trash2 class="w-3.5 h-3.5" />
                 批量删除 ({{ selectedIds.length }})
             </button>
         </div>
