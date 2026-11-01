@@ -16,7 +16,7 @@
             <AlertDialogTitle class="text-base font-semibold text-t-title m-0">{{ title }}</AlertDialogTitle>
           </div>
           <AlertDialogCancel as-child>
-            <button class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer" aria-label="关闭">
+            <button class="btn-admin btn-admin-icon-sm btn-admin-ghost" aria-label="关闭">
               <X class="w-4 h-4" />
             </button>
           </AlertDialogCancel>
@@ -28,14 +28,14 @@
 
         <div class="flex justify-end gap-3">
           <AlertDialogCancel as-child>
-            <button class="btn-glass px-4 py-2 text-sm text-t-muted">
+            <button class="btn-admin btn-admin-secondary">
               {{ cancelText }}
             </button>
           </AlertDialogCancel>
           <AlertDialogAction as-child>
             <button
-              class="px-4 py-2 text-sm"
-              :class="danger ? 'btn-danger' : 'btn-primary'"
+              class="btn-admin"
+              :class="danger ? 'btn-admin-danger' : 'btn-admin-primary'"
               @click="emit('confirm')"
             >
               {{ confirmText }}

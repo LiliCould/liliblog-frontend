@@ -22,8 +22,8 @@
       v-model="model"
       :style="{ minHeight }"
       spellcheck="false"
-      class="w-full px-3 py-2.5 bg-t-bg border text-t-body font-mono text-xs leading-relaxed outline-none transition-colors duration-200 resize-y hover:border-t-border-hover focus:border-t-primary"
-      :class="error ? 'border-t-danger focus:border-t-danger' : 'border-t-border'"
+      class="form-control font-mono text-xs leading-relaxed resize-y"
+      :class="error ? 'is-invalid' : ''"
       placeholder="{}"
     />
 
@@ -53,7 +53,7 @@ withDefaults(defineProps<{
 
 const toast = useToast()
 
-const toolBtnClass = 'inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-t-muted border border-t-border hover:text-t-primary hover:border-t-primary transition-colors cursor-pointer'
+const toolBtnClass = 'btn-admin btn-admin-secondary'
 
 const charCount = computed(() => model.value.length)
 const copied = ref(false)

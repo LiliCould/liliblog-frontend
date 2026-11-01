@@ -1,8 +1,9 @@
 <template>
   <SelectRoot :model-value="modelValue" @update:model-value="onUpdate">
     <SelectTrigger
-      class="flex w-full items-center justify-between gap-2 px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer data-[placeholder]:text-t-muted"
-      :class="buttonClass"
+      :class="variant === 'form'
+        ? ['form-control', 'form-control-select', buttonClass]
+        : ['flex w-full items-center justify-between gap-2 px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary cursor-pointer data-[placeholder]:text-t-muted', buttonClass]"
     >
       <SelectValue class="truncate text-left" :placeholder="placeholder" />
       <SelectIcon class="shrink-0">
@@ -59,9 +60,11 @@ withDefaults(defineProps<{
   options: SelectOption[]
   placeholder?: string
   buttonClass?: string
+  variant?: 'default' | 'form'
 }>(), {
   placeholder: '请选择',
   buttonClass: '',
+  variant: 'default',
 })
 
 const emit = defineEmits<{

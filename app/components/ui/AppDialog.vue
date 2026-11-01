@@ -9,7 +9,7 @@
       >
         <div class="flex items-center justify-between mb-5">
           <DialogTitle class="text-base font-semibold text-t-title m-0">{{ title }}</DialogTitle>
-          <button class="w-7 h-7 flex items-center justify-center text-t-muted hover:text-t-body hover:bg-[rgba(var(--color-primary-rgb),0.08)] transition-all cursor-pointer" aria-label="关闭" @click="close">
+          <button class="btn-admin btn-admin-icon-sm btn-admin-ghost" aria-label="关闭" @click="close">
             <X class="w-4 h-4" />
           </button>
         </div>

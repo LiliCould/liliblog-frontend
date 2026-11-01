@@ -9,11 +9,11 @@
         </button>
         <span class="hidden md:inline text-[11px] font-semibold text-t-muted uppercase tracking-wider">筛选条件</span>
         <div class="flex items-center gap-2">
-          <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
+          <button v-if="selectedIds.length > 0" class="btn-admin btn-admin-danger" @click="handleBatchDelete">
             <Trash2 class="w-3.5 h-3.5" />
             批量删除 ({{ selectedIds.length }})
           </button>
-          <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
+          <button class="btn-admin btn-admin-primary" @click="openAddDialog">
             <Plus class="w-3.5 h-3.5" />
             添加分类
           </button>
@@ -22,15 +22,15 @@
       <div class="flex flex-wrap items-end gap-3" :class="{ 'max-md:hidden': !showFilter }">
         <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
           <label class="block text-xs text-t-muted mb-1">分类名称</label>
-          <input v-model="filters.name" type="text" class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="搜索分类名称" />
+          <input v-model="filters.name" type="text" class="form-control" placeholder="搜索分类名称" />
         </div>
         <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
           <label class="block text-xs text-t-muted mb-1">Slug</label>
-          <input v-model="filters.slug" type="text" class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="搜索 Slug" />
+          <input v-model="filters.slug" type="text" class="form-control" placeholder="搜索 Slug" />
         </div>
         <div class="flex items-center gap-2">
-          <button class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="applyFilters">查询</button>
-          <button class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="resetFilters">重置</button>
+          <button class="btn-admin btn-admin-primary" @click="applyFilters">查询</button>
+          <button class="btn-admin btn-admin-secondary" @click="resetFilters">重置</button>
         </div>
       </div>
       <div v-if="hasActiveFilters" class="flex items-center gap-2 mt-3 pt-3 border-t border-t-border">
@@ -125,19 +125,19 @@
     <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
       <div class="flex items-center gap-2">
         <span class="text-xs text-t-muted">每页</span>
-        <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
+        <CustomSelect v-model="pageSize" :options="pageSizeOptions" variant="form" button-class="form-control-inline" />
       </div>
       <div class="flex items-center gap-1">
-        <button class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed" :disabled="current <= 1" @click="loadCategories(current - 1)">
+        <button class="btn-page" :disabled="current <= 1" @click="loadCategories(current - 1)">
           <ChevronLeft class="w-4 h-4" />
         </button>
         <template v-for="page in displayPages" :key="page">
           <span v-if="page === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
-          <button v-else class="w-8 h-8 rounded text-xs font-medium transition-all duration-200" :class="page === current ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary' : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'" @click="loadCategories(page as number)">
+          <button v-else class="btn-page" :class="page === current ? 'is-active' : ''" @click="loadCategories(page as number)">
             {{ page }}
           </button>
         </template>
-        <button class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed" :disabled="current >= totalPages" @click="loadCategories(current + 1)">
+        <button class="btn-page" :disabled="current >= totalPages" @click="loadCategories(current + 1)">
           <ChevronRight class="w-4 h-4" />
         </button>
       </div>
@@ -148,24 +148,24 @@
       <div class="space-y-4">
         <div>
           <label class="block text-xs text-t-muted mb-1">分类名称 <span class="text-t-danger">*</span></label>
-          <input v-model="form.name" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入分类名称" />
+          <input v-model="form.name" type="text" class="form-control" placeholder="请输入分类名称" />
         </div>
         <div>
           <label class="block text-xs text-t-muted mb-1">Slug <span class="text-t-danger">*</span></label>
-          <input v-model="form.slug" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入 Slug" />
+          <input v-model="form.slug" type="text" class="form-control" placeholder="请输入 Slug" />
         </div>
         <div>
           <label class="block text-xs text-t-muted mb-1">描述</label>
-          <textarea v-model="form.description" rows="3" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary resize-none" placeholder="请输入描述" />
+          <textarea v-model="form.description" rows="3" class="form-control resize-none" placeholder="请输入描述" />
         </div>
         <div>
           <label class="block text-xs text-t-muted mb-1">排序</label>
-          <input v-model.number="form.sortOrder" type="number" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="0" />
+          <input v-model.number="form.sortOrder" type="number" class="form-control" placeholder="0" />
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="closeDialog">取消</button>
-        <button class="px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
+        <button class="btn-admin btn-admin-secondary" @click="closeDialog">取消</button>
+        <button class="btn-admin btn-admin-primary" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
       </div>
     </AppDialog>
 

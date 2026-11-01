@@ -9,11 +9,11 @@
         </button>
         <span class="hidden md:inline text-[11px] font-semibold text-t-muted uppercase tracking-wider">筛选条件</span>
         <div class="flex items-center gap-2">
-          <button v-if="selectedIds.length > 0" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleBatchDelete">
+          <button v-if="selectedIds.length > 0" class="btn-admin btn-admin-danger" @click="handleBatchDelete">
             <Trash2 class="w-3.5 h-3.5" />
             批量删除 ({{ selectedIds.length }})
           </button>
-          <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="openAddDialog">
+          <button class="btn-admin btn-admin-primary" @click="openAddDialog">
             <Plus class="w-3.5 h-3.5" />
             添加标签
           </button>
@@ -22,11 +22,11 @@
       <div class="flex flex-wrap items-end gap-3" :class="{ 'max-md:hidden': !showFilter }">
         <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
           <label class="block text-xs text-t-muted mb-1">标签名称</label>
-          <input v-model="filters.name" type="text" class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="搜索标签名称" />
+          <input v-model="filters.name" type="text" class="form-control" placeholder="搜索标签名称" />
         </div>
         <div class="flex items-center gap-2">
-          <button class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="applyFilters">查询</button>
-          <button class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="resetFilters">重置</button>
+          <button class="btn-admin btn-admin-primary" @click="applyFilters">查询</button>
+          <button class="btn-admin btn-admin-secondary" @click="resetFilters">重置</button>
         </div>
       </div>
       <div v-if="hasActiveFilters" class="flex items-center gap-2 mt-3 pt-3 border-t border-t-border">
@@ -114,19 +114,19 @@
     <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
       <div class="flex items-center gap-2">
         <span class="text-xs text-t-muted">每页</span>
-        <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
+        <CustomSelect v-model="pageSize" :options="pageSizeOptions" variant="form" button-class="form-control-inline" />
       </div>
       <div class="flex items-center gap-1">
-        <button class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed" :disabled="current <= 1" @click="loadTags(current - 1)">
+        <button class="btn-page" :disabled="current <= 1" @click="loadTags(current - 1)">
           <ChevronLeft class="w-4 h-4" />
         </button>
         <template v-for="page in displayPages" :key="page">
           <span v-if="page === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
-          <button v-else class="w-8 h-8 rounded text-xs font-medium transition-all duration-200" :class="page === current ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary' : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'" @click="loadTags(page as number)">
+          <button v-else class="btn-page" :class="page === current ? 'is-active' : ''" @click="loadTags(page as number)">
             {{ page }}
           </button>
         </template>
-        <button class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed" :disabled="current >= totalPages" @click="loadTags(current + 1)">
+        <button class="btn-page" :disabled="current >= totalPages" @click="loadTags(current + 1)">
           <ChevronRight class="w-4 h-4" />
         </button>
       </div>
@@ -137,19 +137,19 @@
       <div class="space-y-4">
         <div>
           <label class="block text-xs text-t-muted mb-1">标签名称 <span class="text-t-danger">*</span></label>
-          <input v-model="form.name" type="text" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" placeholder="请输入标签名称" />
+          <input v-model="form.name" type="text" class="form-control" placeholder="请输入标签名称" />
         </div>
         <div>
           <label class="block text-xs text-t-muted mb-1">颜色 <span class="text-t-danger">*</span></label>
           <div class="flex items-center gap-3">
-            <input v-model="form.color" type="color" class="w-10 h-10 border border-t-border cursor-pointer p-0.5 bg-t-bg" />
-            <input v-model="form.color" type="text" class="flex-1 px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm font-mono outline-none transition-colors duration-200 focus:border-t-primary" placeholder="#000000" />
+            <input v-model="form.color" type="color" class="w-10 h-10 shrink-0 border border-t-border rounded-[var(--radius-control)] cursor-pointer p-0.5 bg-t-bg" />
+            <input v-model="form.color" type="text" class="form-control flex-1 font-mono" placeholder="#000000" />
           </div>
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showDialog = false">取消</button>
-        <button class="px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
+        <button class="btn-admin btn-admin-secondary" @click="showDialog = false">取消</button>
+        <button class="btn-admin btn-admin-primary" @click="handleSubmit">{{ isEdit ? '保存' : '添加' }}</button>
       </div>
     </AppDialog>
 

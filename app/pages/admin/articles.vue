@@ -2,7 +2,7 @@
  <div class="space-y-6">
  <div v-if="selectedIds.length > 0" class="flex items-center justify-end">
  <button
- class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer"
+ class="btn-admin btn-admin-danger"
  @click="handleBatchDelete">
  <Trash2 class="w-3.5 h-3.5" />
  批量删除 ({{ selectedIds.length }})
@@ -20,35 +20,35 @@
  <div class="flex-1 min-w-[180px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">标题</label>
  <input v-model="filters.title" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="form-control"
  placeholder="搜索文章标题" />
  </div>
  <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">分类</label>
- <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" />
+ <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" variant="form" />
  </div>
  <div class="min-w-[120px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">状态</label>
- <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" />
+ <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" variant="form" />
  </div>
  <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间起</label>
  <input v-model="filters.startTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="form-control" />
  </div>
  <div class="min-w-[150px] max-md:min-w-0 max-md:w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间止</label>
  <input v-model="filters.endTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="form-control" />
  </div>
  <div class="flex items-center gap-2">
  <button
- class="px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
+ class="btn-admin btn-admin-primary"
  @click="applyFilters">
  查询
  </button>
  <button
- class="px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+ class="btn-admin btn-admin-secondary"
  @click="resetFilters">
  重置
  </button>
@@ -59,35 +59,35 @@
  <div class="w-full">
  <label class="block text-xs text-t-muted mb-1">标题</label>
  <input v-model="filters.title" type="text"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+ class="form-control"
  placeholder="搜索文章标题" />
  </div>
  <div class="w-full">
  <label class="block text-xs text-t-muted mb-1">分类</label>
- <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" />
+ <CustomSelect v-model="categoryIdModel" :options="categoryOptions" placeholder="全部分类" variant="form" />
  </div>
  <div class="w-full">
  <label class="block text-xs text-t-muted mb-1">状态</label>
- <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" />
+ <CustomSelect v-model="statusModel" :options="articleStatusOptions" placeholder="全部状态" variant="form" />
  </div>
  <div class="w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间起</label>
  <input v-model="filters.startTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="form-control" />
  </div>
  <div class="w-full">
  <label class="block text-xs text-t-muted mb-1">创建时间止</label>
  <input v-model="filters.endTime" type="date"
- class="w-full px-3 py-1.5 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary" />
+ class="form-control" />
  </div>
  <div class="flex items-center gap-2 w-full">
  <button
- class="flex-1 px-4 py-1.5 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
+ class="flex-1 btn-admin btn-admin-primary"
  @click="applyFilters">
  查询
  </button>
  <button
- class="flex-1 px-4 py-1.5 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+ class="flex-1 btn-admin btn-admin-secondary"
  @click="resetFilters">
  重置
  </button>
@@ -247,25 +247,25 @@
  <div v-if="total > 0" class="flex items-center justify-between px-5 py-3 bg-t-surface border border-t-border border-t-0 -mt-px">
  <div class="flex items-center gap-2">
  <span class="text-xs text-t-muted">每页</span>
- <CustomSelect v-model="pageSize" :options="pageSizeOptions" button-class="px-2 py-1 rounded text-xs" />
+ <CustomSelect v-model="pageSize" :options="pageSizeOptions" variant="form" button-class="form-control-inline" />
  </div>
  <div class="flex items-center gap-1">
  <button
- class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+ class="btn-page"
  :disabled="current <= 1" @click="loadArticles(current - 1)">
  <ChevronLeft class="w-4 h-4" />
  </button>
  <template v-for="p in displayPages" :key="p">
  <span v-if="p === '...'" class="w-8 h-8 flex items-center justify-center text-t-muted text-xs">...</span>
- <button v-else class="w-8 h-8 rounded text-xs font-medium transition-all duration-200" :class="p === current
- ? 'bg-[rgba(var(--color-primary-rgb),0.12)] border border-t-primary text-t-primary'
- : 'border border-transparent text-t-muted hover:text-t-primary hover:border-t-primary'"
+ <button v-else class="btn-page" :class="p === current
+ ? 'is-active'
+ : ''"
  @click="loadArticles(p as number)">
  {{ p }}
  </button>
  </template>
  <button
- class="flex items-center justify-center w-8 h-8 rounded border border-t-border text-t-muted transition-all duration-200 hover:text-t-primary hover:border-t-primary disabled:opacity-30 disabled:cursor-not-allowed"
+ class="btn-page"
  :disabled="current >= totalPages" @click="loadArticles(current + 1)">
  <ChevronRight class="w-4 h-4" />
  </button>
@@ -291,10 +291,10 @@
 
         <AppDialog v-model:open="showRejectDialog" title="审核不通过">
             <p class="text-sm text-t-body mb-3">文章「{{ rejectTarget?.title }}」审核不通过，请填写原因：</p>
-            <textarea v-model="rejectReason" class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary resize-none" rows="4" placeholder="请输入不通过原因..." />
+            <textarea v-model="rejectReason" class="form-control resize-none" rows="4" placeholder="请输入不通过原因..." />
             <div class="flex justify-end gap-3 mt-5">
-                <button class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer" @click="showRejectDialog = false">取消</button>
-                <button class="px-4 py-2 text-sm font-semibold text-t-on-danger bg-t-danger hover:opacity-90 transition-all cursor-pointer" @click="handleReject">确认不通过</button>
+                <button class="btn-admin btn-admin-secondary" @click="showRejectDialog = false">取消</button>
+                <button class="btn-admin btn-admin-danger" @click="handleReject">确认不通过</button>
             </div>
         </AppDialog>
 

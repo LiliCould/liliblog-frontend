@@ -193,9 +193,9 @@ const model = defineModel<HeroConfig>({ required: true })
 
 const cardClass = 'bg-t-surface border border-t-border'
 const sectionHeadClass = 'flex flex-wrap items-start justify-between gap-3 px-4 py-3 border-b border-t-border'
-const inputClass = 'w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 hover:border-t-border-hover focus:border-t-primary'
-const deleteBtnClass = 'w-8 h-8 shrink-0 flex items-center justify-center border border-t-border text-t-muted hover:text-t-danger hover:border-t-danger hover:bg-t-danger-soft transition-all cursor-pointer'
-const addBtnClass = 'w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs text-t-muted border border-dashed border-t-border hover:text-t-primary hover:border-t-primary hover:bg-[rgba(var(--color-primary-rgb),0.04)] transition-colors cursor-pointer'
+const inputClass = 'form-control'
+const deleteBtnClass = 'btn-admin btn-admin-icon btn-admin-danger-outline shrink-0'
+const addBtnClass = 'btn-admin-add'
 
 const typewriter = computed<HeroTypewriterConfig>(() => model.value.typewriter ?? {})
 const phrases = computed(() => typewriter.value.phrases ?? [])

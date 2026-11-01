@@ -14,7 +14,7 @@
           <div class="flex items-center gap-1">
             <button
               type="button"
-              class="w-7 h-7 flex items-center justify-center text-t-muted border border-t-border hover:text-t-primary hover:border-t-primary transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              class="btn-admin btn-admin-icon-sm btn-admin-secondary"
               :disabled="loading"
               title="刷新分组"
               aria-label="刷新分组"
@@ -24,7 +24,7 @@
             </button>
             <button
               type="button"
-              class="w-7 h-7 flex items-center justify-center text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer"
+              class="btn-admin btn-admin-icon-sm btn-admin-primary"
               title="新增分组"
               aria-label="新增分组"
               @click="openAddDialog"
@@ -120,7 +120,7 @@
               </div>
 
               <button
-                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                class="btn-admin btn-admin-primary"
                 :disabled="saving"
                 @click="handleSave"
               >
@@ -129,7 +129,7 @@
               </button>
 
               <button
-                class="w-8 h-8 flex items-center justify-center border border-t-border text-t-muted hover:text-t-danger hover:border-t-danger transition-all cursor-pointer"
+                class="btn-admin btn-admin-icon btn-admin-danger-outline"
                 title="删除分组"
                 @click="handleDelete"
               >
@@ -154,7 +154,7 @@
               <div v-else class="border border-dashed border-t-border px-4 py-16 text-center">
                 <p class="text-sm text-t-body">该分组暂无可视化表单，请使用 JSON 编辑</p>
                 <button
-                  class="mt-3 px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+                  class="mt-3 btn-admin btn-admin-secondary"
                   @click="handleTabChange('json')"
                 >
                   切换到 JSON
@@ -188,7 +188,7 @@
           <input
             v-model="addForm.key"
             type="text"
-            class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm font-mono outline-none transition-colors duration-200 focus:border-t-primary"
+            class="form-control font-mono"
             placeholder="例如：footer"
           />
           <p class="mt-1 text-[11px] text-t-muted">需匹配 <span class="font-mono">^[a-z][a-z0-9-]{1,63}$</span></p>
@@ -198,20 +198,20 @@
           <input
             v-model="addForm.remark"
             type="text"
-            class="w-full px-3 py-2 bg-t-bg border border-t-border text-t-body text-sm outline-none transition-colors duration-200 focus:border-t-primary"
+            class="form-control"
             placeholder="可选，用于说明该分组的用途"
           />
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
         <button
-          class="px-4 py-2 text-sm text-t-muted border border-t-border hover:text-t-body transition-colors cursor-pointer"
+          class="btn-admin btn-admin-secondary"
           @click="showAddDialog = false"
         >
           取消
         </button>
         <button
-          class="px-4 py-2 text-sm font-semibold text-t-on-primary bg-t-primary-fill hover:opacity-90 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          class="btn-admin btn-admin-primary"
           :disabled="creating"
           @click="submitAdd"
         >
